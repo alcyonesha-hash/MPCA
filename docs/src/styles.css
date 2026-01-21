@@ -5,10 +5,44 @@
     box-sizing: border-box;
 }
 
-/* Korean text styling */
+/* Korean text styling - displayed below English as smaller gray text */
 .ko {
-    color: #666;
-    font-size: 0.9em;
+    display: block;
+    color: #999;
+    font-size: 0.8em;
+    font-weight: 400;
+    margin-top: 2px;
+}
+
+/* For inline elements like buttons */
+.btn .ko {
+    display: block;
+    font-size: 0.7em;
+    font-weight: 400;
+    margin-top: 4px;
+}
+
+/* For headings */
+h1 .ko, h2 .ko, h3 .ko {
+    font-weight: 400;
+    margin-top: 4px;
+}
+
+/* For list items */
+li .ko {
+    margin-top: 4px;
+    margin-bottom: 8px;
+}
+
+/* For labels */
+label .ko {
+    font-weight: 400;
+}
+
+/* For field notes */
+.field-note .ko {
+    display: block;
+    margin-top: 2px;
 }
 
 body {

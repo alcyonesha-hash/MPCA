@@ -11,41 +11,40 @@
         <!-- Consent Screen -->
         <div id="consent-screen" class="screen active">
             <div class="container">
-                <h1>Research Participation Consent<br><span class="ko">연구 참여 동의</span></h1>
+                <h1>Research Participation Consent<span class="ko">연구 참여 동의</span></h1>
                 <div class="consent-box">
-                    <p>This survey evaluates the naturalness of online chat conversations.<br>
-                    <span class="ko">이 설문은 온라인 채팅 대화의 자연스러움을 평가합니다.</span></p>
+                    <p>This survey evaluates the naturalness of online chat conversations.<span class="ko">이 설문은 온라인 채팅 대화의 자연스러움을 평가합니다.</span></p>
                     <ul>
-                        <li><strong>Duration / 소요시간:</strong> Approximately 10 minutes / 약 10분</li>
-                        <li><strong>Privacy / 개인정보:</strong> Your responses will be used for research purposes only / 응답은 연구 목적으로만 사용됩니다</li>
-                        <li><strong>Voluntary / 자발적 참여:</strong> You may stop at any time / 언제든 중단 가능</li>
-                        <li><strong>No right or wrong answers / 정답 없음:</strong> Please judge based on your personal impression / 개인적인 인상으로 판단해주세요</li>
+                        <li><strong>Duration:</strong> Approximately 10 minutes<span class="ko">약 10분 정도 소요됩니다.</span></li>
+                        <li><strong>Privacy:</strong> Your responses will be used for research purposes only<span class="ko">응답은 연구 목적으로만 사용됩니다.</span></li>
+                        <li><strong>Voluntary:</strong> You may stop at any time<span class="ko">언제든 중단하실 수 있습니다.</span></li>
+                        <li><strong>No right or wrong answers:</strong> Please judge based on your personal impression<span class="ko">정답이 없으니 느끼신 대로 선택해 주세요.</span></li>
                     </ul>
                     <div class="consent-check">
                         <input type="checkbox" id="consent-checkbox">
-                        <label for="consent-checkbox">I understand the above and agree to participate<br><span class="ko">위 내용을 이해하고 참여에 동의합니다</span></label>
+                        <label for="consent-checkbox">I understand the above and agree to participate<span class="ko">위 내용을 이해하였으며 참여에 동의합니다.</span></label>
                     </div>
                 </div>
-                <button id="consent-btn" class="btn primary" disabled>Start Survey / 설문 시작</button>
+                <button id="consent-btn" class="btn primary" disabled>Start Survey<span class="ko">설문 시작</span></button>
             </div>
         </div>
 
         <!-- Participant Info Screen -->
         <div id="info-screen" class="screen">
             <div class="container">
-                <h1>Participant Information<br><span class="ko">참가자 정보</span></h1>
+                <h1>Participant Information<span class="ko">참가자 정보</span></h1>
                 <div class="form-group">
-                    <label for="participant-name">Name / 이름</label>
-                    <input type="text" id="participant-name" placeholder="Enter your name / 이름 입력">
+                    <label for="participant-name">Name<span class="ko">이름</span></label>
+                    <input type="text" id="participant-name" placeholder="Enter your name">
                 </div>
                 <div class="form-group">
-                    <label for="participant-email">Email / 이메일</label>
-                    <input type="email" id="participant-email" placeholder="Enter your email / 이메일 입력">
+                    <label for="participant-email">Email<span class="ko">이메일</span></label>
+                    <input type="email" id="participant-email" placeholder="Enter your email">
                 </div>
                 <div class="form-group">
-                    <label for="participant-age">Age Group / 나이대</label>
+                    <label for="participant-age">Age Group<span class="ko">연령대</span></label>
                     <select id="participant-age">
-                        <option value="">Select / 선택</option>
+                        <option value="">Select</option>
                         <option value="18-24">18-24</option>
                         <option value="25-34">25-34</option>
                         <option value="35-44">35-44</option>
@@ -54,45 +53,39 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="participant-tech">IT/Development Experience / IT 경험</label>
+                    <label for="participant-tech">IT/Development Experience<span class="ko">IT/개발 경험</span></label>
                     <select id="participant-tech">
-                        <option value="">Select / 선택</option>
-                        <option value="none">No experience / 경험 없음</option>
-                        <option value="beginner">Beginner / 초급</option>
-                        <option value="intermediate">Intermediate / 중급</option>
-                        <option value="advanced">Advanced / 고급</option>
+                        <option value="">Select</option>
+                        <option value="none">No experience</option>
+                        <option value="beginner">Beginner</option>
+                        <option value="intermediate">Intermediate</option>
+                        <option value="advanced">Advanced</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="participant-phone">Phone (Optional) / 전화번호 (선택)</label>
-                    <input type="tel" id="participant-phone" placeholder="For gift delivery, discarded after / 답례품 지급용, 지급 후 폐기">
-                    <p class="field-note">Optional - for small gift delivery only / 선택사항 - 소정의 답례품 지급 목적으로만 사용</p>
+                    <label for="participant-phone">Phone (Optional)<span class="ko">전화번호 (선택사항)</span></label>
+                    <input type="tel" id="participant-phone" placeholder="For gift delivery only">
+                    <p class="field-note">Optional - for gift delivery only, will be discarded after<span class="ko">선택사항 - 답례품 지급 후 폐기됩니다.</span></p>
                 </div>
-                <button id="info-btn" class="btn primary" disabled>Next / 다음</button>
+                <button id="info-btn" class="btn primary" disabled>Next<span class="ko">다음</span></button>
             </div>
         </div>
 
         <!-- Instructions Screen -->
         <div id="instructions-screen" class="screen">
             <div class="container">
-                <h1>Instructions<br><span class="ko">안내</span></h1>
+                <h1>Instructions<span class="ko">안내</span></h1>
                 <div class="instructions-box">
-                    <p>In this survey, you will see <strong>two chat conversations (A and B)</strong> and choose which one feels more natural.<br>
-                    <span class="ko">이 설문에서는 <strong>두 개의 채팅 대화 (A와 B)</strong>를 보고 어느 쪽이 더 자연스러운지 선택합니다.</span></p>
+                    <p>In this survey, you will see <strong>two chat conversations (A and B)</strong> and choose which one feels more natural.<span class="ko">두 개의 채팅 대화(A와 B)를 보고 어느 쪽이 더 자연스러운지 선택합니다.</span></p>
                     <ul>
-                        <li>There are <strong>no right or wrong answers</strong>. Please judge based on your intuitive impression.<br>
-                        <span class="ko"><strong>정답이 없습니다</strong>. 직관적인 인상으로 판단해주세요.</span></li>
-                        <li>Some examples are shown as <strong>short videos (GIF)</strong>.<br>
-                        <span class="ko">일부 예시는 <strong>짧은 동영상 (GIF)</strong>으로 표시됩니다.</span></li>
-                        <li>Videos can be replayed multiple times.<br>
-                        <span class="ko">동영상은 여러 번 다시 볼 수 있습니다.</span></li>
-                        <li>There are <strong>10 comparison sets</strong> in total.<br>
-                        <span class="ko">총 <strong>10개의 비교 세트</strong>가 있습니다.</span></li>
+                        <li>There are <strong>no right or wrong answers</strong>. Please judge based on your intuitive impression.<span class="ko">정답이 없으니 직관적인 느낌으로 판단해 주세요.</span></li>
+                        <li>Some examples are shown as <strong>short videos (GIF)</strong>.<span class="ko">일부 예시는 짧은 동영상(GIF)으로 보여집니다.</span></li>
+                        <li>Videos can be replayed multiple times.<span class="ko">동영상은 여러 번 다시 볼 수 있습니다.</span></li>
+                        <li>There are <strong>10 comparison sets</strong> in total.<span class="ko">총 10개의 비교 세트가 있습니다.</span></li>
                     </ul>
-                    <p class="note">For each set, you will answer 4 questions about your preference.<br>
-                    <span class="ko">각 세트마다 4개의 질문에 답합니다.</span></p>
+                    <p class="note">For each set, you will answer 4 questions about your preference.<span class="ko">각 세트마다 4개의 질문에 답합니다.</span></p>
                 </div>
-                <button id="instructions-btn" class="btn primary">Begin Survey / 설문 시작</button>
+                <button id="instructions-btn" class="btn primary">Begin Survey<span class="ko">설문 시작</span></button>
             </div>
         </div>
 
@@ -117,28 +110,28 @@
 
                 <div class="questions-container">
                     <div class="question" id="q1">
-                        <p class="question-text">Q1: Which conversation feels more <strong>human-like</strong>?<br><span class="ko">어느 대화가 더 <strong>사람 같나요</strong>?</span></p>
+                        <p class="question-text">Q1: Which conversation feels more <strong>human-like</strong>?<span class="ko">어느 대화가 더 사람처럼 느껴지나요?</span></p>
                         <div class="options">
                             <button class="option-btn" data-question="q1" data-value="A">A</button>
                             <button class="option-btn" data-question="q1" data-value="B">B</button>
                         </div>
                     </div>
                     <div class="question" id="q2">
-                        <p class="question-text">Q2: Which conversation is <strong>less interruptive/annoying</strong>?<br><span class="ko">어느 대화가 덜 <strong>방해되거나 거슬리나요</strong>?</span></p>
+                        <p class="question-text">Q2: Which conversation is <strong>less interruptive/annoying</strong>?<span class="ko">어느 대화가 덜 거슬리거나 방해되나요?</span></p>
                         <div class="options">
                             <button class="option-btn" data-question="q2" data-value="A">A</button>
                             <button class="option-btn" data-question="q2" data-value="B">B</button>
                         </div>
                     </div>
                     <div class="question" id="q3">
-                        <p class="question-text">Q3: Which conversation has more <strong>natural flow</strong>?<br><span class="ko">어느 대화가 더 <strong>자연스럽게 흘러가나요</strong>?</span></p>
+                        <p class="question-text">Q3: Which conversation has more <strong>natural flow</strong>?<span class="ko">어느 대화가 더 자연스럽게 흘러가나요?</span></p>
                         <div class="options">
                             <button class="option-btn" data-question="q3" data-value="A">A</button>
                             <button class="option-btn" data-question="q3" data-value="B">B</button>
                         </div>
                     </div>
                     <div class="question" id="q4">
-                        <p class="question-text">Q4: Which agent would you <strong>keep in your group chat</strong>?<br><span class="ko">어느 에이전트를 <strong>그룹 채팅에 두고 싶나요</strong>?</span></p>
+                        <p class="question-text">Q4: Which agent would you <strong>keep in your group chat</strong>?<span class="ko">어느 에이전트를 내 그룹 채팅에 두고 싶나요?</span></p>
                         <div class="options">
                             <button class="option-btn" data-question="q4" data-value="A">A</button>
                             <button class="option-btn" data-question="q4" data-value="B">B</button>
@@ -146,16 +139,15 @@
                     </div>
                 </div>
 
-                <button id="next-btn" class="btn primary" disabled>Next / 다음</button>
+                <button id="next-btn" class="btn primary" disabled>Next<span class="ko">다음</span></button>
             </div>
         </div>
 
         <!-- Attention Check Screen -->
         <div id="attention-screen" class="screen">
             <div class="container">
-                <h1>Quick Check<br><span class="ko">확인 문항</span></h1>
-                <p class="attention-text">To ensure quality responses, please select <strong>"A"</strong> for this question.<br>
-                <span class="ko">응답 품질 확인을 위해 이 질문에서는 <strong>"A"</strong>를 선택해주세요.</span></p>
+                <h1>Quick Check<span class="ko">확인 문항</span></h1>
+                <p class="attention-text">To ensure quality responses, please select <strong>"A"</strong> for this question.<span class="ko">응답 품질 확인을 위해 이 질문에서는 "A"를 선택해 주세요.</span></p>
                 <div class="options center">
                     <button class="option-btn attention-option" data-value="A">A</button>
                     <button class="option-btn attention-option" data-value="B">B</button>
@@ -166,17 +158,15 @@
         <!-- Completion Screen -->
         <div id="complete-screen" class="screen">
             <div class="container">
-                <h1>Survey Complete!<br><span class="ko">설문 완료!</span></h1>
+                <h1>Survey Complete!<span class="ko">설문이 완료되었습니다!</span></h1>
                 <div class="complete-box">
-                    <p class="thank-you">Thank you for your participation!<br><span class="ko">참여해주셔서 감사합니다!</span></p>
+                    <p class="thank-you">Thank you for your participation!<span class="ko">참여해 주셔서 감사합니다!</span></p>
                     <div class="debrief">
-                        <h3>About This Study / 연구 소개</h3>
-                        <p>This research investigates how human-like behavioral metrics (response timing, message chunking, etc.) in chat agents affect user perception.<br>
-                        <span class="ko">이 연구는 채팅 에이전트의 사람다운 행동 특성(응답 타이밍, 메시지 분할 등)이 사용자 인식에 어떤 영향을 미치는지 조사합니다.</span></p>
-                        <p>Your responses are anonymous and will be used for research purposes only.<br>
-                        <span class="ko">응답은 익명이며 연구 목적으로만 사용됩니다.</span></p>
+                        <h3>About This Study<span class="ko">연구 소개</span></h3>
+                        <p>This research investigates how human-like behavioral metrics (response timing, message chunking, etc.) in chat agents affect user perception.<span class="ko">이 연구는 채팅 에이전트의 사람다운 행동 특성(응답 타이밍, 메시지 분할 등)이 사용자 인식에 어떤 영향을 미치는지 조사합니다.</span></p>
+                        <p>Your responses are anonymous and will be used for research purposes only.<span class="ko">응답은 익명으로 처리되며 연구 목적으로만 사용됩니다.</span></p>
                     </div>
-                    <p class="contact">Questions? Contact / 문의: <span id="contact-email">researcher@example.com</span></p>
+                    <p class="contact">Questions? Contact: <span id="contact-email">researcher@example.com</span><span class="ko">문의사항이 있으시면 위 이메일로 연락해 주세요.</span></p>
                 </div>
             </div>
         </div>
