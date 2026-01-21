@@ -395,16 +395,22 @@ def main():
     # Multi-party conversations
     # ============================================
 
-    # Set 5: Multi-user quick help (3 users + agent)
+    # Set 5: Multi-user help - nginx + git issues (2 threads, 12 messages)
     timing_messages_1 = [
-        {'role': 'user', 'sender': 'linux_newbie', 'text': 'how do I restart nginx?'},
-        {'role': 'user', 'sender': 'server_guy', 'text': 'anyone know why my cron isnt running?'},
-        {'role': 'agent', 'sender': 'helper', 'text': 'linux_newbie: systemctl restart nginx'},
-        {'role': 'user', 'sender': 'linux_newbie', 'text': 'thanks!'},
-        {'role': 'agent', 'sender': 'helper', 'text': 'server_guy: check crontab -l first'},
-        {'role': 'user', 'sender': 'server_guy', 'text': 'oh I see the issue now'},
+        {'role': 'user', 'sender': 'webdev_kim', 'text': 'nginx keeps showing 502 bad gateway'},
+        {'role': 'user', 'sender': 'junior_dev', 'text': 'how do I undo my last git commit?'},
+        {'role': 'user', 'sender': 'webdev_kim', 'text': 'backend is definitely running'},
+        {'role': 'agent', 'sender': 'helper', 'text': 'webdev_kim: check nginx error logs'},
+        {'role': 'agent', 'sender': 'helper', 'text': 'cat /var/log/nginx/error.log'},
+        {'role': 'user', 'sender': 'junior_dev', 'text': 'I already pushed it too'},
+        {'role': 'agent', 'sender': 'helper', 'text': 'junior_dev: git reset HEAD~1'},
+        {'role': 'agent', 'sender': 'helper', 'text': 'then git push --force'},
+        {'role': 'user', 'sender': 'webdev_kim', 'text': 'found it, upstream timeout'},
+        {'role': 'user', 'sender': 'junior_dev', 'text': 'is force push safe?'},
+        {'role': 'agent', 'sender': 'helper', 'text': 'webdev_kim: increase proxy_read_timeout'},
+        {'role': 'agent', 'sender': 'helper', 'text': 'junior_dev: only if no one else pulled'},
     ]
-    timing_delays_1 = [0, 0, 4, 0, 3, 0]
+    timing_delays_1 = [0, 0, 0, 4, 2, 0, 4, 2, 0, 0, 3, 2]
 
     generate_timing_video(
         timing_messages_1,
@@ -414,22 +420,26 @@ def main():
     )
     generate_timing_video(
         timing_messages_1,
-        [0, 0, 0, 0, 0, 0],
+        [0]*12,
         os.path.join(OUTPUT_DIR, 'timing_notiming_1.mp4'),
         with_timing=False
     )
 
-    # Set 6: Interleaved technical questions (multiple threads)
+    # Set 6: Docker + database issues (2 threads, 11 messages)
     timing_messages_2 = [
-        {'role': 'user', 'sender': 'dev_jane', 'text': 'whats the best way to check disk space?'},
-        {'role': 'user', 'sender': 'admin_bob', 'text': 'npm install failing with EACCES'},
-        {'role': 'user', 'sender': 'newbie_tom', 'text': 'is vim or nano better?'},
-        {'role': 'agent', 'sender': 'helper', 'text': 'dev_jane: df -h for human readable'},
-        {'role': 'agent', 'sender': 'helper', 'text': 'admin_bob: use sudo or fix permissions'},
-        {'role': 'user', 'sender': 'dev_jane', 'text': 'perfect thanks'},
-        {'role': 'user', 'sender': 'oldtimer', 'text': 'nano is easier for beginners imo'},
+        {'role': 'user', 'sender': 'docker_newbie', 'text': 'my container exits immediately'},
+        {'role': 'user', 'sender': 'db_admin', 'text': 'postgres wont start after update'},
+        {'role': 'agent', 'sender': 'helper', 'text': 'docker_newbie: check logs first'},
+        {'role': 'agent', 'sender': 'helper', 'text': 'docker logs <container_id>'},
+        {'role': 'user', 'sender': 'docker_newbie', 'text': 'says exec format error'},
+        {'role': 'user', 'sender': 'db_admin', 'text': 'log says data directory issue'},
+        {'role': 'agent', 'sender': 'helper', 'text': 'docker_newbie: wrong platform image'},
+        {'role': 'agent', 'sender': 'helper', 'text': 'use --platform linux/amd64'},
+        {'role': 'agent', 'sender': 'helper', 'text': 'db_admin: check pg_upgrade logs'},
+        {'role': 'user', 'sender': 'docker_newbie', 'text': 'that fixed it thanks!'},
+        {'role': 'user', 'sender': 'db_admin', 'text': 'found version mismatch'},
     ]
-    timing_delays_2 = [0, 0, 0, 5, 2, 0, 0]
+    timing_delays_2 = [0, 0, 4, 2, 0, 0, 4, 2, 3, 0, 0]
 
     generate_timing_video(
         timing_messages_2,
@@ -439,7 +449,7 @@ def main():
     )
     generate_timing_video(
         timing_messages_2,
-        [0, 0, 0, 0, 0, 0, 0],
+        [0]*11,
         os.path.join(OUTPUT_DIR, 'timing_notiming_2.mp4'),
         with_timing=False
     )
@@ -449,12 +459,15 @@ def main():
     # Multi-party with chunked agent responses
     # ============================================
 
-    # Set 9: Server setup with multiple users watching
+    # Set 9: SSL + Redis setup (2 threads, 10+ messages with chunked response)
     chunking_messages_1 = [
-        {'role': 'user', 'sender': 'junior_dev', 'text': 'how do I set up nginx as reverse proxy?'},
-        {'role': 'user', 'sender': 'curious_one', 'text': 'oh I need this too'},
+        {'role': 'user', 'sender': 'ops_mike', 'text': 'how do I set up SSL with certbot?'},
+        {'role': 'user', 'sender': 'backend_dev', 'text': 'redis memory keeps growing'},
+        {'role': 'user', 'sender': 'ops_mike', 'text': 'using nginx btw'},
+        {'role': 'user', 'sender': 'curious_intern', 'text': 'following this'},
+        {'role': 'user', 'sender': 'backend_dev', 'text': 'already set maxmemory'},
     ]
-    agent_response_1 = "junior_dev: First install nginx. Then edit /etc/nginx/sites-available/default. Add proxy_pass to your backend. Finally reload with systemctl reload nginx."
+    agent_response_1 = "ops_mike: First install certbot with apt. Then run certbot --nginx for automatic setup. It will handle certificate and nginx config. For renewal set up a cron job. backend_dev: Check your maxmemory-policy setting. Use allkeys-lru for cache scenarios. Also monitor with redis-cli info memory."
 
     generate_chunking_video_multi(
         chunking_messages_1,
@@ -469,13 +482,15 @@ def main():
         with_chunking=False
     )
 
-    # Set 10: Deployment steps with team watching
+    # Set 10: CI/CD + monitoring setup (2 threads, detailed explanation)
     chunking_messages_2 = [
-        {'role': 'user', 'sender': 'team_lead', 'text': 'can someone explain the deploy process?'},
-        {'role': 'user', 'sender': 'new_hire', 'text': 'yeah Im confused about this too'},
-        {'role': 'user', 'sender': 'intern_kim', 'text': 'following'},
+        {'role': 'user', 'sender': 'team_lead', 'text': 'how should we set up CI/CD pipeline?'},
+        {'role': 'user', 'sender': 'devops_newbie', 'text': 'also need help with monitoring'},
+        {'role': 'user', 'sender': 'team_lead', 'text': 'using github actions'},
+        {'role': 'user', 'sender': 'senior_dev', 'text': 'prometheus works well for us'},
+        {'role': 'user', 'sender': 'devops_newbie', 'text': 'is grafana needed too?'},
     ]
-    agent_response_2 = "team_lead: First pull latest from main. Run the test suite. Build with npm run build. Then deploy using our CI/CD pipeline. Check the logs after."
+    agent_response_2 = "team_lead: Start with a simple workflow file in .github/workflows. Add build and test steps first. Then add deployment to staging on PR merge. Production deploys should require approval. devops_newbie: Yes use Grafana with Prometheus. Prometheus collects metrics and Grafana visualizes them. Start with node_exporter for system metrics."
 
     generate_chunking_video_multi(
         chunking_messages_2,

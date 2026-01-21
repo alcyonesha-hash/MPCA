@@ -5,43 +5,57 @@
     box-sizing: border-box;
 }
 
-/* Korean text styling - displayed below English as smaller gray text */
+/* Korean text styling - displayed below English with clear line break */
 .ko {
     display: block;
-    color: #999;
-    font-size: 0.75em;
+    color: #888;
+    font-size: 0.8em;
     font-weight: 400;
-    margin-top: 8px;
-    line-height: 1.4;
+    margin-top: 12px;
+    line-height: 1.5;
 }
 
 /* For inline elements like buttons */
 .btn .ko {
-    font-size: 0.65em;
-    margin-top: 6px;
+    font-size: 0.7em;
+    margin-top: 8px;
+    color: rgba(255,255,255,0.8);
 }
 
 /* For headings */
-h1 .ko, h2 .ko, h3 .ko {
-    font-size: 0.6em;
-    margin-top: 10px;
+h1 .ko {
+    font-size: 0.55em;
+    margin-top: 16px;
+    color: #777;
 }
 
-/* For list items */
+h2 .ko, h3 .ko {
+    font-size: 0.7em;
+    margin-top: 8px;
+}
+
+/* For list items - more spacing */
 li .ko {
-    margin-top: 6px;
-    margin-bottom: 12px;
+    margin-top: 8px;
+    margin-bottom: 16px;
+    padding-left: 0;
 }
 
 /* For labels */
 label .ko {
-    font-size: 0.85em;
-    margin-top: 4px;
+    font-size: 0.8em;
+    margin-top: 6px;
+    color: #999;
 }
 
 /* For field notes */
 .field-note .ko {
-    margin-top: 4px;
+    margin-top: 6px;
+}
+
+/* For paragraphs */
+p .ko {
+    margin-top: 10px;
 }
 
 body {
@@ -276,15 +290,15 @@ h3 {
 }
 
 .chat-content {
-    padding: 16px;
-    min-height: 300px;
-    max-height: 400px;
+    padding: 20px;
+    min-height: 350px;
+    max-height: 500px;
     overflow-y: auto;
 }
 
 /* Chat Messages */
 .chat-message {
-    margin-bottom: 12px;
+    margin-bottom: 14px;
     display: flex;
     flex-direction: column;
 }
@@ -298,17 +312,19 @@ h3 {
 }
 
 .message-sender {
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 600;
     margin-bottom: 4px;
-    color: #666;
+    color: #555;
 }
 
 .message-bubble {
-    padding: 10px 14px;
+    padding: 12px 16px;
     border-radius: 12px;
-    max-width: 85%;
+    max-width: 90%;
     word-wrap: break-word;
+    font-size: 15px;
+    line-height: 1.5;
 }
 
 .chat-message.user .message-bubble {
@@ -338,6 +354,36 @@ h3 {
 .gif-container img {
     width: 100%;
     border-radius: 8px;
+}
+
+.gif-container img.hidden {
+    display: none;
+}
+
+.gif-placeholder {
+    width: 100%;
+    height: 300px;
+    background: linear-gradient(135deg, #e8eaf6 0%, #c5cae9 100%);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #5c6bc0;
+}
+
+.gif-placeholder.hidden {
+    display: none;
+}
+
+.gif-placeholder .play-icon {
+    font-size: 48px;
+    margin-bottom: 12px;
+}
+
+.gif-placeholder .play-text {
+    font-size: 14px;
+    color: #7986cb;
 }
 
 .replay-btn {

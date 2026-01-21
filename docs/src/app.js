@@ -197,12 +197,15 @@ class SurveyApp {
         const container = document.getElementById(containerId);
 
         if (type === 'gif') {
-            // GIF display - static image until replay clicked
-            // Add cache-busting parameter to prevent auto-animation
-            const staticSrc = messages.src + '?t=' + Date.now();
+            // GIF display - show placeholder until Play button clicked
+            // Use a canvas to show first frame (static) instead of GIF
             container.innerHTML = `
                 <div class="gif-container">
-                    <img src="${staticSrc}" alt="Chat animation" id="${containerId}-gif" class="chat-gif" data-src="${messages.src}">
+                    <div class="gif-placeholder" id="${containerId}-placeholder">
+                        <span class="play-icon">▶</span>
+                        <span class="play-text">Click Play to start</span>
+                    </div>
+                    <img src="" alt="Chat animation" id="${containerId}-gif" class="chat-gif hidden" data-src="${messages.src}">
                 </div>
             `;
             // Store the source for replay
@@ -233,14 +236,27 @@ class SurveyApp {
         const comparisonContainer = document.querySelector('.comparison-container');
         const replayBtn = document.createElement('button');
         replayBtn.className = 'btn primary gif-replay-btn';
-        replayBtn.textContent = 'Play Both / 재생';
+        replayBtn.innerHTML = 'Play Both<span class="ko">재생</span>';
         replayBtn.onclick = () => {
-            // Reload both GIFs simultaneously with cache-busting
-            const timestamp = Date.now();
+            // Hide placeholders and show GIFs
+            const placeholderA = document.getElementById('chat-a-placeholder');
+            const placeholderB = document.getElementById('chat-b-placeholder');
             const imgA = document.getElementById('chat-a-gif');
             const imgB = document.getElementById('chat-b-gif');
-            if (imgA) imgA.src = srcA + '?t=' + timestamp;
-            if (imgB) imgB.src = srcB + '?t=' + timestamp;
+
+            if (placeholderA) placeholderA.classList.add('hidden');
+            if (placeholderB) placeholderB.classList.add('hidden');
+
+            // Load and play both GIFs simultaneously with cache-busting
+            const timestamp = Date.now();
+            if (imgA) {
+                imgA.classList.remove('hidden');
+                imgA.src = srcA + '?t=' + timestamp;
+            }
+            if (imgB) {
+                imgB.classList.remove('hidden');
+                imgB.src = srcB + '?t=' + timestamp;
+            }
         };
         comparisonContainer.parentNode.insertBefore(replayBtn, comparisonContainer.nextSibling);
     }
