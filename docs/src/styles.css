@@ -9,40 +9,39 @@
 .ko {
     display: block;
     color: #999;
-    font-size: 0.8em;
+    font-size: 0.75em;
     font-weight: 400;
-    margin-top: 2px;
+    margin-top: 8px;
+    line-height: 1.4;
 }
 
 /* For inline elements like buttons */
 .btn .ko {
-    display: block;
-    font-size: 0.7em;
-    font-weight: 400;
-    margin-top: 4px;
+    font-size: 0.65em;
+    margin-top: 6px;
 }
 
 /* For headings */
 h1 .ko, h2 .ko, h3 .ko {
-    font-weight: 400;
-    margin-top: 4px;
+    font-size: 0.6em;
+    margin-top: 10px;
 }
 
 /* For list items */
 li .ko {
-    margin-top: 4px;
-    margin-bottom: 8px;
+    margin-top: 6px;
+    margin-bottom: 12px;
 }
 
 /* For labels */
 label .ko {
-    font-weight: 400;
+    font-size: 0.85em;
+    margin-top: 4px;
 }
 
 /* For field notes */
 .field-note .ko {
-    display: block;
-    margin-top: 2px;
+    margin-top: 4px;
 }
 
 body {
