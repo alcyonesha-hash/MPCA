@@ -130,6 +130,13 @@ h3 {
     border-color: #667eea;
 }
 
+.field-note {
+    font-size: 12px;
+    color: #888;
+    margin-top: 4px;
+    font-style: italic;
+}
+
 /* Instructions */
 .instructions-box {
     background: #f0f4ff;
@@ -315,6 +322,13 @@ h3 {
 
 .replay-btn:hover {
     background: rgba(0, 0, 0, 0.9);
+}
+
+.gif-replay-btn {
+    display: block;
+    width: auto;
+    margin: 16px auto;
+    padding: 12px 32px;
 }
 
 /* Questions */

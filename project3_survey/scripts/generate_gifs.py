@@ -134,15 +134,33 @@ def create_frame(messages_to_show, font):
     return np.array(img)
 
 
+def calculate_reading_time(text):
+    """Calculate realistic reading time based on text length (words per minute)"""
+    words = len(text.split())
+    # Average reading speed: ~200 WPM, but for chat context slower (~150 WPM)
+    # Minimum 1.5 seconds, maximum 5 seconds
+    reading_time = max(1.5, min(5.0, words / 2.5))
+    return reading_time
+
+
+def calculate_typing_time(text):
+    """Calculate realistic typing time based on text length"""
+    chars = len(text)
+    # Average typing speed: ~40 WPM = ~200 CPM = ~3.3 CPS
+    # For chat, faster: ~5 CPS, with minimum 1 second
+    typing_time = max(1.0, min(4.0, chars / 5.0))
+    return typing_time
+
+
 def generate_timing_video(messages, delays, output_path, with_timing=True):
     """
     Generate video showing messages appearing with or without timing delays
 
     Args:
         messages: List of message dicts
-        delays: List of delays in seconds for each message
+        delays: List of delays in seconds for each message (used as base for agent)
         output_path: Output file path
-        with_timing: If True, use delays; if False, instant appearance
+        with_timing: If True, use natural delays for ALL speakers; if False, instant appearance
     """
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
@@ -151,11 +169,26 @@ def generate_timing_video(messages, delays, output_path, with_timing=True):
 
     messages_shown = []
 
-    for i, (msg, delay) in enumerate(zip(messages, delays)):
-        # Add delay frames (if timing enabled)
-        if with_timing and i > 0 and delay > 0:
+    for i, msg in enumerate(messages):
+        # Calculate natural delay based on speaker and context
+        if with_timing and i > 0:
+            prev_msg = messages[i - 1]
+
+            if msg['role'] == 'user':
+                # User needs time to read previous message, then type
+                read_time = calculate_reading_time(prev_msg['text'])
+                type_time = calculate_typing_time(msg['text'])
+                natural_delay = read_time + type_time
+            else:
+                # Agent "thinks" then responds - use provided delay or calculate
+                if i < len(delays) and delays[i] > 0:
+                    natural_delay = delays[i]
+                else:
+                    # Calculate based on response complexity
+                    natural_delay = calculate_typing_time(msg['text']) + 1.0
+
             # Show current state for delay duration
-            delay_frames = int(delay * FPS)
+            delay_frames = int(natural_delay * FPS)
             frame = create_frame(messages_shown, font)
             for _ in range(delay_frames):
                 frames.append(frame)
@@ -166,8 +199,9 @@ def generate_timing_video(messages, delays, output_path, with_timing=True):
         # Show new message appearing
         frame = create_frame(messages_shown, font)
 
-        # Hold for a moment
-        hold_frames = int(0.5 * FPS) if with_timing else int(0.1 * FPS)
+        # Hold for a moment to let viewer read
+        hold_time = calculate_reading_time(msg['text']) * 0.5 if with_timing else 0.1
+        hold_frames = int(hold_time * FPS)
         for _ in range(hold_frames):
             frames.append(frame)
 
@@ -197,14 +231,15 @@ def generate_chunking_video(user_msg, agent_response, output_path, with_chunking
     font = get_font()
     frames = []
 
-    # Show user message first
+    # Show user message first with natural reading time
     messages_shown = [user_msg]
     frame = create_frame(messages_shown, font)
-    for _ in range(int(1 * FPS)):
+    read_time = calculate_reading_time(user_msg['text'])
+    for _ in range(int(read_time * FPS)):
         frames.append(frame)
 
     if with_chunking:
-        # Split response into chunks (max 15 words each)
+        # Split response into chunks (at sentence boundaries, max ~12 words)
         words = agent_response.split()
         chunks = []
         current_chunk = []
@@ -218,24 +253,43 @@ def generate_chunking_video(user_msg, agent_response, output_path, with_chunking
         if current_chunk:
             chunks.append(' '.join(current_chunk))
 
-        # Show chunks with delays
+        # Show chunks with natural typing delays
         for i, chunk in enumerate(chunks):
+            # Add thinking/typing delay before chunk appears
+            if i == 0:
+                # First chunk: agent processing time
+                thinking_delay = 2.0
+            else:
+                # Subsequent chunks: typing delay based on length
+                thinking_delay = calculate_typing_time(chunk)
+
+            # Show delay (thinking indicator could be added here)
+            delay_frame = create_frame(messages_shown, font)
+            for _ in range(int(thinking_delay * FPS)):
+                frames.append(delay_frame)
+
             chunk_msg = {'role': 'agent', 'sender': 'helper', 'text': chunk}
             messages_shown.append(chunk_msg)
 
             frame = create_frame(messages_shown, font)
 
-            # Inter-chunk delay
-            delay = 2.0 if i > 0 else 0.5
-            for _ in range(int(delay * FPS)):
+            # Hold for reading time
+            hold_time = calculate_reading_time(chunk) * 0.6
+            for _ in range(int(hold_time * FPS)):
                 frames.append(frame)
     else:
-        # Single message
+        # Single message - appears after brief processing delay
+        processing_delay = 0.3  # Instant appearance for comparison
+        for _ in range(int(processing_delay * FPS)):
+            frames.append(create_frame(messages_shown, font))
+
         agent_msg = {'role': 'agent', 'sender': 'helper', 'text': agent_response}
         messages_shown.append(agent_msg)
 
         frame = create_frame(messages_shown, font)
-        for _ in range(int(0.5 * FPS)):
+        # Hold for reading time
+        hold_time = calculate_reading_time(agent_response) * 0.5
+        for _ in range(int(hold_time * FPS)):
             frames.append(frame)
 
     # Hold final state

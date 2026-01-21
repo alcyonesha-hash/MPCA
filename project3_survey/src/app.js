@@ -92,9 +92,11 @@ class SurveyApp {
         });
 
         infoBtn.addEventListener('click', () => {
+            const phoneInput = document.getElementById('participant-phone');
             this.participant = {
                 name: nameInput.value.trim(),
                 email: emailInput.value.trim(),
+                phone: phoneInput ? phoneInput.value.trim() : '',
                 ageGroup: ageSelect.value,
                 techExperience: techSelect.value,
                 startTime: new Date().toISOString()
@@ -167,6 +169,11 @@ class SurveyApp {
         this.renderChat('chat-a', chatA, set.type);
         this.renderChat('chat-b', chatB, set.type);
 
+        // Add single replay button for GIF sets
+        if (set.type === 'gif') {
+            this.addGifReplayButton(chatA.src, chatB.src);
+        }
+
         // Reset answers
         this.currentAnswers = {};
         document.querySelectorAll('.option-btn[data-question]').forEach(btn => {
@@ -190,15 +197,16 @@ class SurveyApp {
         const container = document.getElementById(containerId);
 
         if (type === 'gif') {
-            // GIF display
+            // GIF display - static image until replay clicked
+            // Add cache-busting parameter to prevent auto-animation
+            const staticSrc = messages.src + '?t=' + Date.now();
             container.innerHTML = `
                 <div class="gif-container">
-                    <img src="${messages.src}" alt="Chat animation" id="${containerId}-gif" class="chat-gif">
-                    <button class="replay-btn" onclick="var img=document.getElementById('${containerId}-gif'); img.src=''; img.src='${messages.src}';">
-                        Replay
-                    </button>
+                    <img src="${staticSrc}" alt="Chat animation" id="${containerId}-gif" class="chat-gif" data-src="${messages.src}">
                 </div>
             `;
+            // Store the source for replay
+            container.dataset.gifSrc = messages.src;
         } else {
             // Text chat display
             let html = '';
@@ -214,6 +222,27 @@ class SurveyApp {
             });
             container.innerHTML = html;
         }
+    }
+
+    addGifReplayButton(srcA, srcB) {
+        // Remove existing replay button if any
+        const existingBtn = document.querySelector('.gif-replay-btn');
+        if (existingBtn) existingBtn.remove();
+
+        // Add single replay button between the panels
+        const comparisonContainer = document.querySelector('.comparison-container');
+        const replayBtn = document.createElement('button');
+        replayBtn.className = 'btn primary gif-replay-btn';
+        replayBtn.textContent = 'Play Both / 재생';
+        replayBtn.onclick = () => {
+            // Reload both GIFs simultaneously with cache-busting
+            const timestamp = Date.now();
+            const imgA = document.getElementById('chat-a-gif');
+            const imgB = document.getElementById('chat-b-gif');
+            if (imgA) imgA.src = srcA + '?t=' + timestamp;
+            if (imgB) imgB.src = srcB + '?t=' + timestamp;
+        };
+        comparisonContainer.parentNode.insertBefore(replayBtn, comparisonContainer.nextSibling);
     }
 
     selectOption(question, value) {
