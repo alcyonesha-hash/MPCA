@@ -1,0 +1,39 @@
+# Thread Disentanglement Configuration
+# =====================================
+# Semantic 시간 감쇠 방식: 시간 감쇠를 의미 유사도에만 적용
+#
+# Scoring Formula:
+#   base = participant_weight × I[speaker in thread]
+#        + semantic_weight × semantic_sim × exp(-Δt/τ)
+#
+#   score = mention_weight + base  (if mention exists)
+#         = base                   (otherwise)
+
+# 가중치 파라미터
+weights:
+  participant: 1.0    # 참여자 연속성 - 시간 감쇠 없음
+  semantic: 1.0       # 의미 유사도 - 시간 감쇠 적용
+  mention: 2.0        # 멘션 - 시간 무관, 항상 병합
+
+# 시간 감쇠 파라미터
+time_decay:
+  scale: 120.0        # τ (초): exp(-Δt/τ)
+                      # - 0초: 1.0 (100%)
+                      # - 2분: 0.37 (37%)
+                      # - 4분: 0.14 (14%)
+                      # - 10분: 0.007 (~0%)
+
+# 병합 기준
+thresholds:
+  new_thread: 1.0     # 스코어가 이 값 이하면 새 thread 생성
+  max_gap_seconds: 1800.0  # 30분 안전장치 - 초과 시 강제 분리
+
+# 임베딩 설정
+embedding:
+  model: "all-MiniLM-L6-v2"   # sentence-transformers 모델
+  max_thread_context: 5       # thread 벡터 계산용 최근 발화 수
+  cache_size: 2000            # 임베딩 캐시 최대 크기
+
+# 성능 최적화
+optimization:
+  max_active_threads: 10      # 비교 대상 thread 수 제한

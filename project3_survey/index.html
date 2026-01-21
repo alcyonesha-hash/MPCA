@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Naturalness Survey</title>
+    <link rel="stylesheet" href="src/styles.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Consent Screen -->
+        <div id="consent-screen" class="screen active">
+            <div class="container">
+                <h1>Research Participation Consent</h1>
+                <div class="consent-box">
+                    <p>This survey evaluates the naturalness of online chat conversations.</p>
+                    <ul>
+                        <li><strong>Duration:</strong> Approximately 10 minutes</li>
+                        <li><strong>Privacy:</strong> Your responses will be used for research purposes only</li>
+                        <li><strong>Voluntary:</strong> You may stop at any time</li>
+                        <li><strong>No right or wrong answers:</strong> Please judge based on your personal impression</li>
+                    </ul>
+                    <div class="consent-check">
+                        <input type="checkbox" id="consent-checkbox">
+                        <label for="consent-checkbox">I understand the above and agree to participate</label>
+                    </div>
+                </div>
+                <button id="consent-btn" class="btn primary" disabled>Start Survey</button>
+            </div>
+        </div>
+
+        <!-- Participant Info Screen -->
+        <div id="info-screen" class="screen">
+            <div class="container">
+                <h1>Participant Information</h1>
+                <div class="form-group">
+                    <label for="participant-name">Name</label>
+                    <input type="text" id="participant-name" placeholder="Enter your name">
+                </div>
+                <div class="form-group">
+                    <label for="participant-email">Email</label>
+                    <input type="email" id="participant-email" placeholder="Enter your email">
+                </div>
+                <div class="form-group">
+                    <label for="participant-age">Age Group</label>
+                    <select id="participant-age">
+                        <option value="">Select</option>
+                        <option value="18-24">18-24</option>
+                        <option value="25-34">25-34</option>
+                        <option value="35-44">35-44</option>
+                        <option value="45-54">45-54</option>
+                        <option value="55+">55+</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="participant-tech">IT/Development Experience</label>
+                    <select id="participant-tech">
+                        <option value="">Select</option>
+                        <option value="none">No experience</option>
+                        <option value="beginner">Beginner (some exposure)</option>
+                        <option value="intermediate">Intermediate (regular use)</option>
+                        <option value="advanced">Advanced (professional)</option>
+                    </select>
+                </div>
+                <button id="info-btn" class="btn primary" disabled>Next</button>
+            </div>
+        </div>
+
+        <!-- Instructions Screen -->
+        <div id="instructions-screen" class="screen">
+            <div class="container">
+                <h1>Instructions</h1>
+                <div class="instructions-box">
+                    <p>In this survey, you will see <strong>two chat conversations (A and B)</strong> and choose which one feels more natural.</p>
+                    <ul>
+                        <li>There are <strong>no right or wrong answers</strong>. Please judge based on your intuitive impression.</li>
+                        <li>Some examples are shown as <strong>short videos (GIF)</strong>.</li>
+                        <li>Videos can be replayed multiple times.</li>
+                        <li>There are <strong>10 comparison sets</strong> in total.</li>
+                    </ul>
+                    <p class="note">For each set, you will answer 4 questions about your preference.</p>
+                </div>
+                <button id="instructions-btn" class="btn primary">Begin Survey</button>
+            </div>
+        </div>
+
+        <!-- Main Survey Screen -->
+        <div id="survey-screen" class="screen">
+            <div class="container wide">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                    <span class="progress-text" id="progress-text">1 / 10</span>
+                </div>
+
+                <div class="comparison-container">
+                    <div class="chat-panel" id="panel-a">
+                        <h2 class="panel-label">Conversation A</h2>
+                        <div class="chat-content" id="chat-a"></div>
+                    </div>
+                    <div class="chat-panel" id="panel-b">
+                        <h2 class="panel-label">Conversation B</h2>
+                        <div class="chat-content" id="chat-b"></div>
+                    </div>
+                </div>
+
+                <div class="questions-container">
+                    <div class="question" id="q1">
+                        <p class="question-text">Q1: Which conversation feels more <strong>human-like</strong>?</p>
+                        <div class="options">
+                            <button class="option-btn" data-question="q1" data-value="A">A</button>
+                            <button class="option-btn" data-question="q1" data-value="B">B</button>
+                        </div>
+                    </div>
+                    <div class="question" id="q2">
+                        <p class="question-text">Q2: Which conversation is <strong>less interruptive/annoying</strong>?</p>
+                        <div class="options">
+                            <button class="option-btn" data-question="q2" data-value="A">A</button>
+                            <button class="option-btn" data-question="q2" data-value="B">B</button>
+                        </div>
+                    </div>
+                    <div class="question" id="q3">
+                        <p class="question-text">Q3: Which conversation has more <strong>natural flow</strong>?</p>
+                        <div class="options">
+                            <button class="option-btn" data-question="q3" data-value="A">A</button>
+                            <button class="option-btn" data-question="q3" data-value="B">B</button>
+                        </div>
+                    </div>
+                    <div class="question" id="q4">
+                        <p class="question-text">Q4: Which agent would you <strong>keep in your group chat</strong>?</p>
+                        <div class="options">
+                            <button class="option-btn" data-question="q4" data-value="A">A</button>
+                            <button class="option-btn" data-question="q4" data-value="B">B</button>
+                        </div>
+                    </div>
+                </div>
+
+                <button id="next-btn" class="btn primary" disabled>Next</button>
+            </div>
+        </div>
+
+        <!-- Attention Check Screen -->
+        <div id="attention-screen" class="screen">
+            <div class="container">
+                <h1>Quick Check</h1>
+                <p class="attention-text">To ensure quality responses, please select <strong>"A"</strong> for this question.</p>
+                <div class="options center">
+                    <button class="option-btn attention-option" data-value="A">A</button>
+                    <button class="option-btn attention-option" data-value="B">B</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Completion Screen -->
+        <div id="complete-screen" class="screen">
+            <div class="container">
+                <h1>Survey Complete!</h1>
+                <div class="complete-box">
+                    <p class="thank-you">Thank you for your participation!</p>
+                    <div class="debrief">
+                        <h3>About This Study</h3>
+                        <p>This research investigates how human-like behavioral metrics (response timing, message chunking, etc.) in chat agents affect user perception.</p>
+                        <p>Your responses are anonymous and will be used for research purposes only.</p>
+                    </div>
+                    <p class="contact">Questions? Contact: <span id="contact-email">researcher@example.com</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="src/data.js"></script>
+    <script src="src/app.js"></script>
+</body>
+</html>

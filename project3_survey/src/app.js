@@ -1,0 +1,380 @@
+/**
+ * Survey Application
+ *
+ * Features:
+ * - A/B randomization (which is shown as A vs B)
+ * - Set order randomization
+ * - Attention check insertion
+ * - Google Sheets data submission
+ */
+
+class SurveyApp {
+    constructor() {
+        this.currentScreen = 'consent';
+        this.currentSetIndex = 0;
+        this.responses = [];
+        this.participant = {};
+        this.startTime = null;
+        this.setStartTime = null;
+
+        // Randomize A/B order for each set
+        this.abRandomization = SURVEY_SETS.map(() => Math.random() > 0.5);
+
+        // Randomize set order (keeping attention check position)
+        this.setOrder = this.generateSetOrder();
+
+        // Track answers for current set
+        this.currentAnswers = {};
+
+        this.init();
+    }
+
+    init() {
+        this.bindEvents();
+        this.showScreen('consent');
+    }
+
+    generateSetOrder() {
+        // Shuffle main sets (0-9), insert attention check after set 5
+        const mainSets = [...Array(SURVEY_SETS.length).keys()];
+        this.shuffleArray(mainSets);
+
+        // Insert attention check marker at position 5
+        const order = [];
+        for (let i = 0; i < mainSets.length; i++) {
+            order.push({ type: 'survey', index: mainSets[i] });
+            if (i === 4) {
+                order.push({ type: 'attention' });
+            }
+        }
+        return order;
+    }
+
+    shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    bindEvents() {
+        // Consent
+        const consentCheckbox = document.getElementById('consent-checkbox');
+        const consentBtn = document.getElementById('consent-btn');
+
+        consentCheckbox.addEventListener('change', (e) => {
+            consentBtn.disabled = !e.target.checked;
+        });
+
+        consentBtn.addEventListener('click', () => {
+            this.showScreen('info');
+        });
+
+        // Participant Info
+        const infoBtn = document.getElementById('info-btn');
+        const nameInput = document.getElementById('participant-name');
+        const emailInput = document.getElementById('participant-email');
+        const ageSelect = document.getElementById('participant-age');
+        const techSelect = document.getElementById('participant-tech');
+
+        const validateInfo = () => {
+            const valid = nameInput.value.trim() &&
+                         emailInput.value.trim() &&
+                         ageSelect.value &&
+                         techSelect.value;
+            infoBtn.disabled = !valid;
+        };
+
+        [nameInput, emailInput, ageSelect, techSelect].forEach(el => {
+            el.addEventListener('input', validateInfo);
+            el.addEventListener('change', validateInfo);
+        });
+
+        infoBtn.addEventListener('click', () => {
+            this.participant = {
+                name: nameInput.value.trim(),
+                email: emailInput.value.trim(),
+                ageGroup: ageSelect.value,
+                techExperience: techSelect.value,
+                startTime: new Date().toISOString()
+            };
+            this.startTime = Date.now();
+            this.showScreen('instructions');
+        });
+
+        // Instructions
+        document.getElementById('instructions-btn').addEventListener('click', () => {
+            this.showScreen('survey');
+            this.loadCurrentSet();
+        });
+
+        // Option buttons
+        document.querySelectorAll('.option-btn[data-question]').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const question = e.target.dataset.question;
+                const value = e.target.dataset.value;
+                this.selectOption(question, value);
+            });
+        });
+
+        // Attention check buttons
+        document.querySelectorAll('.attention-option').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const value = e.target.dataset.value;
+                this.handleAttentionCheck(value);
+            });
+        });
+
+        // Next button
+        document.getElementById('next-btn').addEventListener('click', () => {
+            this.saveCurrentResponse();
+            this.nextSet();
+        });
+    }
+
+    showScreen(screenId) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(`${screenId}-screen`).classList.add('active');
+        this.currentScreen = screenId;
+    }
+
+    loadCurrentSet() {
+        const setInfo = this.setOrder[this.currentSetIndex];
+
+        if (setInfo.type === 'attention') {
+            this.showScreen('attention');
+            return;
+        }
+
+        const setIndex = setInfo.index;
+        const set = SURVEY_SETS[setIndex];
+        const swapAB = this.abRandomization[setIndex];
+
+        // Update progress
+        const surveyProgress = this.setOrder.filter((s, i) => i <= this.currentSetIndex && s.type === 'survey').length;
+        const totalSurveys = SURVEY_SETS.length;
+        document.getElementById('progress-fill').style.width = `${(surveyProgress / totalSurveys) * 100}%`;
+        document.getElementById('progress-text').textContent = `${surveyProgress} / ${totalSurveys}`;
+
+        // Load chat content
+        const fullChat = set.full;
+        const comparisonChat = set.comparison;
+
+        const chatA = swapAB ? comparisonChat : fullChat;
+        const chatB = swapAB ? fullChat : comparisonChat;
+
+        this.renderChat('chat-a', chatA, set.type);
+        this.renderChat('chat-b', chatB, set.type);
+
+        // Reset answers
+        this.currentAnswers = {};
+        document.querySelectorAll('.option-btn[data-question]').forEach(btn => {
+            btn.classList.remove('selected');
+        });
+        document.getElementById('next-btn').disabled = true;
+
+        // Store metadata
+        this.currentSetMeta = {
+            setIndex: setIndex,
+            setType: set.type,
+            comparisonType: set.comparisonType,
+            swapAB: swapAB,
+            fullPosition: swapAB ? 'B' : 'A'
+        };
+
+        this.setStartTime = Date.now();
+    }
+
+    renderChat(containerId, messages, type) {
+        const container = document.getElementById(containerId);
+
+        if (type === 'gif') {
+            // GIF display
+            container.innerHTML = `
+                <div class="gif-container">
+                    <img src="${messages.src}" alt="Chat animation" id="${containerId}-gif" class="chat-gif">
+                    <button class="replay-btn" onclick="var img=document.getElementById('${containerId}-gif'); img.src=''; img.src='${messages.src}';">
+                        Replay
+                    </button>
+                </div>
+            `;
+        } else {
+            // Text chat display
+            let html = '';
+            messages.forEach(msg => {
+                const isAgent = msg.role === 'agent';
+                html += `
+                    <div class="chat-message ${msg.role}">
+                        <span class="message-sender">${msg.sender || (isAgent ? 'Agent' : 'User')}</span>
+                        <div class="message-bubble">${msg.text}</div>
+                        ${msg.time ? `<span class="message-time">${msg.time}</span>` : ''}
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+    }
+
+    selectOption(question, value) {
+        // Update UI
+        document.querySelectorAll(`.option-btn[data-question="${question}"]`).forEach(btn => {
+            btn.classList.remove('selected');
+        });
+        document.querySelector(`.option-btn[data-question="${question}"][data-value="${value}"]`).classList.add('selected');
+
+        // Store answer
+        this.currentAnswers[question] = value;
+
+        // Check if all questions answered
+        const allAnswered = ['q1', 'q2', 'q3', 'q4'].every(q => this.currentAnswers[q]);
+        document.getElementById('next-btn').disabled = !allAnswered;
+    }
+
+    handleAttentionCheck(value) {
+        document.querySelectorAll('.attention-option').forEach(btn => {
+            btn.classList.remove('selected');
+        });
+        document.querySelector(`.attention-option[data-value="${value}"]`).classList.add('selected');
+
+        // Record attention check result
+        this.participant.attentionCheck = value;
+        this.participant.attentionCheckPassed = (value === 'A');
+
+        // Move to next set after brief delay
+        setTimeout(() => {
+            this.currentSetIndex++;
+            if (this.currentSetIndex < this.setOrder.length) {
+                this.showScreen('survey');
+                this.loadCurrentSet();
+            } else {
+                this.completesurvey();
+            }
+        }, 500);
+    }
+
+    saveCurrentResponse() {
+        const meta = this.currentSetMeta;
+        const timeSpent = Date.now() - this.setStartTime;
+
+        // Convert answers to reference Full condition
+        // If swapAB is true, Full is B, so we need to flip the answers
+        const convertAnswer = (answer) => {
+            if (meta.swapAB) {
+                return answer === 'A' ? 'B' : 'A';
+            }
+            return answer;
+        };
+
+        const response = {
+            setIndex: meta.setIndex,
+            setType: meta.setType,
+            comparisonType: meta.comparisonType,
+            fullPosition: meta.fullPosition,
+
+            // Raw answers (as shown to user)
+            rawQ1: this.currentAnswers.q1,
+            rawQ2: this.currentAnswers.q2,
+            rawQ3: this.currentAnswers.q3,
+            rawQ4: this.currentAnswers.q4,
+
+            // Normalized answers (relative to Full condition)
+            // "A" means user chose Full, "B" means user chose comparison
+            q1_humanLike: convertAnswer(this.currentAnswers.q1) === 'A' ? 'Full' : meta.comparisonType,
+            q2_lessAnnoying: convertAnswer(this.currentAnswers.q2) === 'A' ? 'Full' : meta.comparisonType,
+            q3_naturalFlow: convertAnswer(this.currentAnswers.q3) === 'A' ? 'Full' : meta.comparisonType,
+            q4_keepInChat: convertAnswer(this.currentAnswers.q4) === 'A' ? 'Full' : meta.comparisonType,
+
+            // Did user prefer Full?
+            prefersFullQ1: convertAnswer(this.currentAnswers.q1) === 'A',
+            prefersFullQ2: convertAnswer(this.currentAnswers.q2) === 'A',
+            prefersFullQ3: convertAnswer(this.currentAnswers.q3) === 'A',
+            prefersFullQ4: convertAnswer(this.currentAnswers.q4) === 'A',
+
+            timeSpentMs: timeSpent
+        };
+
+        this.responses.push(response);
+    }
+
+    nextSet() {
+        this.currentSetIndex++;
+
+        if (this.currentSetIndex < this.setOrder.length) {
+            const setInfo = this.setOrder[this.currentSetIndex];
+            if (setInfo.type === 'attention') {
+                this.showScreen('attention');
+            } else {
+                this.loadCurrentSet();
+            }
+        } else {
+            this.completeSurvey();
+        }
+    }
+
+    completeSurvey() {
+        const totalTime = Date.now() - this.startTime;
+
+        const surveyData = {
+            participant: this.participant,
+            responses: this.responses,
+            metadata: {
+                totalTimeMs: totalTime,
+                completedAt: new Date().toISOString(),
+                setOrder: this.setOrder.map(s => s.type === 'attention' ? 'attention' : s.index),
+                abRandomization: this.abRandomization
+            }
+        };
+
+        // Send to Google Sheets
+        this.submitToGoogleSheets(surveyData);
+
+        // Show completion screen
+        this.showScreen('complete');
+    }
+
+    async submitToGoogleSheets(data) {
+        // Google Sheets Web App URL (to be configured)
+        const GOOGLE_SHEETS_URL = window.GOOGLE_SHEETS_WEBHOOK_URL || '';
+
+        if (!GOOGLE_SHEETS_URL) {
+            console.log('Google Sheets URL not configured. Data:', data);
+            // Save locally as backup
+            this.downloadAsJSON(data);
+            return;
+        }
+
+        try {
+            const response = await fetch(GOOGLE_SHEETS_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            });
+            console.log('Data submitted to Google Sheets');
+        } catch (error) {
+            console.error('Failed to submit to Google Sheets:', error);
+            // Save locally as backup
+            this.downloadAsJSON(data);
+        }
+    }
+
+    downloadAsJSON(data) {
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `survey_response_${data.participant.email}_${Date.now()}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+}
+
+// Initialize app when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+    window.surveyApp = new SurveyApp();
+});

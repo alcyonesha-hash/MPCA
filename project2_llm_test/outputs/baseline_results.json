@@ -1,0 +1,137 @@
+[
+  {
+    "prompt": "thanks for the help",
+    "response": "re welcome!",
+    "word_count": 2,
+    "chunks": [
+      "re welcome!"
+    ],
+    "chunk_count": 1,
+    "chunk_lengths": [
+      2
+    ],
+    "delay": 0.0,
+    "utt_type": "unknown",
+    "mode": "baseline"
+  },
+  {
+    "prompt": "ok I'll try that",
+    "response": "Good luck!",
+    "word_count": 2,
+    "chunks": [
+      "Good luck!"
+    ],
+    "chunk_count": 1,
+    "chunk_lengths": [
+      2
+    ],
+    "delay": 0.0,
+    "utt_type": "unknown",
+    "mode": "baseline"
+  },
+  {
+    "prompt": "yes that works",
+    "response": "Need to respond as per instruction: 8 words or less, one short sentence, IRC style.",
+    "word_count": 15,
+    "chunks": [
+      "Need to respond as per instruction: 8 words or less, one short sentence, IRC style."
+    ],
+    "chunk_count": 1,
+    "chunk_lengths": [
+      15
+    ],
+    "delay": 0.0,
+    "utt_type": "unknown",
+    "mode": "baseline"
+  },
+  {
+    "prompt": "How do I install Python on Ubuntu?",
+    "response": "sudo apt update && sudo apt install python3",
+    "word_count": 8,
+    "chunks": [
+      "sudo apt update && sudo apt install python3"
+    ],
+    "chunk_count": 1,
+    "chunk_lengths": [
+      8
+    ],
+    "delay": 0.0,
+    "utt_type": "unknown",
+    "mode": "baseline"
+  },
+  {
+    "prompt": "My wifi keeps disconnecting after suspend",
+    "response": "Check NetworkManager's \"wifi.p",
+    "word_count": 3,
+    "chunks": [
+      "Check NetworkManager's \"wifi.p"
+    ],
+    "chunk_count": 1,
+    "chunk_lengths": [
+      3
+    ],
+    "delay": 0.0,
+    "utt_type": "unknown",
+    "mode": "baseline"
+  },
+  {
+    "prompt": "apt-get says package not found",
+    "response": "<|channel|>final",
+    "word_count": 1,
+    "chunks": [
+      "<|channel|>final"
+    ],
+    "chunk_count": 1,
+    "chunk_lengths": [
+      1
+    ],
+    "delay": 0.0,
+    "utt_type": "unknown",
+    "mode": "baseline"
+  },
+  {
+    "prompt": "I'm getting a dependency error when running apt-get install nodejs",
+    "response": "Run `sudo apt --fix-broken install",
+    "word_count": 5,
+    "chunks": [
+      "Run `sudo apt --fix-broken install"
+    ],
+    "chunk_count": 1,
+    "chunk_lengths": [
+      5
+    ],
+    "delay": 0.0,
+    "utt_type": "unknown",
+    "mode": "baseline"
+  },
+  {
+    "prompt": "The system won't boot after grub update, shows error: file not found",
+    "response": "Provide fix: reinstall grub, check /boot/grub.cfg. Let's craft:",
+    "word_count": 8,
+    "chunks": [
+      "Provide fix: reinstall grub, check /boot/grub.cfg. Let's craft:"
+    ],
+    "chunk_count": 1,
+    "chunk_lengths": [
+      8
+    ],
+    "delay": 0.0,
+    "utt_type": "unknown",
+    "mode": "baseline"
+  },
+  {
+    "prompt": "How do I configure nginx as a reverse proxy for my Node.js app?",
+    "response": "Provide concise config line. Maybe \"Use proxy_pass http://localhost:3000",
+    "word_count": 8,
+    "chunks": [
+      "Provide concise config line. Maybe \"Use proxy_pass http://localhost:3000"
+    ],
+    "chunk_count": 1,
+    "chunk_lengths": [
+      8
+    ],
+    "delay": 0.0,
+    "utt_type": "unknown",
+    "mode": "baseline"
+  }
+]

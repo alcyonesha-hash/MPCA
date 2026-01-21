@@ -1,0 +1,154 @@
+{
+  "timestamp": "2026-01-20T00:47:24.433141",
+  "baseline": {
+    "mode": "baseline",
+    "total_responses": 9,
+    "word_counts": [
+      2,
+      2,
+      15,
+      8,
+      3,
+      1,
+      5,
+      8,
+      8
+    ],
+    "chunk_counts": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "delays": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "utt_types": {
+      "quick": 0,
+      "normal": 0,
+      "detailed": 0,
+      "unknown": 9
+    },
+    "word_count_summary": {
+      "mean": 5.777777777777778,
+      "median": 5.0,
+      "q75": 8.0,
+      "max": 15
+    },
+    "chunk_count_summary": {
+      "mean": 1.0,
+      "single_pct": 100.0,
+      "double_pct": 0.0,
+      "triple_plus_pct": 0.0
+    },
+    "delay_summary": {
+      "mean": 0.0,
+      "median": 0.0,
+      "immediate_pct": 100.0
+    }
+  },
+  "with_metrics": {
+    "mode": "with_metrics",
+    "total_responses": 9,
+    "word_counts": [
+      4,
+      2,
+      1,
+      8,
+      11,
+      5,
+      1,
+      5,
+      12
+    ],
+    "chunk_counts": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "delays": [
+      14.0,
+      7.738249100830934,
+      9.798647333257604,
+      7.929232231710968,
+      4.218471918035158,
+      6.75509547436865,
+      11.0,
+      4.921309968610417,
+      6.90732318556004
+    ],
+    "utt_types": {
+      "quick": 3,
+      "normal": 1,
+      "detailed": 5,
+      "unknown": 0
+    },
+    "word_count_summary": {
+      "mean": 5.444444444444445,
+      "median": 5.0,
+      "q75": 8.0,
+      "max": 12
+    },
+    "chunk_count_summary": {
+      "mean": 1.0,
+      "single_pct": 100.0,
+      "double_pct": 0.0,
+      "triple_plus_pct": 0.0
+    },
+    "delay_summary": {
+      "mean": 8.14092546804153,
+      "median": 7.738249100830934,
+      "immediate_pct": 77.77777777777779
+    }
+  },
+  "human_reference": {
+    "chunk_length_q75": 15,
+    "consecutive_dist": {
+      "1": 0.67,
+      "2": 0.21,
+      "3": 0.12
+    },
+    "timing": {
+      "quick": {
+        "p_immediate": 0.71,
+        "range": [
+          3,
+          10
+        ]
+      },
+      "normal": {
+        "p_immediate": 0.69,
+        "range": [
+          3,
+          10
+        ]
+      },
+      "detailed": {
+        "p_immediate": 0.62,
+        "range": [
+          3,
+          10
+        ]
+      }
+    }
+  }
+}

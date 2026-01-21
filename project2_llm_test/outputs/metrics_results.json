@@ -1,0 +1,173 @@
+[
+  {
+    "prompt": "thanks for the help",
+    "response": "s two words. That",
+    "word_count": 4,
+    "chunks": [
+      "s two words. That"
+    ],
+    "chunk_count": 1,
+    "chunk_lengths": [
+      4
+    ],
+    "chunk_delays": [
+      0.0
+    ],
+    "delay": 14.0,
+    "utt_type": "quick",
+    "tech_score": 0.0,
+    "mode": "with_metrics"
+  },
+  {
+    "prompt": "ok I'll try that",
+    "response": "Good luck!",
+    "word_count": 2,
+    "chunks": [
+      "Good luck!"
+    ],
+    "chunk_count": 1,
+    "chunk_lengths": [
+      2
+    ],
+    "chunk_delays": [
+      0.0
+    ],
+    "delay": 7.738249100830934,
+    "utt_type": "quick",
+    "tech_score": 0.0,
+    "mode": "with_metrics"
+  },
+  {
+    "prompt": "yes that works",
+    "response": "<|channel|>",
+    "word_count": 1,
+    "chunks": [
+      "<|channel|>"
+    ],
+    "chunk_count": 1,
+    "chunk_lengths": [
+      1
+    ],
+    "chunk_delays": [
+      0.0
+    ],
+    "delay": 9.798647333257604,
+    "utt_type": "detailed",
+    "tech_score": 0.25,
+    "mode": "with_metrics"
+  },
+  {
+    "prompt": "How do I install Python on Ubuntu?",
+    "response": "sudo apt update && sudo apt install python3",
+    "word_count": 8,
+    "chunks": [
+      "sudo apt update && sudo apt install python3"
+    ],
+    "chunk_count": 1,
+    "chunk_lengths": [
+      8
+    ],
+    "chunk_delays": [
+      0.0
+    ],
+    "delay": 7.929232231710968,
+    "utt_type": "detailed",
+    "tech_score": 0.75,
+    "mode": "with_metrics"
+  },
+  {
+    "prompt": "My wifi keeps disconnecting after suspend",
+    "response": "Provide solution. Maybe \"Disable power management: sudo iwconfig wlan0 power off",
+    "word_count": 11,
+    "chunks": [
+      "Provide solution. Maybe \"Disable power management: sudo iwconfig wlan0 power off"
+    ],
+    "chunk_count": 1,
+    "chunk_lengths": [
+      11
+    ],
+    "chunk_delays": [
+      0.0
+    ],
+    "delay": 4.218471918035158,
+    "utt_type": "detailed",
+    "tech_score": 0.2,
+    "mode": "with_metrics"
+  },
+  {
+    "prompt": "apt-get says package not found",
+    "response": "Run apt update then install.",
+    "word_count": 5,
+    "chunks": [
+      "Run apt update then install."
+    ],
+    "chunk_count": 1,
+    "chunk_lengths": [
+      5
+    ],
+    "chunk_delays": [
+      0.0
+    ],
+    "delay": 6.75509547436865,
+    "utt_type": "detailed",
+    "tech_score": 0.30000000000000004,
+    "mode": "with_metrics"
+  },
+  {
+    "prompt": "I'm getting a dependency error when running apt-get install nodejs",
+    "response": "Run",
+    "word_count": 1,
+    "chunks": [
+      "Run"
+    ],
+    "chunk_count": 1,
+    "chunk_lengths": [
+      1
+    ],
+    "chunk_delays": [
+      0.0
+    ],
+    "delay": 11.0,
+    "utt_type": "quick",
+    "tech_score": 0.0,
+    "mode": "with_metrics"
+  },
+  {
+    "prompt": "The system won't boot after grub update, shows error: file not found",
+    "response": "Update initramfs and reinstall grub",
+    "word_count": 5,
+    "chunks": [
+      "Update initramfs and reinstall grub"
+    ],
+    "chunk_count": 1,
+    "chunk_lengths": [
+      5
+    ],
+    "chunk_delays": [
+      0.0
+    ],
+    "delay": 4.921309968610417,
+    "utt_type": "detailed",
+    "tech_score": 0.2,
+    "mode": "with_metrics"
+  },
+  {
+    "prompt": "How do I configure nginx as a reverse proxy for my Node.js app?",
+    "response": "Provide concise config tip. Maybe: \"Use upstream block and proxy_pass to localhost",
+    "word_count": 12,
+    "chunks": [
+      "Provide concise config tip. Maybe: \"Use upstream block and proxy_pass to localhost"
+    ],
+    "chunk_count": 1,
+    "chunk_lengths": [
+      12
+    ],
+    "chunk_delays": [
+      0.0
+    ],
+    "delay": 6.90732318556004,
+    "utt_type": "normal",
+    "tech_score": 0.0,
+    "mode": "with_metrics"
+  }
+]

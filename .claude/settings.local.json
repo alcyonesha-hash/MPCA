@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python run_experiment.py:*)",
+      "Bash(curl:*)",
+      "Bash(jq:*)",
+      "Bash(python:*)",
+      "Bash(python3:*)",
+      "Bash(wc:*)",
+      "Bash(ls:*)",
+      "Bash(kill:*)",
+      "Bash(__NEW_LINE_867492726aa78c5d__ echo \"\")",
+      "Bash(git -C /Users/seunghobaek/Desktop/mpca/MPCA log --oneline -10)",
+      "Bash(git -C /Users/seunghobaek/Desktop/mpca/MPCA branch:*)",
+      "Bash(open http://localhost:8000)",
+      "Bash(git add:*)"
+    ]
+  }
+}
