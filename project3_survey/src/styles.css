@@ -5,6 +5,12 @@
     box-sizing: border-box;
 }
 
+/* Korean text styling */
+.ko {
+    color: #666;
+    font-size: 0.9em;
+}
+
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
