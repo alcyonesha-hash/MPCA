@@ -1,17 +1,13 @@
 /**
  * Survey Data - 10 Comparison Sets
  *
+ * Multi-party IRC-style conversations with interleaved threads
+ *
  * Structure:
  * - Sets 1-4: Full vs Baseline (text)
  * - Sets 5-6: Full vs (Full - Timing) (GIF)
  * - Sets 7-8: Full vs (Full - Topical Fit) (text)
  * - Sets 9-10: Full vs (Full - Chunking) (GIF)
- *
- * Each set has:
- * - full: The complete human-like metrics version
- * - comparison: The ablated/baseline version
- * - type: "text" or "gif"
- * - comparisonType: What's being compared against Full
  */
 
 const SURVEY_SETS = [
@@ -19,123 +15,143 @@ const SURVEY_SETS = [
     // Sets 1-4: Full vs Baseline
     // ============================================
 
-    // Set 1: apt-get package issue
+    // Set 1: Multiple users with package/dependency issues
     {
         type: "text",
         comparisonType: "Baseline",
-        topic: "apt-get package installation",
+        topic: "package installation help",
         full: [
-            { role: "user", sender: "marcopolo", text: "apt-get says package not found when I try to install chromium", time: "14:23" },
-            { role: "agent", sender: "helper", text: "Try running apt update first.", time: "14:23 (+5s)" },
-            { role: "user", sender: "marcopolo", text: "still says package not found", time: "14:24" },
-            { role: "agent", sender: "helper", text: "Chromium is snap-only on Ubuntu now.", time: "14:24 (+7s)" },
-            { role: "agent", sender: "helper", text: "Use: snap install chromium", time: "14:24 (+2s)" },
-            { role: "user", sender: "marcopolo", text: "oh that explains it, thanks!", time: "14:25" },
-            { role: "agent", sender: "helper", text: "No problem.", time: "14:25 (+4s)" },
+            { role: "user", sender: "marcopolo", text: "apt-get says package not found for chromium", time: "14:23" },
+            { role: "user", sender: "jenny_dev", text: "anyone know why pip install keeps failing?", time: "14:23" },
+            { role: "user", sender: "n00b_linux", text: "is ubuntu 22.04 stable enough for daily use?", time: "14:23" },
+            { role: "agent", sender: "helper", text: "marcopolo: Chromium is snap-only now.", time: "14:23 (+5s)" },
+            { role: "agent", sender: "helper", text: "Use: snap install chromium", time: "14:23 (+2s)" },
+            { role: "user", sender: "marcopolo", text: "oh that explains it thanks", time: "14:24" },
+            { role: "agent", sender: "helper", text: "jenny_dev: What error are you getting?", time: "14:24 (+4s)" },
+            { role: "user", sender: "jenny_dev", text: "permission denied on /usr/lib", time: "14:24" },
+            { role: "user", sender: "techguru42", text: "22.04 is solid, been using it for months", time: "14:25" },
+            { role: "agent", sender: "helper", text: "jenny_dev: Use pip install --user or venv", time: "14:25 (+3s)" },
         ],
         comparison: [
-            { role: "user", sender: "marcopolo", text: "apt-get says package not found when I try to install chromium", time: "14:23" },
-            { role: "agent", sender: "helper", text: "You should run sudo apt update first to refresh your package lists, then try installing again. If that doesn't work, note that Chromium browser is now only available as a snap package on Ubuntu, not as a deb. You can install it using snap install chromium instead.", time: "14:23 (+0s)" },
-            { role: "user", sender: "marcopolo", text: "still says package not found", time: "14:24" },
-            { role: "agent", sender: "helper", text: "As I mentioned, Chromium is no longer available via apt on Ubuntu. The deb package is just a transitional package that points to snap. Please use: sudo snap install chromium", time: "14:24 (+0s)" },
-            { role: "user", sender: "marcopolo", text: "oh that explains it, thanks!", time: "14:25" },
-            { role: "agent", sender: "helper", text: "You're welcome! Happy to help. Let me know if you have any other questions about package management on Ubuntu.", time: "14:25 (+0s)" },
+            { role: "user", sender: "marcopolo", text: "apt-get says package not found for chromium", time: "14:23" },
+            { role: "user", sender: "jenny_dev", text: "anyone know why pip install keeps failing?", time: "14:23" },
+            { role: "user", sender: "n00b_linux", text: "is ubuntu 22.04 stable enough for daily use?", time: "14:23" },
+            { role: "agent", sender: "helper", text: "For the Chromium issue, you should know that Chromium browser is no longer available via apt on Ubuntu. It's now distributed exclusively as a snap package. You can install it using 'sudo snap install chromium'. For the pip issue, when you see permission denied errors, it usually means you're trying to install packages system-wide without proper permissions. You have several options: use 'pip install --user packagename' to install to your home directory, create a virtual environment with 'python -m venv myenv' and activate it, or use pipx for CLI tools. As for Ubuntu 22.04, it's an LTS release and quite stable for daily use.", time: "14:23 (+0s)" },
+            { role: "user", sender: "marcopolo", text: "oh that explains it thanks", time: "14:24" },
+            { role: "user", sender: "jenny_dev", text: "permission denied on /usr/lib", time: "14:24" },
+            { role: "user", sender: "techguru42", text: "22.04 is solid, been using it for months", time: "14:25" },
+            { role: "agent", sender: "helper", text: "Yes, as I mentioned, use pip with --user flag or set up a virtual environment. Virtual environments are the recommended approach for Python development as they isolate project dependencies.", time: "14:25 (+0s)" },
         ]
     },
 
-    // Set 2: cron job issue
+    // Set 2: Server troubleshooting with multiple threads
     {
         type: "text",
         comparisonType: "Baseline",
-        topic: "cron job not running",
+        topic: "server issues",
         full: [
-            { role: "user", sender: "Gudddu", text: "I feel that my cron is not working. */5 * * * /home/ubuntu/script.sh", time: "04:31" },
-            { role: "agent", sender: "helper", text: "Missing asterisk after */5.", time: "04:31 (+6s)" },
-            { role: "agent", sender: "helper", text: "Should be: */5 * * * *", time: "04:31 (+2s)" },
-            { role: "user", sender: "Gudddu", text: "oh I see, let me try", time: "04:32" },
-            { role: "user", sender: "Gudddu", text: "Got it. I was missing the right syntax.", time: "04:38" },
-            { role: "agent", sender: "helper", text: "Great!", time: "04:38 (+3s)" },
+            { role: "user", sender: "sysadmin_joe", text: "nginx keeps returning 502, any ideas?", time: "09:15" },
+            { role: "user", sender: "devops_kim", text: "how do I check if port 8080 is in use?", time: "09:15" },
+            { role: "user", sender: "webmaster", text: "my SSL cert expired, how to renew with certbot?", time: "09:16" },
+            { role: "agent", sender: "helper", text: "sysadmin_joe: Check upstream service status", time: "09:16 (+4s)" },
+            { role: "agent", sender: "helper", text: "Is your backend actually running?", time: "09:16 (+2s)" },
+            { role: "user", sender: "sysadmin_joe", text: "oh the php-fpm crashed", time: "09:17" },
+            { role: "agent", sender: "helper", text: "devops_kim: lsof -i :8080", time: "09:17 (+3s)" },
+            { role: "agent", sender: "helper", text: "or: ss -tlnp | grep 8080", time: "09:17 (+2s)" },
+            { role: "user", sender: "devops_kim", text: "perfect, found it", time: "09:18" },
+            { role: "agent", sender: "helper", text: "webmaster: certbot renew --dry-run first", time: "09:18 (+5s)" },
         ],
         comparison: [
-            { role: "user", sender: "Gudddu", text: "I feel that my cron is not working. */5 * * * /home/ubuntu/script.sh", time: "04:31" },
-            { role: "agent", sender: "helper", text: "I can see the issue with your cron syntax. You have */5 * * * /home/ubuntu/script.sh but the correct format requires 5 fields before the command. The format is: minute hour day month weekday command. You're missing one asterisk - it should be */5 * * * * /home/ubuntu/script.sh (note the 5 asterisks/time fields). Also make sure your script is executable with chmod +x.", time: "04:31 (+0s)" },
-            { role: "user", sender: "Gudddu", text: "oh I see, let me try", time: "04:32" },
-            { role: "user", sender: "Gudddu", text: "Got it. I was missing the right syntax.", time: "04:38" },
-            { role: "agent", sender: "helper", text: "Excellent! Glad that fixed it. Cron syntax can be tricky - I recommend using crontab.guru website to verify your cron expressions in the future.", time: "04:38 (+0s)" },
+            { role: "user", sender: "sysadmin_joe", text: "nginx keeps returning 502, any ideas?", time: "09:15" },
+            { role: "user", sender: "devops_kim", text: "how do I check if port 8080 is in use?", time: "09:15" },
+            { role: "user", sender: "webmaster", text: "my SSL cert expired, how to renew with certbot?", time: "09:16" },
+            { role: "agent", sender: "helper", text: "For the 502 error, this typically means nginx can't connect to your upstream server (like PHP-FPM, Node.js, etc.). Check if your backend service is running with 'systemctl status php-fpm' or whatever service you're using. Also check nginx error logs at /var/log/nginx/error.log. For checking port usage, you can use 'lsof -i :8080' or 'ss -tlnp | grep 8080' or 'netstat -tlnp | grep 8080'. For SSL renewal with certbot, run 'certbot renew --dry-run' first to test, then 'certbot renew' if successful. You might need to reload nginx after.", time: "09:16 (+0s)" },
+            { role: "user", sender: "sysadmin_joe", text: "oh the php-fpm crashed", time: "09:17" },
+            { role: "user", sender: "devops_kim", text: "perfect, found it", time: "09:18" },
+            { role: "agent", sender: "helper", text: "Glad that helped! For future reference, you can set up monitoring for PHP-FPM to catch crashes early. Tools like monit or systemd's restart functionality can automatically restart services when they fail.", time: "09:18 (+0s)" },
         ]
     },
 
-    // Set 3: nano editor line wrapping
+    // Set 3: Git and development workflow
     {
         type: "text",
         comparisonType: "Baseline",
-        topic: "nano editor configuration",
+        topic: "git workflow",
         full: [
-            { role: "user", sender: "charles_", text: "Does anyone know how to cause Nano to show the whole line of text?", time: "15:33" },
-            { role: "agent", sender: "helper", text: "Use nano -S for soft wrap.", time: "15:33 (+8s)" },
-            { role: "user", sender: "charles_", text: "thanks!", time: "15:36" },
-            { role: "agent", sender: "helper", text: "Be careful with config files though.", time: "15:36 (+5s)" },
-            { role: "agent", sender: "helper", text: "Soft wrap can break them when copying.", time: "15:37 (+2s)" },
-            { role: "user", sender: "charles_", text: "interesting, good to know", time: "15:44" },
+            { role: "user", sender: "newbie_coder", text: "I accidentally committed to main, how to undo?", time: "16:42" },
+            { role: "user", sender: "alice_dev", text: "whats the diff between rebase and merge?", time: "16:42" },
+            { role: "user", sender: "bob_senior", text: "use rebase for cleaner history imo", time: "16:43" },
+            { role: "agent", sender: "helper", text: "newbie_coder: git reset HEAD~1", time: "16:43 (+4s)" },
+            { role: "agent", sender: "helper", text: "This keeps your changes unstaged", time: "16:43 (+2s)" },
+            { role: "user", sender: "newbie_coder", text: "what if I already pushed?", time: "16:44" },
+            { role: "agent", sender: "helper", text: "Then you need force push, but be careful", time: "16:44 (+5s)" },
+            { role: "user", sender: "alice_dev", text: "so rebase rewrites history?", time: "16:45" },
+            { role: "agent", sender: "helper", text: "alice_dev: Yes, rebase replays commits", time: "16:45 (+3s)" },
+            { role: "agent", sender: "helper", text: "Merge preserves original history", time: "16:45 (+2s)" },
         ],
         comparison: [
-            { role: "user", sender: "charles_", text: "Does anyone know how to cause Nano to show the whole line of text?", time: "15:33" },
-            { role: "agent", sender: "helper", text: "To enable line wrapping in nano, you can use the -S flag for soft wrapping when opening a file (nano -S filename), or you can set it permanently by adding 'set softwrap' to your ~/.nanorc configuration file. You can also toggle it while in nano using Meta+S (usually Alt+S). Note that there's also hard wrapping with -w flag which is different.", time: "15:33 (+0s)" },
-            { role: "user", sender: "charles_", text: "thanks!", time: "15:36" },
-            { role: "agent", sender: "helper", text: "You're welcome! One important thing to be aware of: when using soft wrap, be careful when editing configuration files because the visual line breaks might cause issues when you copy and paste text using mouse selection. The wrapped lines will be treated as separate lines. When saving, it's fine because nano knows the actual line boundaries, but copying can introduce unwanted newlines.", time: "15:36 (+0s)" },
-            { role: "user", sender: "charles_", text: "interesting, good to know", time: "15:44" },
+            { role: "user", sender: "newbie_coder", text: "I accidentally committed to main, how to undo?", time: "16:42" },
+            { role: "user", sender: "alice_dev", text: "whats the diff between rebase and merge?", time: "16:42" },
+            { role: "user", sender: "bob_senior", text: "use rebase for cleaner history imo", time: "16:43" },
+            { role: "agent", sender: "helper", text: "To undo a commit on main, use 'git reset HEAD~1' which will undo the last commit but keep your changes. If you want to completely discard the changes, use 'git reset --hard HEAD~1'. If you already pushed, you'll need 'git push --force' but be very careful as this rewrites remote history. For rebase vs merge: rebase rewrites commit history by replaying your commits on top of another branch, creating a linear history. Merge creates a merge commit that combines two branches, preserving the original branching structure. Rebase is cleaner but changes commit hashes; merge is safer for shared branches.", time: "16:43 (+0s)" },
+            { role: "user", sender: "newbie_coder", text: "what if I already pushed?", time: "16:44" },
+            { role: "user", sender: "alice_dev", text: "so rebase rewrites history?", time: "16:45" },
+            { role: "agent", sender: "helper", text: "Yes, as I explained, if you pushed you need force push. And yes, rebase does rewrite history which is why you should never rebase commits that others might have pulled.", time: "16:45 (+0s)" },
         ]
     },
 
-    // Set 4: fsck filesystem repair
+    // Set 4: Docker and containerization
     {
         type: "text",
         comparisonType: "Baseline",
-        topic: "filesystem check and repair",
+        topic: "docker help",
         full: [
-            { role: "user", sender: "foo", text: "My laptop keeps dropping to maintenance mode. How do I force filesystem check?", time: "20:24" },
-            { role: "agent", sender: "helper", text: "Run fsck /dev/sdXY from recovery.", time: "20:24 (+7s)" },
-            { role: "user", sender: "foo", text: "which partition should I check?", time: "20:25" },
-            { role: "agent", sender: "helper", text: "Usually sda2 for root.", time: "20:25 (+5s)" },
-            { role: "agent", sender: "helper", text: "Check with lsblk first.", time: "20:25 (+2s)" },
-            { role: "user", sender: "foo", text: "ok will try that", time: "20:26" },
-            { role: "agent", sender: "helper", text: "Back up data first if possible.", time: "20:26 (+4s)" },
+            { role: "user", sender: "docker_noob", text: "my container keeps exiting immediately", time: "11:30" },
+            { role: "user", sender: "k8s_fan", text: "whats the best way to pass env vars to docker?", time: "11:30" },
+            { role: "user", sender: "fullstack_dev", text: "how do I connect containers on same network?", time: "11:31" },
+            { role: "agent", sender: "helper", text: "docker_noob: Check logs with docker logs <id>", time: "11:31 (+5s)" },
+            { role: "user", sender: "docker_noob", text: "says no main process", time: "11:32" },
+            { role: "agent", sender: "helper", text: "Your CMD needs a foreground process", time: "11:32 (+4s)" },
+            { role: "agent", sender: "helper", text: "k8s_fan: Use -e flag or --env-file", time: "11:32 (+2s)" },
+            { role: "user", sender: "k8s_fan", text: "can I use .env file directly?", time: "11:33" },
+            { role: "agent", sender: "helper", text: "Yes: docker run --env-file .env", time: "11:33 (+3s)" },
+            { role: "agent", sender: "helper", text: "fullstack_dev: Create a network first", time: "11:34 (+4s)" },
         ],
         comparison: [
-            { role: "user", sender: "foo", text: "My laptop keeps dropping to maintenance mode. How do I force filesystem check?", time: "20:24" },
-            { role: "agent", sender: "helper", text: "To force a filesystem check, you can boot into recovery mode or use a live USB. From there, run 'fsck /dev/sdXY' where X is the drive letter and Y is the partition number. For example, fsck /dev/sda2 for the second partition on the first drive. You can also add fsck.mode=force fsck.repair=yes to your kernel boot parameters in GRUB by pressing 'e' at the boot menu and editing the linux line.", time: "20:24 (+0s)" },
-            { role: "user", sender: "foo", text: "which partition should I check?", time: "20:25" },
-            { role: "agent", sender: "helper", text: "The root partition is typically sda2 on most systems (sda1 is usually the EFI or boot partition). You can verify this by running 'lsblk' or 'fdisk -l' to see your partition layout. Look for the partition mounted at '/' or the largest ext4 partition. Be careful with fsck --repair as it can potentially cause data loss if the filesystem is severely corrupted.", time: "20:25 (+0s)" },
-            { role: "user", sender: "foo", text: "ok will try that", time: "20:26" },
-            { role: "agent", sender: "helper", text: "Good luck! I strongly recommend backing up any important data before running repair operations, if at all possible. You might also want to check the SMART status of your drive with 'sudo smartctl -a /dev/sda' to see if there are any hardware issues.", time: "20:26 (+0s)" },
+            { role: "user", sender: "docker_noob", text: "my container keeps exiting immediately", time: "11:30" },
+            { role: "user", sender: "k8s_fan", text: "whats the best way to pass env vars to docker?", time: "11:30" },
+            { role: "user", sender: "fullstack_dev", text: "how do I connect containers on same network?", time: "11:31" },
+            { role: "agent", sender: "helper", text: "When a container exits immediately, it usually means the main process finished or crashed. Check logs with 'docker logs <container_id>'. Common causes include: no foreground process (the CMD runs and exits), crash on startup, or missing dependencies. For environment variables, you can use '-e VAR=value' for individual vars, '--env-file .env' to load from a file, or define them in docker-compose.yml. For container networking, create a custom network with 'docker network create mynet' then run containers with '--network mynet' and they can reach each other by container name.", time: "11:31 (+0s)" },
+            { role: "user", sender: "docker_noob", text: "says no main process", time: "11:32" },
+            { role: "user", sender: "k8s_fan", text: "can I use .env file directly?", time: "11:33" },
+            { role: "agent", sender: "helper", text: "As I mentioned, you need a foreground process. Make sure your CMD runs something that doesn't exit, like a server. And yes, you can use .env files directly with the --env-file flag I mentioned earlier.", time: "11:33 (+0s)" },
         ]
     },
 
     // ============================================
     // Sets 5-6: Full vs No Timing (GIF)
-    // Shows real-time message appearance
     // ============================================
 
-    // Set 5: Quick help exchange - timing difference
+    // Set 5: Multi-user quick help
     {
         type: "gif",
         comparisonType: "NoTiming",
-        topic: "quick help exchange",
+        topic: "multi-user quick help",
         full: {
             src: "data/gifs/timing_full_1.gif",
-            description: "Messages appear with natural delays (3-10 seconds)"
+            description: "Messages appear with natural delays"
         },
         comparison: {
             src: "data/gifs/timing_notiming_1.gif",
-            description: "Messages appear instantly (0 second delay)"
+            description: "Messages appear instantly"
         }
     },
 
-    // Set 6: Technical question - timing difference
+    // Set 6: Interleaved technical questions
     {
         type: "gif",
         comparisonType: "NoTiming",
-        topic: "technical question",
+        topic: "interleaved questions",
         full: {
             src: "data/gifs/timing_full_2.gif",
             description: "Messages appear with natural delays"
@@ -148,86 +164,93 @@ const SURVEY_SETS = [
 
     // ============================================
     // Sets 7-8: Full vs No Topical Fit
-    // Agent responds to wrong topic / off-topic
     // ============================================
 
-    // Set 7: Two interleaved conversations - topical fit difference
+    // Set 7: Multiple threads, agent tracks correctly vs confused
     {
         type: "text",
         comparisonType: "NoTopicalFit",
-        topic: "interleaved conversations",
+        topic: "multiple support threads",
         full: [
-            { role: "user", sender: "alice", text: "How do I check disk space on Ubuntu?", time: "10:01" },
-            { role: "user", sender: "bob", text: "Anyone know a good video editor for Linux?", time: "10:01" },
-            { role: "agent", sender: "helper", text: "alice: Use df -h command.", time: "10:01 (+6s)" },
-            { role: "user", sender: "alice", text: "thanks! what about inode usage?", time: "10:02" },
-            { role: "agent", sender: "helper", text: "df -i shows inode usage.", time: "10:02 (+5s)" },
-            { role: "user", sender: "bob", text: "looking for something like premiere", time: "10:03" },
-            { role: "agent", sender: "helper", text: "bob: Try Kdenlive or DaVinci Resolve.", time: "10:03 (+7s)" },
+            { role: "user", sender: "mike_ops", text: "redis keeps running out of memory", time: "15:01" },
+            { role: "user", sender: "sarah_fe", text: "how do I center a div vertically?", time: "15:01" },
+            { role: "user", sender: "tom_backend", text: "postgres query is super slow", time: "15:02" },
+            { role: "agent", sender: "helper", text: "mike_ops: Check maxmemory setting", time: "15:02 (+4s)" },
+            { role: "agent", sender: "helper", text: "Also set maxmemory-policy", time: "15:02 (+2s)" },
+            { role: "user", sender: "sarah_fe", text: "using flexbox btw", time: "15:03" },
+            { role: "agent", sender: "helper", text: "sarah_fe: align-items: center on parent", time: "15:03 (+3s)" },
+            { role: "user", sender: "mike_ops", text: "its set to 2gb, should I increase?", time: "15:04" },
+            { role: "agent", sender: "helper", text: "mike_ops: Depends on your data size", time: "15:04 (+4s)" },
+            { role: "agent", sender: "helper", text: "tom_backend: Run EXPLAIN ANALYZE on query", time: "15:05 (+3s)" },
         ],
         comparison: [
-            { role: "user", sender: "alice", text: "How do I check disk space on Ubuntu?", time: "10:01" },
-            { role: "user", sender: "bob", text: "Anyone know a good video editor for Linux?", time: "10:01" },
-            { role: "agent", sender: "helper", text: "Try Kdenlive, it's a great free video editor!", time: "10:01 (+0s)" },
-            { role: "user", sender: "alice", text: "thanks! what about inode usage?", time: "10:02" },
-            { role: "agent", sender: "helper", text: "Kdenlive has good timeline features.", time: "10:02 (+0s)" },
-            { role: "user", sender: "bob", text: "looking for something like premiere", time: "10:03" },
-            { role: "agent", sender: "helper", text: "DaVinci Resolve is more professional.", time: "10:03 (+0s)" },
+            { role: "user", sender: "mike_ops", text: "redis keeps running out of memory", time: "15:01" },
+            { role: "user", sender: "sarah_fe", text: "how do I center a div vertically?", time: "15:01" },
+            { role: "user", sender: "tom_backend", text: "postgres query is super slow", time: "15:02" },
+            { role: "agent", sender: "helper", text: "For centering, use flexbox with align-items: center", time: "15:02 (+0s)" },
+            { role: "user", sender: "sarah_fe", text: "using flexbox btw", time: "15:03" },
+            { role: "agent", sender: "helper", text: "Great, flexbox is the best approach!", time: "15:03 (+0s)" },
+            { role: "user", sender: "mike_ops", text: "its set to 2gb, should I increase?", time: "15:04" },
+            { role: "agent", sender: "helper", text: "2gb should be enough for most flexbox layouts", time: "15:04 (+0s)" },
+            { role: "agent", sender: "helper", text: "CSS doesn't usually need that much memory", time: "15:05 (+0s)" },
         ]
     },
 
-    // Set 8: Topic drift - agent stays on vs drifts
+    // Set 8: Complex multi-thread conversation
     {
         type: "text",
         comparisonType: "NoTopicalFit",
-        topic: "wifi troubleshooting",
+        topic: "mixed development help",
         full: [
-            { role: "user", sender: "user1", text: "My wifi keeps disconnecting after suspend", time: "11:10" },
-            { role: "agent", sender: "helper", text: "Check your network manager logs.", time: "11:10 (+6s)" },
-            { role: "user", sender: "user1", text: "where are those logs?", time: "11:11" },
-            { role: "agent", sender: "helper", text: "journalctl -u NetworkManager", time: "11:11 (+5s)" },
-            { role: "user", sender: "user2", text: "anyone tried the new kernel 6.5?", time: "11:12" },
-            { role: "user", sender: "user1", text: "I see some errors about wlp2s0", time: "11:13" },
-            { role: "agent", sender: "helper", text: "user1: That's your wifi interface.", time: "11:13 (+4s)" },
-            { role: "agent", sender: "helper", text: "Try: sudo systemctl restart NetworkManager", time: "11:13 (+2s)" },
+            { role: "user", sender: "junior_dev", text: "why does my React component keep re-rendering?", time: "10:20" },
+            { role: "user", sender: "data_guy", text: "best way to handle CSV with 1M rows in python?", time: "10:20" },
+            { role: "user", sender: "mobile_dev", text: "flutter or react native in 2024?", time: "10:21" },
+            { role: "agent", sender: "helper", text: "junior_dev: Check your useEffect deps", time: "10:21 (+5s)" },
+            { role: "user", sender: "junior_dev", text: "its an empty array", time: "10:22" },
+            { role: "agent", sender: "helper", text: "Then check parent re-renders", time: "10:22 (+3s)" },
+            { role: "agent", sender: "helper", text: "data_guy: Use pandas with chunks", time: "10:22 (+2s)" },
+            { role: "user", sender: "data_guy", text: "pd.read_csv with chunksize?", time: "10:23" },
+            { role: "agent", sender: "helper", text: "data_guy: Exactly, or use dask", time: "10:23 (+4s)" },
+            { role: "user", sender: "senior_eng", text: "flutter has better perf imo", time: "10:24" },
         ],
         comparison: [
-            { role: "user", sender: "user1", text: "My wifi keeps disconnecting after suspend", time: "11:10" },
-            { role: "agent", sender: "helper", text: "Check your network manager logs.", time: "11:10 (+0s)" },
-            { role: "user", sender: "user1", text: "where are those logs?", time: "11:11" },
-            { role: "agent", sender: "helper", text: "journalctl -u NetworkManager", time: "11:11 (+0s)" },
-            { role: "user", sender: "user2", text: "anyone tried the new kernel 6.5?", time: "11:12" },
-            { role: "agent", sender: "helper", text: "Yes! Kernel 6.5 has great improvements.", time: "11:12 (+0s)" },
-            { role: "user", sender: "user1", text: "I see some errors about wlp2s0", time: "11:13" },
-            { role: "agent", sender: "helper", text: "The new kernel has better hardware support overall. You might want to upgrade!", time: "11:13 (+0s)" },
+            { role: "user", sender: "junior_dev", text: "why does my React component keep re-rendering?", time: "10:20" },
+            { role: "user", sender: "data_guy", text: "best way to handle CSV with 1M rows in python?", time: "10:20" },
+            { role: "user", sender: "mobile_dev", text: "flutter or react native in 2024?", time: "10:21" },
+            { role: "agent", sender: "helper", text: "Flutter has really improved recently!", time: "10:21 (+0s)" },
+            { role: "user", sender: "junior_dev", text: "its an empty array", time: "10:22" },
+            { role: "agent", sender: "helper", text: "Empty arrays are common in Flutter too", time: "10:22 (+0s)" },
+            { role: "user", sender: "data_guy", text: "pd.read_csv with chunksize?", time: "10:23" },
+            { role: "agent", sender: "helper", text: "React Native also supports chunked loading", time: "10:23 (+0s)" },
+            { role: "user", sender: "senior_eng", text: "flutter has better perf imo", time: "10:24" },
+            { role: "agent", sender: "helper", text: "Yes Flutter performance is great for mobile!", time: "10:24 (+0s)" },
         ]
     },
 
     // ============================================
     // Sets 9-10: Full vs No Chunking (GIF)
-    // Shows message splitting vs single long message
     // ============================================
 
-    // Set 9: Long technical answer - chunking difference
+    // Set 9: Multi-user with chunked responses
     {
         type: "gif",
         comparisonType: "NoChunking",
-        topic: "nginx configuration",
+        topic: "server setup help",
         full: {
             src: "data/gifs/chunking_full_1.gif",
-            description: "Response split into natural chunks with typing delays"
+            description: "Response split into natural chunks"
         },
         comparison: {
             src: "data/gifs/chunking_nochunk_1.gif",
-            description: "Single long message appears all at once"
+            description: "Single long message"
         }
     },
 
-    // Set 10: Multi-step instruction - chunking difference
+    // Set 10: Detailed explanation chunked vs wall of text
     {
         type: "gif",
         comparisonType: "NoChunking",
-        topic: "system update steps",
+        topic: "deployment steps",
         full: {
             src: "data/gifs/chunking_full_2.gif",
             description: "Instructions appear step by step"

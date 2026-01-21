@@ -302,6 +302,88 @@ def generate_chunking_video(user_msg, agent_response, output_path, with_chunking
     print(f"Generated: {gif_path}")
 
 
+def generate_chunking_video_multi(user_messages, agent_response, output_path, with_chunking=True):
+    """
+    Generate video showing chunked vs single response with multiple users
+
+    Args:
+        user_messages: List of user message dicts
+        agent_response: Full agent response text
+        output_path: Output file path
+        with_chunking: If True, split into chunks; if False, single message
+    """
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+
+    font = get_font()
+    frames = []
+
+    messages_shown = []
+
+    # Show user messages appearing
+    for msg in user_messages:
+        messages_shown.append(msg)
+        frame = create_frame(messages_shown, font)
+        read_time = calculate_reading_time(msg['text']) * 0.8
+        for _ in range(int(read_time * FPS)):
+            frames.append(frame)
+
+    if with_chunking:
+        # Split response into chunks (at sentence boundaries)
+        words = agent_response.split()
+        chunks = []
+        current_chunk = []
+
+        for word in words:
+            current_chunk.append(word)
+            if len(current_chunk) >= 10 or word.endswith(('.', '!', '?')):
+                chunks.append(' '.join(current_chunk))
+                current_chunk = []
+
+        if current_chunk:
+            chunks.append(' '.join(current_chunk))
+
+        # Show chunks with natural typing delays
+        for i, chunk in enumerate(chunks):
+            if i == 0:
+                thinking_delay = 2.5
+            else:
+                thinking_delay = calculate_typing_time(chunk)
+
+            delay_frame = create_frame(messages_shown, font)
+            for _ in range(int(thinking_delay * FPS)):
+                frames.append(delay_frame)
+
+            chunk_msg = {'role': 'agent', 'sender': 'helper', 'text': chunk}
+            messages_shown.append(chunk_msg)
+
+            frame = create_frame(messages_shown, font)
+            hold_time = calculate_reading_time(chunk) * 0.5
+            for _ in range(int(hold_time * FPS)):
+                frames.append(frame)
+    else:
+        # Single message - appears instantly
+        processing_delay = 0.3
+        for _ in range(int(processing_delay * FPS)):
+            frames.append(create_frame(messages_shown, font))
+
+        agent_msg = {'role': 'agent', 'sender': 'helper', 'text': agent_response}
+        messages_shown.append(agent_msg)
+
+        frame = create_frame(messages_shown, font)
+        hold_time = calculate_reading_time(agent_response) * 0.4
+        for _ in range(int(hold_time * FPS)):
+            frames.append(frame)
+
+    # Hold final state
+    for _ in range(int(2 * FPS)):
+        frames.append(frames[-1])
+
+    # Save as GIF
+    gif_path = output_path.replace('.mp4', '.gif')
+    imageio.mimsave(gif_path, frames, duration=1000/FPS, loop=0)
+    print(f"Generated: {gif_path}")
+
+
 def main():
     """Generate all survey videos"""
 
@@ -310,16 +392,19 @@ def main():
 
     # ============================================
     # Timing comparison videos (Sets 5-6)
+    # Multi-party conversations
     # ============================================
 
-    # Set 5: Quick help exchange
+    # Set 5: Multi-user quick help (3 users + agent)
     timing_messages_1 = [
-        {'role': 'user', 'sender': 'user1', 'text': 'How do I restart nginx?'},
-        {'role': 'agent', 'sender': 'helper', 'text': 'sudo systemctl restart nginx'},
-        {'role': 'user', 'sender': 'user1', 'text': 'thanks!'},
-        {'role': 'agent', 'sender': 'helper', 'text': 'No problem.'},
+        {'role': 'user', 'sender': 'linux_newbie', 'text': 'how do I restart nginx?'},
+        {'role': 'user', 'sender': 'server_guy', 'text': 'anyone know why my cron isnt running?'},
+        {'role': 'agent', 'sender': 'helper', 'text': 'linux_newbie: systemctl restart nginx'},
+        {'role': 'user', 'sender': 'linux_newbie', 'text': 'thanks!'},
+        {'role': 'agent', 'sender': 'helper', 'text': 'server_guy: check crontab -l first'},
+        {'role': 'user', 'sender': 'server_guy', 'text': 'oh I see the issue now'},
     ]
-    timing_delays_1 = [0, 5, 0, 3]  # delays in seconds
+    timing_delays_1 = [0, 0, 4, 0, 3, 0]
 
     generate_timing_video(
         timing_messages_1,
@@ -329,20 +414,22 @@ def main():
     )
     generate_timing_video(
         timing_messages_1,
-        [0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0],
         os.path.join(OUTPUT_DIR, 'timing_notiming_1.mp4'),
         with_timing=False
     )
 
-    # Set 6: Technical question
+    # Set 6: Interleaved technical questions (multiple threads)
     timing_messages_2 = [
-        {'role': 'user', 'sender': 'newbie', 'text': 'What command shows running processes?'},
-        {'role': 'agent', 'sender': 'helper', 'text': 'Use ps aux or htop.'},
-        {'role': 'user', 'sender': 'newbie', 'text': 'whats the difference?'},
-        {'role': 'agent', 'sender': 'helper', 'text': 'htop is interactive with colors.'},
-        {'role': 'agent', 'sender': 'helper', 'text': 'ps is just text output.'},
+        {'role': 'user', 'sender': 'dev_jane', 'text': 'whats the best way to check disk space?'},
+        {'role': 'user', 'sender': 'admin_bob', 'text': 'npm install failing with EACCES'},
+        {'role': 'user', 'sender': 'newbie_tom', 'text': 'is vim or nano better?'},
+        {'role': 'agent', 'sender': 'helper', 'text': 'dev_jane: df -h for human readable'},
+        {'role': 'agent', 'sender': 'helper', 'text': 'admin_bob: use sudo or fix permissions'},
+        {'role': 'user', 'sender': 'dev_jane', 'text': 'perfect thanks'},
+        {'role': 'user', 'sender': 'oldtimer', 'text': 'nano is easier for beginners imo'},
     ]
-    timing_delays_2 = [0, 7, 0, 6, 2]
+    timing_delays_2 = [0, 0, 0, 5, 2, 0, 0]
 
     generate_timing_video(
         timing_messages_2,
@@ -352,44 +439,52 @@ def main():
     )
     generate_timing_video(
         timing_messages_2,
-        [0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
         os.path.join(OUTPUT_DIR, 'timing_notiming_2.mp4'),
         with_timing=False
     )
 
     # ============================================
     # Chunking comparison videos (Sets 9-10)
+    # Multi-party with chunked agent responses
     # ============================================
 
-    # Set 9: nginx configuration
-    user_msg_1 = {'role': 'user', 'sender': 'dev1', 'text': 'How do I set up nginx as reverse proxy?'}
-    agent_response_1 = "First install nginx with apt. Then edit /etc/nginx/sites-available/default. Add proxy_pass http://localhost:3000 in the location block. Finally run nginx -t to test and systemctl reload nginx."
+    # Set 9: Server setup with multiple users watching
+    chunking_messages_1 = [
+        {'role': 'user', 'sender': 'junior_dev', 'text': 'how do I set up nginx as reverse proxy?'},
+        {'role': 'user', 'sender': 'curious_one', 'text': 'oh I need this too'},
+    ]
+    agent_response_1 = "junior_dev: First install nginx. Then edit /etc/nginx/sites-available/default. Add proxy_pass to your backend. Finally reload with systemctl reload nginx."
 
-    generate_chunking_video(
-        user_msg_1,
+    generate_chunking_video_multi(
+        chunking_messages_1,
         agent_response_1,
         os.path.join(OUTPUT_DIR, 'chunking_full_1.mp4'),
         with_chunking=True
     )
-    generate_chunking_video(
-        user_msg_1,
+    generate_chunking_video_multi(
+        chunking_messages_1,
         agent_response_1,
         os.path.join(OUTPUT_DIR, 'chunking_nochunk_1.mp4'),
         with_chunking=False
     )
 
-    # Set 10: system update steps
-    user_msg_2 = {'role': 'user', 'sender': 'user2', 'text': 'How do I fully update my Ubuntu system?'}
-    agent_response_2 = "Run sudo apt update to refresh package lists. Then sudo apt upgrade for regular updates. Use sudo apt full-upgrade for major updates. Finally sudo apt autoremove to clean up old packages."
+    # Set 10: Deployment steps with team watching
+    chunking_messages_2 = [
+        {'role': 'user', 'sender': 'team_lead', 'text': 'can someone explain the deploy process?'},
+        {'role': 'user', 'sender': 'new_hire', 'text': 'yeah Im confused about this too'},
+        {'role': 'user', 'sender': 'intern_kim', 'text': 'following'},
+    ]
+    agent_response_2 = "team_lead: First pull latest from main. Run the test suite. Build with npm run build. Then deploy using our CI/CD pipeline. Check the logs after."
 
-    generate_chunking_video(
-        user_msg_2,
+    generate_chunking_video_multi(
+        chunking_messages_2,
         agent_response_2,
         os.path.join(OUTPUT_DIR, 'chunking_full_2.mp4'),
         with_chunking=True
     )
-    generate_chunking_video(
-        user_msg_2,
+    generate_chunking_video_multi(
+        chunking_messages_2,
         agent_response_2,
         os.path.join(OUTPUT_DIR, 'chunking_nochunk_2.mp4'),
         with_chunking=False
