@@ -378,11 +378,10 @@ def generate_timing_video(messages, output_path, with_timing=True):
 
 
 
-def generate_baseline_video(user_messages, agent_messages, output_path, speed_multiplier=1.0):
+def generate_baseline_video(user_messages, agent_messages, output_path):
     """
     Generate video for baseline comparison
     Shows user messages then agent responses
-    speed_multiplier: higher = faster video (2.0 = 2x faster)
     """
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
@@ -395,11 +394,8 @@ def generate_baseline_video(user_messages, agent_messages, output_path, speed_mu
     # Combine user messages and agent messages
     all_messages = user_messages + agent_messages
 
-    # Adjust timing multiplier for speed
-    effective_multiplier = TIMING_MULTIPLIER / speed_multiplier
-
     for i, msg in enumerate(all_messages):
-        msg_ts = msg.get('ts', 0) * effective_multiplier
+        msg_ts = msg.get('ts', 0) * TIMING_MULTIPLIER
 
         # Calculate delay since last message
         if i > 0:
@@ -417,14 +413,14 @@ def generate_baseline_video(user_messages, agent_messages, output_path, speed_mu
         messages_shown.append(msg)
         frame = create_frame(messages_shown, font)
 
-        # Hold for reading time (adjusted for speed)
-        hold_time = calculate_reading_time(msg['text']) * 0.5 / speed_multiplier
+        # Hold for reading time
+        hold_time = calculate_reading_time(msg['text']) * 0.5
         hold_frames = max(1, int(hold_time * FPS))
         for _ in range(hold_frames):
             frames.append(frame)
 
-    # Hold final state (adjusted for speed)
-    final_hold = int(3 * FPS / speed_multiplier)
+    # Hold final state
+    final_hold = int(3 * FPS)
     for _ in range(final_hold):
         frames.append(frames[-1] if frames else create_frame([], font))
 
@@ -502,8 +498,8 @@ def main():
         {'role': 'agent', 'sender': 'helper', 'text': 'Translation choice depends on your translation philosophy and target readers.\n번역 선택은 번역 철학과 대상 독자에 달려 있습니다.', 'ts': 18000},
     ]
 
-    generate_baseline_video(baseline_1_user, baseline_1_full, os.path.join(OUTPUT_DIR, 'baseline_full_1.mp4'), speed_multiplier=2.0)
-    generate_baseline_video(baseline_1_user, baseline_1_baseline, os.path.join(OUTPUT_DIR, 'baseline_baseline_1.mp4'), speed_multiplier=2.0)
+    generate_baseline_video(baseline_1_user, baseline_1_full, os.path.join(OUTPUT_DIR, 'baseline_full_1.mp4'))
+    generate_baseline_video(baseline_1_user, baseline_1_baseline, os.path.join(OUTPUT_DIR, 'baseline_baseline_1.mp4'))
 
     # ============================================
     # Set 8: Database model selection (baseline comparison)
@@ -529,8 +525,8 @@ def main():
         {'role': 'agent', 'sender': 'helper', 'text': 'Migration complexity varies depending on your specific data and requirements.\n마이그레이션 복잡도는 특정 데이터와 요구사항에 따라 다릅니다.', 'ts': 18000},
     ]
 
-    generate_baseline_video(baseline_2_user, baseline_2_full, os.path.join(OUTPUT_DIR, 'baseline_full_2.mp4'), speed_multiplier=2.0)
-    generate_baseline_video(baseline_2_user, baseline_2_baseline, os.path.join(OUTPUT_DIR, 'baseline_baseline_2.mp4'), speed_multiplier=2.0)
+    generate_baseline_video(baseline_2_user, baseline_2_full, os.path.join(OUTPUT_DIR, 'baseline_full_2.mp4'))
+    generate_baseline_video(baseline_2_user, baseline_2_baseline, os.path.join(OUTPUT_DIR, 'baseline_baseline_2.mp4'))
 
     print("\nAll videos generated successfully!")
     print(f"Total: 8 videos in {OUTPUT_DIR}")
