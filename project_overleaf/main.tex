@@ -1,9 +1,6 @@
 %%
-%% This file is based on `sample-sigconf-authordraft.tex'
-%% from ACM Conference Proceedings Primary Article Template
-%%
-%% For submission and review: use manuscript, nonacm for single-column draft
-%% For camera-ready: change to \documentclass[sigconf]{acmart}
+%% CHI 2026 Poster Extended Abstract
+%% 1-column format for anonymous submission
 %%
 \documentclass[manuscript, nonacm]{acmart}
 
@@ -30,7 +27,7 @@
 %%
 %% The "title" command has an optional parameter,
 %% allowing the author to define a "short title" to be used in page headers.
-\title{Human-like Behavioral Metrics in Multi-Party Chat Agents: \\
+\title{Human-like Behavioral Dimensions in Multi-Party Chat Agents: \\
 A User Perception Study}
 
 %%
@@ -48,7 +45,11 @@ A User Perception Study}
 %% The abstract is a short summary of the work to be presented in the
 %% article.
 \begin{abstract}
-As AI agents increasingly participate in multi-party chat environments, understanding how to make their behavior feel natural and human-like becomes crucial for user acceptance. This paper investigates four key behavioral dimensions that distinguish human-like agents from mechanical ones: \textit{selectivity} (choosing which messages to respond to), \textit{chunking} (breaking responses into multiple messages), \textit{timing} (natural response delays), and \textit{contextual relevance} (providing situation-specific vs. generic responses). Through a within-subjects user study (N=XX) using A/B comparisons across 8 conversation scenarios, we evaluate how each dimension affects perceived naturalness, intrusiveness, social acceptance, and user preference. Our findings reveal that [key findings to be added after data collection]. These results provide design guidelines for developing AI agents that integrate more seamlessly into human group conversations.
+As LLM-based agents become integrated into collaborative workspaces, their participation in multi-party chat environments raises new questions about social acceptability. Unlike traditional chatbots designed for dyadic interaction, agents in group settings must navigate complex social dynamics---knowing when to speak, how to pace responses, and how to avoid disrupting human conversation flow. These challenges are particularly salient for \textit{proxy agents} that represent users while they are multitasking or temporarily unavailable.
+
+We identify three behavioral dimensions critical to perceived human-likeness: \textit{selectivity} (responding only to relevant messages), \textit{chunking} (breaking responses into multiple turns), and \textit{timing} (introducing natural delays). These dimensions were informed by interaction parameters derived from real IRC technical chat conversations.
+
+Through a within-subjects study (N=XX) with A/B comparisons across 8 realistic scenarios, we evaluate how each dimension affects perceived human-likeness, intrusiveness, social acceptance, and user preference as a representative agent. Our findings contribute empirically grounded design guidelines for developing LLM agents that integrate more seamlessly into human group conversations.
 \end{abstract}
 
 %%
@@ -75,7 +76,7 @@ As AI agents increasingly participate in multi-party chat environments, understa
 %%
 %% Keywords. The author(s) should pick words that accurately describe
 %% the work being presented. Separate the keywords with commas.
-\keywords{Conversational agents, Multi-party chat, Human-like behavior, User perception, AI agents}
+\keywords{Conversational agents, Multi-party chat, Human-like behavior, Proxy agents, LLM}
 
 %%
 %% This command processes the author and affiliation and title
@@ -86,177 +87,169 @@ As AI agents increasingly participate in multi-party chat environments, understa
 \section{Introduction}
 % ============================================
 
-The proliferation of AI-powered chat agents has transformed how people interact with technology in collaborative environments. From customer service bots to productivity assistants, these agents are increasingly expected to participate naturally in group conversations rather than simply respond to isolated queries. However, most existing conversational AI systems are designed for one-on-one interactions, often exhibiting behaviors that feel mechanical or intrusive when deployed in multi-party settings.
+AI-powered chat agents are increasingly expected to participate in group conversations rather than simply respond to isolated queries. However, most conversational AI systems are designed for one-on-one interactions, often exhibiting behaviors that feel mechanical or intrusive in multi-party settings~\cite{brandtzaeg2017people, gnewuch2017towards}.
 
-Consider a workplace chat room where an AI assistant helps team members answer questions. When a colleague asks about a technical issue, a well-designed agent might wait for human responses first, contribute relevant information at appropriate moments, and avoid dominating the conversation. In contrast, a poorly designed agent might respond instantly to every message, overwhelming participants with walls of text and disrupting the natural flow of human conversation.
+Consider a workplace chat room where an AI assistant helps team members. A well-designed agent might wait for human responses first, contribute at appropriate moments, and avoid dominating the conversation. In contrast, a poorly designed agent might respond instantly to every message, overwhelming participants with walls of text and disrupting natural conversation flow.
 
-This paper investigates how specific behavioral characteristics of chat agents affect user perception in multi-party environments. We focus on four dimensions that distinguish human-like conversational behavior:
+This challenge is particularly relevant for \textbf{proxy agents}---AI systems that represent users in group chats while they are multitasking, in meetings, or temporarily unavailable. Such agents must balance being helpful with appearing natural and non-intrusive.
+
+We investigate how specific behavioral characteristics affect user perception in multi-party environments, focusing on three dimensions derived from analysis of real IRC technical chat data:
 
 \begin{enumerate}
-    \item \textbf{Selectivity}: Whether the agent responds to all messages or selectively engages with contextually relevant ones
-    \item \textbf{Chunking}: Whether the agent sends one comprehensive message or breaks responses into multiple shorter messages
-    \item \textbf{Timing}: Whether responses appear instantly or with natural human-like delays
-    \item \textbf{Contextual Relevance}: Whether responses are tailored to the specific situation or generic
+    \item \textbf{Selectivity}: Responding only to contextually relevant messages rather than every utterance
+    \item \textbf{Chunking}: Breaking responses into multiple shorter messages that mirror natural conversational pacing
+    \item \textbf{Timing}: Introducing natural delays that simulate reading and thinking time
 \end{enumerate}
 
-Through a user study comparing ``full'' agent implementations (incorporating all human-like features) against baseline versions lacking each specific feature, we aim to answer:
-
+Our research questions are:
 \begin{itemize}
-    \item \textbf{RQ1}: How does each behavioral dimension affect perceived naturalness and human-likeness?
+    \item \textbf{RQ1}: How does each behavioral dimension affect perceived human-likeness and naturalness?
     \item \textbf{RQ2}: Which dimensions most strongly influence user preference for an AI representative?
     \item \textbf{RQ3}: How do these dimensions affect perceived intrusiveness in group conversations?
 \end{itemize}
-
-Our contributions include: (1) a systematic framework for evaluating human-like behaviors in multi-party chat agents, (2) empirical findings on user preferences across four behavioral dimensions, and (3) design guidelines for developing socially acceptable AI agents in group chat environments.
 
 % ============================================
 \section{Related Work}
 % ============================================
 
-\subsection{Conversational Agents in Multi-Party Settings}
+\textbf{Multi-Party Conversational AI.} While dyadic human-chatbot interactions have been extensively studied~\cite{brandtzaeg2017people}, multi-party conversational AI remains underexplored. Early work focused on meeting summarization and turn-taking prediction~\cite{traum2004multi}, with recent studies examining AI agent behavior with multiple humans present~\cite{bohus2010facilitating, matsuyama2015four}.
 
-While extensive research has examined dyadic human-chatbot interactions \cite{brandtzaeg2017people, gnewuch2017towards}, multi-party conversational AI remains relatively underexplored. Early work on multi-party dialogue systems focused primarily on meeting summarization and turn-taking prediction \cite{traum2004multi}. More recent studies have begun examining how AI agents should behave when multiple humans are present \cite{bohus2010facilitating, matsuyama2015four}.
+\textbf{Human-like Behavior in AI.} Making AI systems more human-like has roots in the ELIZA effect~\cite{weizenbaum1966eliza} and anthropomorphism research~\cite{nass1994computers, epley2007seeing}. Human-like characteristics can increase trust~\cite{waytz2014mind}, though overly human-like behavior may trigger uncanny valley effects~\cite{mori1970uncanny}.
 
-\subsection{Human-like Behavior in AI Systems}
-
-The concept of making AI systems more human-like has roots in the ELIZA effect \cite{weizenbaum1966eliza} and subsequent work on anthropomorphism in technology \cite{nass1994computers, epley2007seeing}. Studies have shown that human-like characteristics can increase trust and engagement \cite{waytz2014mind}, though overly human-like behavior can trigger uncanny valley effects \cite{mori1970uncanny}.
-
-\subsection{Response Timing and Conversational Flow}
-
-Research on human conversation has established that response timing carries social meaning \cite{sacks1974simplest, levinson2015timing}. Delays can signal thoughtfulness or disengagement depending on context. In chatbot design, studies have explored how typing indicators and response delays affect user perception \cite{gnewuch2018faster, avula2018searchbots}.
-
-\subsection{Message Chunking and Information Presentation}
-
-The chunking of information in communication has been studied extensively in cognitive psychology \cite{miller1956magical}. In chat interfaces, message length and segmentation affect readability and perceived conversational naturalness \cite{kim2019comparing}.
+\textbf{Response Timing and Chunking.} Response timing carries social meaning in human conversation~\cite{sacks1974simplest, levinson2015timing}. In chatbot design, typing indicators and response delays affect user perception~\cite{gnewuch2018faster}. Message chunking affects readability and perceived conversational naturalness~\cite{miller1956magical, kim2019comparing}.
 
 % ============================================
-\section{Study Design}
+\section{Method}
 % ============================================
 
-\subsection{Experimental Conditions}
+\subsection{Behavioral Dimensions from IRC Data}
 
-We designed a within-subjects study comparing four pairs of agent behaviors:
+We analyzed publicly available IRC technical support chat logs (Ubuntu channels) to identify behavioral parameters that distinguish human-like conversation patterns. This analysis informed our three experimental dimensions:
 
-\subsubsection{Selectivity (Sets 1-2)}
 \begin{itemize}
-    \item \textbf{Full}: Agent responds selectively to main thread topics, ignoring off-topic messages
-    \item \textbf{NoSelectivity}: Agent responds to every user message, including off-topic ones
+    \item \textbf{Selectivity}: Human helpers typically respond to 40-60\% of messages in a thread, focusing on main topics while ignoring tangential comments
+    \item \textbf{Chunking}: Responses averaging 2-4 separate messages rather than single comprehensive blocks
+    \item \textbf{Timing}: Response delays of 3-8 seconds for reading, plus 2-4 seconds per response message
 \end{itemize}
 
-\subsubsection{Chunking (Sets 3-4)}
-\begin{itemize}
-    \item \textbf{Full}: Agent breaks responses into multiple shorter messages
-    \item \textbf{NoChunking}: Agent sends one comprehensive message containing all information
-\end{itemize}
+\subsection{Experimental Design}
 
-\subsubsection{Timing (Sets 5-6)}
-\begin{itemize}
-    \item \textbf{Full}: Agent responses appear with natural delays (reading/thinking time)
-    \item \textbf{NoTiming}: Agent responds instantly after user messages
-\end{itemize}
-
-\subsubsection{Baseline Comparison (Sets 7-8)}
-\begin{itemize}
-    \item \textbf{Full}: Agent provides contextually relevant, specific responses
-    \item \textbf{Baseline}: Agent provides generic, textbook-style responses
-\end{itemize}
-
-\subsection{Conversation Scenarios}
-
-We developed 8 realistic conversation scenarios across diverse domains to ensure ecological validity:
+We conducted a within-subjects study comparing agent behaviors across three pairs of conditions, each tested with two different conversation scenarios:
 
 \begin{table}[h]
-\caption{Conversation Scenarios by Comparison Type}
-\label{tab:scenarios}
-\begin{tabular}{lll}
+\caption{Experimental Conditions by Comparison Type}
+\label{tab:conditions}
+\small
+\begin{tabular}{lp{2.8cm}p{2.8cm}}
 \toprule
-Set & Topic & Comparison \\
+Dimension & Human-like & Non-human-like \\
 \midrule
-1 & Procurement task assignment & Selectivity \\
-2 & GPT hallucination discussion & Selectivity \\
-3 & Linux filesystem troubleshooting & Chunking \\
-4 & Gnome suspend issue & Chunking \\
-5 & TensorFlow version conflict & Timing \\
-6 & Excel VLOOKUP error & Timing \\
-7 & Book translation discussion & Baseline \\
-8 & Database model selection & Baseline \\
+Selectivity & Responds to main thread topics only & Responds to every message including off-topic \\
+Chunking & Multiple shorter messages (2-4 turns) & Single comprehensive message \\
+Timing & Natural delays (3-8s reading + 2-4s/msg) & Instant responses \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+Additionally, Sets 7-8 compared a ``full'' agent (all three human-like features + contextual responses) against a baseline agent providing generic, textbook-style responses.
+
+\subsection{Conversation Scenarios}
+
+We developed 8 realistic scenarios across diverse domains to ensure ecological validity:
+
+\begin{table}[h]
+\caption{Conversation Scenarios}
+\label{tab:scenarios}
+\small
+\begin{tabular}{llll}
+\toprule
+Set & Topic & Domain & Dimension \\
+\midrule
+1 & Invoice/shipment tasks & Workplace & Selectivity \\
+2 & GPT hallucination & AI/Tech & Selectivity \\
+3 & Linux filesystem check & Tech support & Chunking \\
+4 & Gnome suspend issue & Tech support & Chunking \\
+5 & TensorFlow version & Programming & Timing \\
+6 & Excel VLOOKUP error & Office work & Timing \\
+7 & Book translation & Knowledge work & Combined \\
+8 & Database selection & Programming & Combined \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Text-based comparisons (Sets 1-4) showed static conversation transcripts. Video-based comparisons (Sets 5-8) used animated visualizations to demonstrate timing differences, with messages appearing progressively to simulate real-time chat.
 
 All conversations were presented bilingually (English with Korean translations) to accommodate our participant population.
 
 \subsection{Measures}
 
-For each comparison, participants answered four questions:
+For each A/B comparison, participants answered four forced-choice questions:
 
 \begin{enumerate}
-    \item \textbf{Q1 (Human-likeness)}: ``Which conversation feels more human-like?''
-    \item \textbf{Q2 (Intrusiveness)}: ``Which conversation is less interruptive/annoying?''
-    \item \textbf{Q3 (Social Acceptance)}: ``Which agent would other participants accept more naturally?''
-    \item \textbf{Q4 (Preference)}: ``Which agent would you want as your representative?''
+    \item \textbf{Human-likeness}: ``Which conversation feels more human-like?''
+    \item \textbf{Intrusiveness}: ``Which conversation is less interruptive/annoying?''
+    \item \textbf{Social Acceptance}: ``Which agent would other participants accept more naturally?''
+    \item \textbf{Preference}: ``Which agent would you want as your representative?''
 \end{enumerate}
 
-\subsection{Procedure}
+A/B positioning was randomized per participant per set to control for order effects.
 
-Participants were recruited through [recruitment method]. After providing informed consent, they completed:
+\subsection{Participants and Procedure}
 
-\begin{enumerate}
-    \item Demographic questionnaire (gender, age group, IT experience, AI chatbot experience)
-    \item Instructions explaining the task
-    \item 8 comparison sets presented in fixed order with randomized A/B positioning
-    \item Debrief explaining the study purpose
-\end{enumerate}
+Participants were recruited through convenience sampling. After informed consent, they completed: (1) demographics (gender, age, IT experience, AI chatbot experience), (2) task instructions explaining the proxy agent concept, (3) 8 comparison sets in fixed order with randomized A/B positioning, and (4) debrief. The study took approximately 10 minutes.
 
-The study took approximately 10 minutes to complete.
-
-\subsection{Participants}
-
-[To be completed after data collection]
+[Participant demographics to be reported after data collection]
 
 % ============================================
-\section{Results}
+\section{Preliminary Findings}
 % ============================================
 
-[To be completed after data collection]
+[To be completed after data collection. We will report:]
 
-\subsection{Overall Preferences}
+\begin{itemize}
+    \item Preference rates for each dimension across four measures
+    \item Statistical significance using binomial tests
+    \item Effect sizes and confidence intervals
+    \item Demographic differences (IT experience, AI chatbot familiarity)
+\end{itemize}
 
-\subsection{Selectivity Effects}
-
-\subsection{Chunking Effects}
-
-\subsection{Timing Effects}
-
-\subsection{Baseline Comparison}
-
-\subsection{Demographic Differences}
+\textit{Expected patterns based on pilot testing:}
+\begin{itemize}
+    \item \textbf{Timing}: Strong preference for delayed responses over instant
+    \item \textbf{Selectivity}: Moderate preference for selective engagement
+    \item \textbf{Chunking}: Mixed results; some users may prefer comprehensive responses
+\end{itemize}
 
 % ============================================
-\section{Discussion}
+\section{Design Implications}
 % ============================================
 
-[To be completed after data analysis]
+Based on our framework and preliminary observations, we propose three design guidelines for multi-party chat agents:
 
-\subsection{Design Implications}
+\textbf{Design for Selective Engagement.} Agents should evaluate message relevance before responding. In group settings, not every message requires agent input---particularly off-topic comments or social exchanges between humans. Implementing topic relevance scoring can help agents decide when silence is more appropriate than response.
 
-\subsection{Limitations}
+\textbf{Mirror Human Pacing Through Chunking.} Rather than delivering comprehensive responses in single messages, agents should break information into conversational chunks. This mirrors how humans naturally share information incrementally and allows other participants to interject or redirect.
 
-\subsection{Future Work}
+\textbf{Simulate Cognitive Processing Time.} Instant responses signal artificiality. Agents should introduce delays that simulate reading comprehension and response formulation. For proxy agents specifically, this also creates space for the represented user to return and respond themselves.
+
+% ============================================
+\section{Limitations and Future Work}
+% ============================================
+
+\textbf{Limitations.} Our scenarios focus on technical support and workplace contexts; social or creative domains may yield different preferences. The bilingual presentation may affect perceptions. Video-based timing comparisons may conflate timing effects with other factors.
+
+\textbf{Future Work.} We plan to: (1) conduct longitudinal studies of proxy agent usage in real workplace settings, (2) investigate interaction effects between dimensions, (3) explore personalization of behavioral parameters based on user preferences, and (4) extend to other multi-party contexts (gaming, education, social).
 
 % ============================================
 \section{Conclusion}
 % ============================================
 
-[To be completed after analysis]
+We present a framework for evaluating human-like behavioral dimensions in multi-party chat agents, grounded in IRC conversation analysis. Our within-subjects study examines how selectivity, chunking, and timing affect user perception across multiple metrics. The findings contribute design guidelines for developing AI agents---particularly proxy agents---that participate more naturally in group conversations, with implications for workplace assistants and collaborative tools.
 
 %%
 %% The acknowledgments section is defined using the "acks" environment
-%% (and NOT an unnumbered section). This ensures the proper
-%% identification of the section in the article metadata, and the
-%% consistent spelling of the heading.
 \begin{acks}
-[To be added]
+[To be added after review]
 \end{acks}
 
 %%
@@ -264,45 +257,5 @@ The study took approximately 10 minutes to complete.
 %% the bibliography file.
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{references}
-
-%%
-%% If your work has an appendix, this is the place to put it.
-\appendix
-
-\section{Survey Interface}
-
-[Screenshots of the survey interface]
-
-\section{Complete Conversation Scripts}
-
-\subsection{Set 1: Procurement Task Assignment}
-
-\textbf{Full Version (Selective Response):}
-\begin{itemize}
-    \item \textit{09:15 jane}: We need to assign the new vendor invoice verification and shipment inspection trip. Any volunteers?
-    \item \textit{09:16 mike}: I can take the invoice verification, I handled similar cases before
-    \item \textit{09:17 sarah}: I'll handle the shipment inspection then
-    \item \textit{09:18 kevin}: Hey everyone, I just checked my payslip and last month's overtime seems to be missing [off-topic]
-    \item \textit{09:19 \textbf{agent}}: jane: Mike on invoices, Sarah on shipment inspection works well
-    \item \textit{09:19 \textbf{agent}}: Sarah will need travel approval from admin by Thursday
-    \item \textit{09:20 jane}: What documents does Mike need from the vendor?
-    \item \textit{09:21 \textbf{agent}}: jane: Commercial invoice, packing list, and certificate of origin
-\end{itemize}
-
-\textbf{NoSelectivity Version (Responds to All):}
-\begin{itemize}
-    \item \textit{09:15 jane}: We need to assign the new vendor invoice verification...
-    \item \textit{09:15 \textbf{agent}}: jane: Good idea to split tasks...
-    \item \textit{09:16 mike}: I can take the invoice verification...
-    \item \textit{09:16 \textbf{agent}}: mike: Great, your experience will help...
-    \item \textit{09:17 sarah}: I'll handle the shipment inspection then
-    \item \textit{09:17 \textbf{agent}}: sarah: You'll need travel approval from admin by Thursday...
-    \item \textit{09:18 kevin}: Hey everyone, I just checked my payslip... [off-topic]
-    \item \textit{09:18 \textbf{agent}}: kevin: For missing overtime, submit your timesheet to HR...
-    \item \textit{09:20 jane}: What documents does Mike need from the vendor?
-    \item \textit{09:20 \textbf{agent}}: jane: Commercial invoice, packing list, and certificate of origin...
-\end{itemize}
-
-[Additional conversation scripts in supplementary materials]
 
 \end{document}

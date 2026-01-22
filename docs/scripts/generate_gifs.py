@@ -35,6 +35,7 @@ AVATAR_MARGIN = 14
 
 # Timing multiplier - higher = slower messages (more natural)
 TIMING_MULTIPLIER = 1.5  # 1.5x (faster than before, was 2.5)
+BASELINE_SPEED_MULTIPLIER = 0.5  # Baseline videos 2x faster (0.5 = half the time)
 
 # Colors
 BG_COLOR = (248, 249, 250)
@@ -382,6 +383,7 @@ def generate_baseline_video(user_messages, agent_messages, output_path):
     """
     Generate video for baseline comparison
     Shows user messages then agent responses
+    Uses BASELINE_SPEED_MULTIPLIER for faster playback
     """
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
@@ -394,8 +396,11 @@ def generate_baseline_video(user_messages, agent_messages, output_path):
     # Combine user messages and agent messages
     all_messages = user_messages + agent_messages
 
+    # Use baseline speed multiplier (0.5 = 2x faster)
+    speed_mult = TIMING_MULTIPLIER * BASELINE_SPEED_MULTIPLIER
+
     for i, msg in enumerate(all_messages):
-        msg_ts = msg.get('ts', 0) * TIMING_MULTIPLIER
+        msg_ts = msg.get('ts', 0) * speed_mult
 
         # Calculate delay since last message
         if i > 0:
@@ -413,8 +418,8 @@ def generate_baseline_video(user_messages, agent_messages, output_path):
         messages_shown.append(msg)
         frame = create_frame(messages_shown, font)
 
-        # Hold for reading time
-        hold_time = calculate_reading_time(msg['text']) * 0.5
+        # Hold for reading time (also apply baseline speed multiplier)
+        hold_time = calculate_reading_time(msg['text']) * 0.5 * BASELINE_SPEED_MULTIPLIER
         hold_frames = max(1, int(hold_time * FPS))
         for _ in range(hold_frames):
             frames.append(frame)
