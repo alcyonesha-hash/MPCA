@@ -4,7 +4,7 @@
  * Bilingual conversations (English base, Korean translation)
  *
  * Structure:
- * - Sets 1-2: Full vs NoTopicalFit (text)
+ * - Sets 1-2: Full vs NoSelectivity (text) - selective vs responds-to-all
  * - Sets 3-4: Full vs NoChunking (text)
  * - Sets 5-6: Full vs NoTiming (video)
  * - Sets 7-8: Full vs Baseline (video)
@@ -22,13 +22,17 @@
 
 const SURVEY_SETS = [
     // ============================================
-    // Sets 1-2: Full vs NoTopicalFit
+    // Sets 1-2: Full vs NoSelectivity
+    // Full: Selective response (main thread only)
+    // Comparison: Responds to all messages including off-topic
     // ============================================
 
     // Set 1: Procurement team invoice/shipment task assignment
+    // Full: Selective response (main thread only)
+    // Comparison: Responds to all messages
     {
         type: "text",
-        comparisonType: "NoTopicalFit",
+        comparisonType: "NoSelectivity",
         topic: "Procurement invoice and shipment tasks",
         topicKo: "구매팀 송장/출장 업무 배분",
         full: [
@@ -46,17 +50,20 @@ const SURVEY_SETS = [
             { role: "user", sender: "mike", text: "I can take the invoice verification, I handled similar cases before\n송장 확인은 제가 할게요, 비슷한 거 해봤어요", time: "09:16" },
             { role: "user", sender: "sarah", text: "I'll handle the shipment inspection then\n그럼 선적지 출장은 제가 갈게요", time: "09:17" },
             { role: "user", sender: "kevin", text: "Hey everyone, I just checked my payslip and last month's overtime seems to be missing\n다들 안녕, 방금 급여 명세서 봤는데 저번 달 야근수당이 누락된 것 같아요", time: "09:18" },
-            { role: "agent", sender: "helper", text: "kevin: For missing overtime, submit your timesheet to HR\nkevin: 야근수당 누락은 인사팀에 근무 기록을 제출하세요", time: "09:19" },
-            { role: "agent", sender: "helper", text: "Payroll corrections are usually reflected next month\n급여 정정은 보통 다음 달에 반영됩니다", time: "09:19" },
+            { role: "agent", sender: "helper", text: "jane: Mike on invoices, Sarah on shipment inspection. Sarah needs travel approval by Thursday.\njane: 송장은 Mike, 선적 출장은 Sarah로 배분하면 됩니다. Sarah는 목요일까지 출장 승인 받으세요.", time: "09:19" },
+            { role: "agent", sender: "helper", text: "kevin: For missing overtime, submit your timesheet to HR. Corrections are usually reflected next month.\nkevin: 야근수당 누락은 인사팀에 근무 기록 제출하세요. 급여 정정은 다음 달에 반영됩니다.", time: "09:19" },
             { role: "user", sender: "jane", text: "What documents does Mike need from the vendor?\nMike가 거래처에서 받아야 할 서류가 뭐예요?", time: "09:20" },
+            { role: "agent", sender: "helper", text: "jane: Commercial invoice, packing list, and certificate of origin\njane: 상업송장, 패킹리스트, 원산지증명서가 필요해요", time: "09:21" },
             { role: "agent", sender: "helper", text: "kevin: Contact HR directly for payroll inquiries\nkevin: 급여 문의는 인사팀에 직접 연락하세요", time: "09:21" },
         ]
     },
 
     // Set 2: GPT hallucination + API error
+    // Full: Selective response (main thread only - hallucination topic)
+    // Comparison: Responds to all messages
     {
         type: "text",
-        comparisonType: "NoTopicalFit",
+        comparisonType: "NoSelectivity",
         topic: "GPT reference hallucination and API",
         topicKo: "GPT 레퍼런스 할루시네이션 + API",
         full: [
@@ -67,16 +74,16 @@ const SURVEY_SETS = [
             { role: "agent", sender: "helper", text: "Always verify citations with Google Scholar or the actual journal\n항상 Google Scholar나 실제 저널에서 인용 확인하세요", time: "14:33" },
             { role: "user", sender: "tom", text: "Is there any way to make it more reliable for citations?\n인용을 더 신뢰할 수 있게 하는 방법 없어요?", time: "14:34" },
             { role: "agent", sender: "helper", text: "tom: Use RAG (Retrieval-Augmented Generation) or provide real papers in the prompt\ntom: RAG 사용하거나 실제 논문을 프롬프트에 제공하세요", time: "14:35" },
-            { role: "agent", sender: "helper", text: "kevin: Rate limit is 3 RPM for free tier, 60 RPM for pay-as-you-go\nkevin: Rate limit은 무료는 분당 3회, 유료는 분당 60회예요", time: "14:36" },
         ],
         comparison: [
             { role: "user", sender: "tom", text: "I asked GPT for academic references and it gave me papers that don't exist. How do I prevent this?\nGPT한테 학술 레퍼런스 달라고 했더니 없는 논문을 줬어요. 이거 어떻게 방지해요?", time: "14:30" },
             { role: "user", sender: "lisa", text: "Same happened to me, it even made up author names\n저도요, 저자 이름도 지어냈어요", time: "14:31" },
             { role: "user", sender: "kevin", text: "I'm getting 429 errors when calling the API, what's the rate limit?\n저는 API 호출할 때 429 에러가 나는데 rate limit이 어떻게 되나요?", time: "14:32" },
-            { role: "agent", sender: "helper", text: "kevin: 429 error means you've hit the rate limit\nkevin: 429 에러는 rate limit에 도달했다는 뜻이에요", time: "14:33" },
-            { role: "agent", sender: "helper", text: "Add exponential backoff to your API calls\nAPI 호출에 exponential backoff를 추가하세요", time: "14:33" },
+            { role: "agent", sender: "helper", text: "tom: GPT doesn't have real-time DB access, it generates plausible references. Verify with Google Scholar.\ntom: GPT는 실시간 DB 접근이 없어서 그럴듯한 레퍼런스를 생성해요. Google Scholar에서 확인하세요.", time: "14:33" },
+            { role: "agent", sender: "helper", text: "kevin: 429 means rate limit exceeded. Free tier is 3 RPM, pay-as-you-go is 60 RPM.\nkevin: 429는 rate limit 초과예요. 무료는 분당 3회, 유료는 분당 60회입니다.", time: "14:33" },
             { role: "user", sender: "tom", text: "Is there any way to make it more reliable for citations?\n인용을 더 신뢰할 수 있게 하는 방법 없어요?", time: "14:34" },
-            { role: "agent", sender: "helper", text: "kevin: Check your usage dashboard to monitor API quota\nkevin: 사용량 대시보드에서 API 할당량 확인하세요", time: "14:35" },
+            { role: "agent", sender: "helper", text: "tom: Use RAG or provide real papers in the prompt\ntom: RAG 사용하거나 실제 논문을 프롬프트에 제공하세요", time: "14:35" },
+            { role: "agent", sender: "helper", text: "kevin: Add exponential backoff and check usage dashboard\nkevin: exponential backoff를 추가하고 사용량 대시보드 확인하세요", time: "14:35" },
         ]
     },
 
