@@ -1,162 +1,152 @@
 /**
- * Survey Data - 10 Comparison Sets
+ * Survey Data - 8 Comparison Sets
  *
- * Mock conversations for various topics
- * Each message has English text + Korean translation
+ * Bilingual conversations (English base, Korean translation)
  *
  * Structure:
- * - Sets 1-4: Full vs Baseline (text)
- * - Sets 5-6: Full vs NoTiming (GIF)
- * - Sets 7-8: Full vs NoTopicalFit (text)
- * - Sets 9-10: Full vs NoChunking (GIF)
+ * - Sets 1-2: Full vs NoTopicalFit (text)
+ * - Sets 3-4: Full vs NoChunking (text)
+ * - Sets 5-6: Full vs NoTiming (video)
+ * - Sets 7-8: Full vs Baseline (text)
  *
  * Topics:
- * 1. Ubuntu (package installation)
- * 2. Python (pip conflict)
- * 3. Python (virtual environment)
- * 4. Office work (Excel formula)
- * 5. Office work (email writing) - GIF
- * 6. Finance (stock terms) - GIF
- * 7. Finance (ETF recommendation)
- * 8. LLM usage (prompt writing)
- * 9. LLM usage (API integration) - GIF
- * 10. LLM usage (token optimization) - GIF
+ * 1. Accounting system task assignment (NoTopicalFit)
+ * 2. ChatGPT prompt engineering (NoTopicalFit)
+ * 3. Filesystem check - IRC Ubuntu (Chunking)
+ * 4. Gnome suspend issue - IRC Ubuntu (Chunking)
+ * 5. Python version conflict (Timing - video)
+ * 6. Excel VLOOKUP error (Timing - video)
+ * 7. Book translation - literal vs liberal (Baseline)
+ * 8. Database model selection (Baseline)
  */
 
 const SURVEY_SETS = [
     // ============================================
-    // Sets 1-4: Full vs Baseline
+    // Sets 1-2: Full vs NoTopicalFit
     // ============================================
 
-    // Set 1: Ubuntu - package installation
+    // Set 1: Accounting system task assignment
     {
         type: "text",
-        comparisonType: "Baseline",
-        topic: "Ubuntu package installation",
-        topicKo: "우분투 패키지 설치",
+        comparisonType: "NoTopicalFit",
+        topic: "Accounting system task assignment",
+        topicKo: "회계 시스템 업무 배분",
         full: [
-            { role: "user", sender: "alex", text: "How do I install Chrome on Ubuntu? The software center only shows Chromium.\n우분투에서 크롬 설치하려면 어떻게 해요? 소프트웨어 센터에는 크로미움만 있네요.", time: "14:23" },
-            { role: "user", sender: "maya", text: "Also having issues with my apt - it says some packages are held back\n저도 apt 문제가 있어요 - 일부 패키지가 보류됐다고 나와요", time: "14:24" },
-            { role: "user", sender: "jordan", text: "Chrome isn't in the repos, you need the .deb from Google\n크롬은 저장소에 없어요, 구글에서 .deb 파일 받아야 해요", time: "14:25" },
-            { role: "agent", sender: "helper", text: "alex: Download from google.com/chrome\nalex: google.com/chrome에서 다운로드하세요", time: "14:26" },
-            { role: "agent", sender: "helper", text: "Then run: sudo dpkg -i google-chrome*.deb\n그다음 실행: sudo dpkg -i google-chrome*.deb", time: "14:26" },
-            { role: "user", sender: "alex", text: "Got it, downloading now\n알겠어요, 지금 다운로드 중이에요", time: "14:27" },
-            { role: "agent", sender: "helper", text: "maya: Run sudo apt update first\nmaya: 먼저 sudo apt update 실행해보세요", time: "14:28" },
-            { role: "agent", sender: "helper", text: "Then try sudo apt upgrade\n그다음 sudo apt upgrade 해보세요", time: "14:28" },
-            { role: "user", sender: "maya", text: "The held back packages are still there after update\n업데이트 후에도 보류된 패키지가 그대로예요", time: "14:30" },
-            { role: "agent", sender: "helper", text: "maya: Those are phased updates, just wait a few days\nmaya: 단계적 업데이트예요, 며칠 기다리면 돼요", time: "14:31" },
+            { role: "user", sender: "jane", text: "How should we divide the new transaction system? Separate for payables and receivables?\n새 거래 시스템 담당 어떻게 나눌까요? 매입/매출 따로?", time: "09:15" },
+            { role: "user", sender: "mike", text: "I've done payables before, I can take that\n저 매입 해봤으니까 맡을게요", time: "09:16" },
+            { role: "user", sender: "sarah", text: "Then I'll handle receivables. By the way, I checked my payslip and overtime pay seems missing\n그럼 저는 매출 맡을게요. 근데 급여 명세서 봤는데 야근수당 누락된 것 같아요", time: "09:17" },
+            { role: "agent", sender: "helper", text: "jane: Payables to Mike, receivables to Sarah works well\njane: 매입은 Mike, 매출은 Sarah로 배분하면 좋겠습니다", time: "09:18" },
+            { role: "agent", sender: "helper", text: "You'll also need access permissions from IT\nIT팀에 권한 설정도 요청하세요", time: "09:18" },
+            { role: "user", sender: "jane", text: "When do we need to finish the permission setup?\n권한 설정은 언제까지 해야 해요?", time: "09:19" },
+            { role: "agent", sender: "helper", text: "jane: By Friday for Monday go-live\njane: 금요일까지 완료하면 월요일부터 운영 가능합니다", time: "09:20" },
+            { role: "agent", sender: "helper", text: "sarah: For the missing overtime, contact HR with your timesheet records\nsarah: 야근수당 누락은 인사팀에 근무 기록과 함께 문의하세요", time: "09:21" },
         ],
         comparison: [
-            { role: "user", sender: "alex", text: "How do I install Chrome on Ubuntu? The software center only shows Chromium.\n우분투에서 크롬 설치하려면 어떻게 해요? 소프트웨어 센터에는 크로미움만 있네요.", time: "14:23" },
-            { role: "user", sender: "maya", text: "Also having issues with my apt - it says some packages are held back\n저도 apt 문제가 있어요 - 일부 패키지가 보류됐다고 나와요", time: "14:24" },
-            { role: "user", sender: "jordan", text: "Chrome isn't in the repos, you need the .deb from Google\n크롬은 저장소에 없어요, 구글에서 .deb 파일 받아야 해요", time: "14:25" },
-            { role: "agent", sender: "helper", text: "For Chrome installation: Google Chrome is not available in Ubuntu's official repositories because it's proprietary software. You need to download the .deb package directly from google.com/chrome. Once downloaded, install it using 'sudo dpkg -i google-chrome-stable_current_amd64.deb'. If there are dependency errors, run 'sudo apt -f install' to fix them. For the held back packages issue: This is normal behavior called 'phased updates' where Ubuntu gradually rolls out updates to detect issues. Run 'sudo apt update' followed by 'sudo apt upgrade'. If packages are still held back, you can either wait a few days or force the upgrade with 'sudo apt full-upgrade', though waiting is recommended.\n크롬 설치: 구글 크롬은 독점 소프트웨어라 우분투 공식 저장소에 없습니다. google.com/chrome에서 .deb 패키지를 직접 다운로드해야 합니다. 다운로드 후 'sudo dpkg -i google-chrome-stable_current_amd64.deb'로 설치하세요. 의존성 오류가 있으면 'sudo apt -f install'로 해결하세요. 보류된 패키지 문제: 이것은 우분투가 문제를 감지하기 위해 점진적으로 업데이트를 배포하는 '단계적 업데이트'라는 정상적인 동작입니다. 'sudo apt update' 후 'sudo apt upgrade'를 실행하세요. 여전히 보류되면 며칠 기다리거나 'sudo apt full-upgrade'로 강제 업그레이드할 수 있지만, 기다리는 것을 권장합니다.", time: "14:25" },
-            { role: "user", sender: "alex", text: "Got it, downloading now\n알겠어요, 지금 다운로드 중이에요", time: "14:27" },
-            { role: "user", sender: "maya", text: "The held back packages are still there after update\n업데이트 후에도 보류된 패키지가 그대로예요", time: "14:30" },
-            { role: "agent", sender: "helper", text: "As I mentioned, phased updates are normal. Just wait a few days.\n말씀드렸듯이, 단계적 업데이트는 정상입니다. 며칠만 기다리세요.", time: "14:31" },
+            { role: "user", sender: "jane", text: "How should we divide the new transaction system? Separate for payables and receivables?\n새 거래 시스템 담당 어떻게 나눌까요? 매입/매출 따로?", time: "09:15" },
+            { role: "user", sender: "mike", text: "I've done payables before, I can take that\n저 매입 해봤으니까 맡을게요", time: "09:16" },
+            { role: "user", sender: "sarah", text: "Then I'll handle receivables. By the way, I checked my payslip and overtime pay seems missing\n그럼 저는 매출 맡을게요. 근데 급여 명세서 봤는데 야근수당 누락된 것 같아요", time: "09:17" },
+            { role: "agent", sender: "helper", text: "For missing overtime pay, submit your timesheet to HR\n야근수당 누락은 인사팀에 근무 기록을 제출하세요", time: "09:18" },
+            { role: "agent", sender: "helper", text: "Payroll corrections are usually reflected next month\n급여 정정은 보통 다음 달에 반영됩니다", time: "09:18" },
+            { role: "user", sender: "jane", text: "When do we need to finish the permission setup?\n권한 설정은 언제까지 해야 해요?", time: "09:19" },
+            { role: "agent", sender: "helper", text: "For payroll inquiries, contact HR directly\n급여 문의는 인사팀에 직접 연락하세요", time: "09:20" },
         ]
     },
 
-    // Set 2: Python - pip conflict
+    // Set 2: ChatGPT prompt engineering
     {
         type: "text",
-        comparisonType: "Baseline",
-        topic: "Python pip dependency conflict",
-        topicKo: "Python pip 의존성 충돌",
+        comparisonType: "NoTopicalFit",
+        topic: "ChatGPT prompt engineering",
+        topicKo: "ChatGPT 프롬프트 작성",
         full: [
-            { role: "user", sender: "sam", text: "pip install keeps failing with dependency conflicts between numpy and pandas\npip install이 numpy랑 pandas 의존성 충돌로 계속 실패해요", time: "10:15" },
-            { role: "user", sender: "taylor", text: "What versions are you trying to install?\n어떤 버전을 설치하려고 해요?", time: "10:16" },
-            { role: "user", sender: "sam", text: "numpy 1.21 and pandas 2.0\nnumpy 1.21이랑 pandas 2.0이요", time: "10:17" },
-            { role: "agent", sender: "helper", text: "sam: pandas 2.0 needs numpy >= 1.23\nsam: pandas 2.0은 numpy 1.23 이상이 필요해요", time: "10:18" },
-            { role: "agent", sender: "helper", text: "Either upgrade numpy or use pandas 1.5\nnumpy를 업그레이드하거나 pandas 1.5를 쓰세요", time: "10:18" },
-            { role: "user", sender: "riley", text: "I had the same issue last week\n저도 지난주에 같은 문제 있었어요", time: "10:19" },
-            { role: "user", sender: "sam", text: "But my other package needs numpy < 1.22\n근데 다른 패키지가 numpy 1.22 미만을 필요로 해요", time: "10:20" },
-            { role: "agent", sender: "helper", text: "sam: Then you need separate virtual environments\nsam: 그러면 가상환경을 분리해야 해요", time: "10:21" },
-            { role: "agent", sender: "helper", text: "One for each incompatible project\n호환 안 되는 프로젝트마다 하나씩요", time: "10:21" },
-            { role: "user", sender: "sam", text: "Makes sense, thanks!\n이해됐어요, 감사합니다!", time: "10:22" },
+            { role: "user", sender: "tom", text: "How do I get better summaries from ChatGPT? Mine always come out too long\nChatGPT로 요약 잘 나오게 하려면 어떻게 해요? 맨날 너무 길어요", time: "14:30" },
+            { role: "user", sender: "lisa", text: "Same here, I keep having to ask it to shorten\n저도요, 계속 줄여달라고 해야 해요", time: "14:31" },
+            { role: "user", sender: "kevin", text: "I'm trying to integrate the API, what's the request format?\n저는 API 연동하려는데 요청 형식이 어떻게 돼요?", time: "14:32" },
+            { role: "agent", sender: "helper", text: "tom: Specify length in your prompt like '3 sentences' or '100 words'\ntom: 프롬프트에 '3문장으로' 또는 '100단어로' 같이 길이를 명시하세요", time: "14:33" },
+            { role: "agent", sender: "helper", text: "Role assignment helps too: 'You are a concise editor...'\n역할 부여도 효과적이에요: 'You are a concise editor...'", time: "14:33" },
+            { role: "user", sender: "tom", text: "Can I also specify the output format?\n출력 형식도 지정할 수 있어요?", time: "14:34" },
+            { role: "agent", sender: "helper", text: "tom: Yes, try 'respond in bullet points' or 'use markdown headers'\ntom: 네, 'bullet point로 작성해줘' 또는 'markdown 헤더 사용' 같이요", time: "14:35" },
+            { role: "agent", sender: "helper", text: "kevin: POST to /v1/chat/completions with messages array in the body\nkevin: /v1/chat/completions에 messages 배열을 body로 POST 요청하세요", time: "14:36" },
         ],
         comparison: [
-            { role: "user", sender: "sam", text: "pip install keeps failing with dependency conflicts between numpy and pandas\npip install이 numpy랑 pandas 의존성 충돌로 계속 실패해요", time: "10:15" },
-            { role: "user", sender: "taylor", text: "What versions are you trying to install?\n어떤 버전을 설치하려고 해요?", time: "10:16" },
-            { role: "user", sender: "sam", text: "numpy 1.21 and pandas 2.0\nnumpy 1.21이랑 pandas 2.0이요", time: "10:17" },
-            { role: "agent", sender: "helper", text: "The dependency conflict occurs because pandas 2.0 requires numpy version 1.23 or higher, but you're trying to install numpy 1.21. You have several options: 1) Upgrade numpy to 1.23+ with 'pip install numpy>=1.23 pandas==2.0', 2) Downgrade pandas to 1.5.x which supports older numpy with 'pip install numpy==1.21 pandas==1.5.3', 3) If you have conflicting requirements from different packages, create separate virtual environments for each project using 'python -m venv env_name'. You can also use pip's dependency resolver with 'pip install --use-feature=2020-resolver' for better conflict resolution. Check the exact requirements with 'pip show pandas' to see version constraints.\n의존성 충돌은 pandas 2.0이 numpy 1.23 이상을 요구하는데 numpy 1.21을 설치하려고 해서 발생합니다. 여러 옵션이 있습니다: 1) 'pip install numpy>=1.23 pandas==2.0'으로 numpy를 1.23+로 업그레이드, 2) 'pip install numpy==1.21 pandas==1.5.3'으로 이전 numpy를 지원하는 pandas 1.5.x로 다운그레이드, 3) 다른 패키지에서 충돌하는 요구사항이 있으면 'python -m venv env_name'으로 각 프로젝트별 가상환경을 만드세요. 'pip install --use-feature=2020-resolver'로 pip의 의존성 해결기를 사용할 수도 있습니다. 'pip show pandas'로 정확한 요구사항을 확인하세요.", time: "10:17" },
-            { role: "user", sender: "riley", text: "I had the same issue last week\n저도 지난주에 같은 문제 있었어요", time: "10:19" },
-            { role: "user", sender: "sam", text: "But my other package needs numpy < 1.22\n근데 다른 패키지가 numpy 1.22 미만을 필요로 해요", time: "10:20" },
-            { role: "agent", sender: "helper", text: "As mentioned, use separate virtual environments for incompatible projects.\n말씀드렸듯이, 호환되지 않는 프로젝트는 별도 가상환경을 사용하세요.", time: "10:21" },
-            { role: "user", sender: "sam", text: "Makes sense, thanks!\n이해됐어요, 감사합니다!", time: "10:22" },
-        ]
-    },
-
-    // Set 3: Python - virtual environment
-    {
-        type: "text",
-        comparisonType: "Baseline",
-        topic: "Python virtual environment setup",
-        topicKo: "Python 가상환경 설정",
-        full: [
-            { role: "user", sender: "jamie", text: "How do I set up a virtual environment? I keep messing up my global packages\n가상환경 어떻게 설정해요? 전역 패키지를 계속 망치고 있어요", time: "15:40" },
-            { role: "user", sender: "casey", text: "Are you on Windows or Mac?\n윈도우예요 맥이에요?", time: "15:41" },
-            { role: "user", sender: "jamie", text: "Windows 11\n윈도우 11이요", time: "15:41" },
-            { role: "agent", sender: "helper", text: "jamie: Run python -m venv myenv\njamie: python -m venv myenv 실행하세요", time: "15:42" },
-            { role: "agent", sender: "helper", text: "Then activate with myenv\\Scripts\\activate\n그다음 myenv\\Scripts\\activate로 활성화", time: "15:42" },
-            { role: "user", sender: "morgan", text: "Don't forget to add myenv to .gitignore!\nmyenv를 .gitignore에 추가하는 거 잊지 마세요!", time: "15:43" },
-            { role: "user", sender: "jamie", text: "It says 'running scripts is disabled on this system'\n'이 시스템에서 스크립트 실행이 비활성화되어 있습니다'래요", time: "15:44" },
-            { role: "agent", sender: "helper", text: "jamie: PowerShell execution policy issue\njamie: PowerShell 실행 정책 문제예요", time: "15:45" },
-            { role: "agent", sender: "helper", text: "Run: Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned\n실행: Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned", time: "15:45" },
-            { role: "user", sender: "jamie", text: "That worked! Thanks everyone\n됐어요! 다들 감사해요", time: "15:47" },
-        ],
-        comparison: [
-            { role: "user", sender: "jamie", text: "How do I set up a virtual environment? I keep messing up my global packages\n가상환경 어떻게 설정해요? 전역 패키지를 계속 망치고 있어요", time: "15:40" },
-            { role: "user", sender: "casey", text: "Are you on Windows or Mac?\n윈도우예요 맥이에요?", time: "15:41" },
-            { role: "user", sender: "jamie", text: "Windows 11\n윈도우 11이요", time: "15:41" },
-            { role: "agent", sender: "helper", text: "To set up a Python virtual environment on Windows 11: 1) Open PowerShell or Command Prompt, 2) Navigate to your project folder with 'cd your_project', 3) Create the virtual environment with 'python -m venv myenv' (myenv is the folder name), 4) Activate it with 'myenv\\Scripts\\activate' (PowerShell) or 'myenv\\Scripts\\activate.bat' (CMD). Your prompt will show (myenv) when activated. If you get an error about scripts being disabled, run 'Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned' in PowerShell as administrator. To deactivate, just type 'deactivate'. Always add the venv folder to .gitignore to avoid committing it. You can also use 'pip freeze > requirements.txt' to save your dependencies.\nWindows 11에서 Python 가상환경 설정: 1) PowerShell 또는 명령 프롬프트 열기, 2) 'cd your_project'로 프로젝트 폴더로 이동, 3) 'python -m venv myenv'로 가상환경 생성 (myenv는 폴더 이름), 4) 'myenv\\Scripts\\activate' (PowerShell) 또는 'myenv\\Scripts\\activate.bat' (CMD)로 활성화. 활성화되면 프롬프트에 (myenv)가 표시됩니다. 스크립트 비활성화 오류가 나면 PowerShell에서 관리자 권한으로 'Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned' 실행하세요. 비활성화는 'deactivate' 입력. venv 폴더는 항상 .gitignore에 추가하세요. 'pip freeze > requirements.txt'로 의존성을 저장할 수 있습니다.", time: "15:41" },
-            { role: "user", sender: "morgan", text: "Don't forget to add myenv to .gitignore!\nmyenv를 .gitignore에 추가하는 거 잊지 마세요!", time: "15:43" },
-            { role: "user", sender: "jamie", text: "It says 'running scripts is disabled on this system'\n'이 시스템에서 스크립트 실행이 비활성화되어 있습니다'래요", time: "15:44" },
-            { role: "agent", sender: "helper", text: "As I mentioned, run the Set-ExecutionPolicy command to fix the script execution error.\n말씀드렸듯이, Set-ExecutionPolicy 명령어로 스크립트 실행 오류를 해결하세요.", time: "15:45" },
-            { role: "user", sender: "jamie", text: "That worked! Thanks everyone\n됐어요! 다들 감사해요", time: "15:47" },
-        ]
-    },
-
-    // Set 4: Office work - Excel formula
-    {
-        type: "text",
-        comparisonType: "Baseline",
-        topic: "Excel VLOOKUP formula",
-        topicKo: "엑셀 VLOOKUP 함수",
-        full: [
-            { role: "user", sender: "chris", text: "My VLOOKUP keeps returning #N/A even though the value exists\nVLOOKUP이 값이 있는데도 계속 #N/A를 반환해요", time: "09:30" },
-            { role: "user", sender: "pat", text: "Are you using exact match or approximate?\n정확히 일치로 하고 있어요, 근사치로 하고 있어요?", time: "09:31" },
-            { role: "user", sender: "chris", text: "I think exact match? I have TRUE at the end\n정확히 일치인 것 같아요? 끝에 TRUE 넣었어요", time: "09:32" },
-            { role: "agent", sender: "helper", text: "chris: TRUE means approximate match\nchris: TRUE는 근사 일치예요", time: "09:33" },
-            { role: "agent", sender: "helper", text: "Use FALSE for exact match\n정확히 일치는 FALSE를 쓰세요", time: "09:33" },
-            { role: "user", sender: "drew", text: "Also check for extra spaces in your data\n데이터에 여분의 공백이 있는지도 확인해보세요", time: "09:34" },
-            { role: "user", sender: "chris", text: "Changed to FALSE but still not working\nFALSE로 바꿨는데 여전히 안 돼요", time: "09:35" },
-            { role: "agent", sender: "helper", text: "chris: Try wrapping lookup value with TRIM()\nchris: 찾는 값을 TRIM()으로 감싸보세요", time: "09:36" },
-            { role: "agent", sender: "helper", text: "=VLOOKUP(TRIM(A1),B:C,2,FALSE)\n=VLOOKUP(TRIM(A1),B:C,2,FALSE)", time: "09:36" },
-            { role: "user", sender: "chris", text: "That was it! Hidden spaces were the problem\n그거였어요! 숨겨진 공백이 문제였네요", time: "09:38" },
-        ],
-        comparison: [
-            { role: "user", sender: "chris", text: "My VLOOKUP keeps returning #N/A even though the value exists\nVLOOKUP이 값이 있는데도 계속 #N/A를 반환해요", time: "09:30" },
-            { role: "user", sender: "pat", text: "Are you using exact match or approximate?\n정확히 일치로 하고 있어요, 근사치로 하고 있어요?", time: "09:31" },
-            { role: "user", sender: "chris", text: "I think exact match? I have TRUE at the end\n정확히 일치인 것 같아요? 끝에 TRUE 넣었어요", time: "09:32" },
-            { role: "agent", sender: "helper", text: "The VLOOKUP #N/A error with TRUE at the end is a common mistake. In VLOOKUP syntax =VLOOKUP(lookup_value, table_array, col_index, [range_lookup]), the last parameter TRUE means approximate match (data must be sorted), while FALSE means exact match. For exact matching, always use FALSE. Other common causes of #N/A: 1) Extra spaces - use TRIM() on your lookup value like =VLOOKUP(TRIM(A1),B:C,2,FALSE), 2) Different data types - numbers stored as text vs actual numbers, use VALUE() or TEXT() to convert, 3) The lookup value is in a column to the right of the return column - VLOOKUP only searches leftmost column, 4) Table array doesn't include the lookup column. Consider using INDEX/MATCH or XLOOKUP (Excel 365) for more flexibility.\nVLOOKUP에서 끝에 TRUE를 넣고 #N/A 오류가 나는 것은 흔한 실수입니다. VLOOKUP 문법 =VLOOKUP(찾는값, 테이블범위, 열번호, [범위검색])에서 마지막 매개변수 TRUE는 근사 일치(데이터 정렬 필요), FALSE는 정확히 일치입니다. 정확한 일치에는 항상 FALSE를 사용하세요. #N/A의 다른 원인: 1) 여분의 공백 - =VLOOKUP(TRIM(A1),B:C,2,FALSE)처럼 TRIM() 사용, 2) 다른 데이터 유형 - 텍스트로 저장된 숫자 vs 실제 숫자, VALUE() 또는 TEXT()로 변환, 3) 찾는 값이 반환 열의 오른쪽에 있음 - VLOOKUP은 맨 왼쪽 열만 검색, 4) 테이블 범위에 검색 열이 포함되지 않음. 더 유연하게 INDEX/MATCH 또는 XLOOKUP(Excel 365)을 고려하세요.", time: "09:32" },
-            { role: "user", sender: "drew", text: "Also check for extra spaces in your data\n데이터에 여분의 공백이 있는지도 확인해보세요", time: "09:34" },
-            { role: "user", sender: "chris", text: "Changed to FALSE but still not working\nFALSE로 바꿨는데 여전히 안 돼요", time: "09:35" },
-            { role: "agent", sender: "helper", text: "As I mentioned, try TRIM() to remove hidden spaces.\n말씀드렸듯이, TRIM()으로 숨겨진 공백을 제거해보세요.", time: "09:36" },
-            { role: "user", sender: "chris", text: "That was it! Hidden spaces were the problem\n그거였어요! 숨겨진 공백이 문제였네요", time: "09:38" },
+            { role: "user", sender: "tom", text: "How do I get better summaries from ChatGPT? Mine always come out too long\nChatGPT로 요약 잘 나오게 하려면 어떻게 해요? 맨날 너무 길어요", time: "14:30" },
+            { role: "user", sender: "lisa", text: "Same here, I keep having to ask it to shorten\n저도요, 계속 줄여달라고 해야 해요", time: "14:31" },
+            { role: "user", sender: "kevin", text: "I'm trying to integrate the API, what's the request format?\n저는 API 연동하려는데 요청 형식이 어떻게 돼요?", time: "14:32" },
+            { role: "agent", sender: "helper", text: "API calls use POST to /v1/chat/completions endpoint\nAPI 호출은 /v1/chat/completions 엔드포인트에 POST 요청합니다", time: "14:33" },
+            { role: "agent", sender: "helper", text: "Include Authorization header with Bearer token\nAuthorization 헤더에 Bearer 토큰을 포함하세요", time: "14:33" },
+            { role: "user", sender: "tom", text: "Can I also specify the output format?\n출력 형식도 지정할 수 있어요?", time: "14:34" },
+            { role: "agent", sender: "helper", text: "Extract result from response.choices[0].message.content\n응답에서 choices[0].message.content로 결과를 추출합니다", time: "14:35" },
         ]
     },
 
     // ============================================
-    // Sets 5-6: Full vs NoTiming (GIF)
+    // Sets 3-4: Full vs NoChunking
     // ============================================
 
-    // Set 5: Office work - email writing
+    // Set 3: Filesystem check - IRC Ubuntu based
+    {
+        type: "text",
+        comparisonType: "NoChunking",
+        topic: "Filesystem check after improper shutdown",
+        topicKo: "비정상 종료 후 파일시스템 검사",
+        full: [
+            { role: "user", sender: "foo", text: "My old laptop keeps dropping to maintenance mode after improper shutdown. How can I force a filesystem check?\n노트북이 비정상 종료 후 유지보수 모드로 계속 떨어져요. 파일시스템 검사 어떻게 강제로 해요?", time: "20:24" },
+            { role: "user", sender: "eric", text: "Which partition is your root?\n루트 파티션이 어디야?", time: "20:25" },
+            { role: "user", sender: "foo", text: "sda2 I think\nsda2인 것 같아요", time: "20:26" },
+            { role: "agent", sender: "helper", text: "foo: Run fsck /dev/sda2 to check the filesystem\nfoo: fsck /dev/sda2로 파일시스템 검사하세요", time: "20:27" },
+            { role: "agent", sender: "helper", text: "Make sure the partition is unmounted first\n먼저 파티션이 마운트 해제되어 있어야 해요", time: "20:27" },
+            { role: "user", sender: "foo", text: "It's asking to remove dirty bit, should I?\ndirty bit 제거하라는데 해도 되나요?", time: "20:28" },
+            { role: "agent", sender: "helper", text: "foo: Yes, if fsck offers that option it means no corruption was found\nfoo: 네, fsck가 그 옵션을 제시하면 손상이 없다는 뜻이에요", time: "20:29" },
+            { role: "agent", sender: "helper", text: "After that, check system logs for disk errors: journalctl -b -p err\n그 후 디스크 에러 로그 확인: journalctl -b -p err", time: "20:29" },
+            { role: "agent", sender: "helper", text: "Also backup important data before further troubleshooting\n추가 작업 전에 중요 데이터 백업하세요", time: "20:30" },
+        ],
+        comparison: [
+            { role: "user", sender: "foo", text: "My old laptop keeps dropping to maintenance mode after improper shutdown. How can I force a filesystem check?\n노트북이 비정상 종료 후 유지보수 모드로 계속 떨어져요. 파일시스템 검사 어떻게 강제로 해요?", time: "20:24" },
+            { role: "user", sender: "eric", text: "Which partition is your root?\n루트 파티션이 어디야?", time: "20:25" },
+            { role: "user", sender: "foo", text: "sda2 I think\nsda2인 것 같아요", time: "20:26" },
+            { role: "agent", sender: "helper", text: "foo: Run fsck /dev/sda2 to check the filesystem. Make sure the partition is unmounted first. If it asks to remove the dirty bit, you can accept - this means no corruption was found. After the check, verify disk health with journalctl -b -p err to look for any hardware errors. You should also backup important data before any further troubleshooting since fsck repairs can sometimes be destructive.\nfoo: fsck /dev/sda2로 파일시스템 검사하세요. 먼저 파티션이 마운트 해제되어 있어야 합니다. dirty bit 제거를 묻는다면 승인해도 됩니다 - 손상이 없다는 뜻입니다. 검사 후 journalctl -b -p err로 하드웨어 에러 확인하세요. fsck 복구가 파괴적일 수 있으니 추가 작업 전 중요 데이터를 백업하세요.", time: "20:27" },
+            { role: "user", sender: "foo", text: "It's asking to remove dirty bit, should I?\ndirty bit 제거하라는데 해도 되나요?", time: "20:28" },
+            { role: "agent", sender: "helper", text: "Yes, as I mentioned, accepting the dirty bit removal is safe when fsck offers it.\n네, 말씀드렸듯이 fsck가 제시하면 dirty bit 제거는 안전합니다.", time: "20:29" },
+        ]
+    },
+
+    // Set 4: Gnome suspend issue - IRC Ubuntu based
+    {
+        type: "text",
+        comparisonType: "NoChunking",
+        topic: "Gnome black screen after suspend",
+        topicKo: "절전모드 후 검은 화면",
+        full: [
+            { role: "user", sender: "arkanoid", text: "Gnome shows black screen after resume from suspend. TTY and networking work fine\n절전모드 해제 후 Gnome이 검은 화면이에요. TTY랑 네트워크는 정상이에요", time: "14:58" },
+            { role: "user", sender: "lotus", text: "Can you share your dmesg output?\ndmesg 출력 공유해줄 수 있어요?", time: "14:59" },
+            { role: "user", sender: "arkanoid", text: "dmesg shows nothing suspicious. journalctl shows gnome-session GLib-GIO-CRITICAL error\ndmesg는 이상 없어요. journalctl에 gnome-session GLib-GIO-CRITICAL 에러가 있어요", time: "15:06" },
+            { role: "agent", sender: "helper", text: "arkanoid: This looks like a known GDM/Gnome issue with suspend\narkanoid: 절전모드 관련 GDM/Gnome 알려진 이슈 같아요", time: "15:07" },
+            { role: "agent", sender: "helper", text: "Try: sudo systemctl restart gdm3\n시도해보세요: sudo systemctl restart gdm3", time: "15:07" },
+            { role: "user", sender: "arkanoid", text: "That brings login back but after login it goes black again\n로그인 화면은 나오는데 로그인하면 다시 검은 화면이에요", time: "15:10" },
+            { role: "agent", sender: "helper", text: "arkanoid: Check if nvidia drivers are involved: lspci | grep -i nvidia\narkanoid: nvidia 드라이버 관련인지 확인: lspci | grep -i nvidia", time: "15:11" },
+            { role: "agent", sender: "helper", text: "If nvidia, try: sudo prime-select intel, then reboot\nnvidia면 시도: sudo prime-select intel 후 재부팅", time: "15:11" },
+            { role: "agent", sender: "helper", text: "The fix was backported in 22.10, consider upgrading if this persists\n수정 사항이 22.10에 적용됐으니 계속되면 업그레이드 고려하세요", time: "15:12" },
+        ],
+        comparison: [
+            { role: "user", sender: "arkanoid", text: "Gnome shows black screen after resume from suspend. TTY and networking work fine\n절전모드 해제 후 Gnome이 검은 화면이에요. TTY랑 네트워크는 정상이에요", time: "14:58" },
+            { role: "user", sender: "lotus", text: "Can you share your dmesg output?\ndmesg 출력 공유해줄 수 있어요?", time: "14:59" },
+            { role: "user", sender: "arkanoid", text: "dmesg shows nothing suspicious. journalctl shows gnome-session GLib-GIO-CRITICAL error\ndmesg는 이상 없어요. journalctl에 gnome-session GLib-GIO-CRITICAL 에러가 있어요", time: "15:06" },
+            { role: "agent", sender: "helper", text: "arkanoid: This is a known GDM/Gnome suspend issue. Try restarting GDM with 'sudo systemctl restart gdm3'. If that doesn't fully resolve it, check if NVIDIA drivers are involved using 'lspci | grep -i nvidia'. For NVIDIA systems, switching to Intel graphics with 'sudo prime-select intel' and rebooting often helps. This bug was fixed in Ubuntu 22.10, so upgrading is recommended if the issue persists.\narkanoid: GDM/Gnome 절전모드 관련 알려진 이슈입니다. 'sudo systemctl restart gdm3'로 GDM 재시작해보세요. 완전히 해결 안 되면 'lspci | grep -i nvidia'로 NVIDIA 드라이버 관련인지 확인하세요. NVIDIA 시스템은 'sudo prime-select intel'로 Intel 그래픽 전환 후 재부팅하면 도움됩니다. 이 버그는 22.10에서 수정됐으니 계속되면 업그레이드를 권장합니다.", time: "15:07" },
+            { role: "user", sender: "arkanoid", text: "That brings login back but after login it goes black again\n로그인 화면은 나오는데 로그인하면 다시 검은 화면이에요", time: "15:10" },
+            { role: "agent", sender: "helper", text: "As mentioned, try the NVIDIA workaround or consider upgrading to 22.10+.\n말씀드렸듯이 NVIDIA 해결책을 시도하거나 22.10+ 업그레이드를 고려하세요.", time: "15:11" },
+        ]
+    },
+
+    // ============================================
+    // Sets 5-6: Full vs NoTiming (Video)
+    // ============================================
+
+    // Set 5: Python version conflict
     {
         type: "video",
         comparisonType: "NoTiming",
-        topic: "Ubuntu suspend/resume issue",
-        topicKo: "우분투 절전모드 문제",
+        topic: "Python version library conflict",
+        topicKo: "Python 버전별 라이브러리 충돌",
         full: {
             src: "data/gifs/timing_full_1.mp4",
             description: "Messages appear with natural delays"
@@ -167,12 +157,12 @@ const SURVEY_SETS = [
         }
     },
 
-    // Set 6: Finance - stock terms
+    // Set 6: Excel VLOOKUP error
     {
         type: "video",
         comparisonType: "NoTiming",
-        topic: "Terminal shortcuts & phased updates",
-        topicKo: "터미널 단축키 & 단계적 업데이트",
+        topic: "Excel VLOOKUP #N/A error",
+        topicKo: "엑셀 VLOOKUP #N/A 에러",
         full: {
             src: "data/gifs/timing_full_2.mp4",
             description: "Messages appear with natural delays"
@@ -184,179 +174,92 @@ const SURVEY_SETS = [
     },
 
     // ============================================
-    // Sets 7-8: Full vs NoTopicalFit
+    // Sets 7-8: Full vs Baseline
     // ============================================
 
-    // Set 7: Finance - ETF recommendation
+    // Set 7: Book translation - literal vs liberal
     {
         type: "text",
-        comparisonType: "NoTopicalFit",
-        topic: "ETF investment advice",
-        topicKo: "ETF 투자 조언",
+        comparisonType: "Baseline",
+        topic: "Book translation discussion",
+        topicKo: "출판물 번역 의역/직역",
         full: [
-            { role: "user", sender: "kevin", text: "I'm new to investing. What's the difference between ETF and mutual fund?\n투자 초보인데요. ETF랑 뮤추얼펀드 차이가 뭐예요?", time: "11:20" },
-            { role: "user", sender: "lisa", text: "Also wondering about expense ratios\n보수율도 궁금해요", time: "11:21" },
-            { role: "user", sender: "mike", text: "ETFs trade like stocks, mutual funds don't\nETF는 주식처럼 거래되고, 뮤추얼펀드는 안 그래요", time: "11:22" },
-            { role: "agent", sender: "helper", text: "kevin: ETFs trade on exchange in real-time\nkevin: ETF는 거래소에서 실시간으로 거래돼요", time: "11:23" },
-            { role: "agent", sender: "helper", text: "Mutual funds settle at end of day price\n뮤추얼펀드는 하루 마감 가격으로 정산돼요", time: "11:23" },
-            { role: "user", sender: "kevin", text: "Which one has lower fees usually?\n보통 어느 쪽이 수수료가 낮아요?", time: "11:24" },
-            { role: "agent", sender: "helper", text: "lisa: Expense ratio is the annual fee percentage\nlisa: 보수율은 연간 수수료 비율이에요", time: "11:25" },
-            { role: "agent", sender: "helper", text: "kevin: ETFs typically have lower expense ratios\nkevin: ETF가 보통 보수율이 더 낮아요", time: "11:26" },
-            { role: "user", sender: "lisa", text: "What's considered a good expense ratio?\n좋은 보수율은 어느 정도예요?", time: "11:27" },
-            { role: "agent", sender: "helper", text: "lisa: Under 0.2% is excellent for index ETFs\nlisa: 인덱스 ETF는 0.2% 미만이면 훌륭해요", time: "11:28" },
+            { role: "user", sender: "editor", text: "How should we translate 'I'm not crazy, my mother had me tested'? Direct translation sounds weird in Korean\n'I'm not crazy, my mother had me tested'를 어떻게 번역할까요? 직역하면 한국어로 이상해요", time: "11:20" },
+            { role: "user", sender: "translatorA", text: "Literally it's '나 미친 거 아니야, 엄마가 검사받게 했어' - loses the humor\n직역하면 '나 미친 거 아니야, 엄마가 검사받게 했어' - 유머가 사라져요", time: "11:21" },
+            { role: "user", sender: "translatorB", text: "Maybe '난 정상이야, 의사가 증명했어' captures the defensiveness better?\n'난 정상이야, 의사가 증명했어'가 방어적인 뉘앙스를 더 잘 살릴까요?", time: "11:22" },
+            { role: "agent", sender: "helper", text: "editor: The humor comes from the absurd logic of using a test to prove sanity\neditor: 유머는 정신건강을 검사로 증명하려는 황당한 논리에서 와요", time: "11:23" },
+            { role: "agent", sender: "helper", text: "Korean readers might not connect 'mother had me tested' with psychiatric evaluation\n한국 독자들은 '엄마가 검사받게 했어'를 정신과 검사와 연결 못 할 수 있어요", time: "11:23" },
+            { role: "user", sender: "editor", text: "So should we add context or keep it vague?\n그럼 맥락을 추가할까요, 모호하게 둘까요?", time: "11:24" },
+            { role: "agent", sender: "helper", text: "editor: Consider '난 미친 거 아냐, 병원에서 정상 판정 받았다고' - makes the joke clearer\neditor: '난 미친 거 아냐, 병원에서 정상 판정 받았다고' 고려해보세요 - 농담이 명확해져요", time: "11:25" },
+            { role: "agent", sender: "helper", text: "The defensive 'my mother made me' becomes institutional '병원에서', which Korean readers understand as authority\n방어적인 'my mother made me'가 '병원에서'로 바뀌면 한국 독자들이 권위로 이해해요", time: "11:25" },
+            { role: "agent", sender: "helper", text: "This preserves the character's need to prove themselves while being culturally accessible\n이렇게 하면 캐릭터의 증명 욕구를 살리면서 문화적으로 접근 가능해요", time: "11:26" },
         ],
         comparison: [
-            { role: "user", sender: "kevin", text: "I'm new to investing. What's the difference between ETF and mutual fund?\n투자 초보인데요. ETF랑 뮤추얼펀드 차이가 뭐예요?", time: "11:20" },
-            { role: "user", sender: "lisa", text: "Also wondering about expense ratios\n보수율도 궁금해요", time: "11:21" },
-            { role: "user", sender: "mike", text: "ETFs trade like stocks, mutual funds don't\nETF는 주식처럼 거래되고, 뮤추얼펀드는 안 그래요", time: "11:22" },
-            { role: "agent", sender: "helper", text: "Investing can be a great way to build wealth!\n투자는 재산을 늘리는 좋은 방법이에요!", time: "11:23" },
-            { role: "user", sender: "kevin", text: "Which one has lower fees usually?\n보통 어느 쪽이 수수료가 낮아요?", time: "11:24" },
-            { role: "agent", sender: "helper", text: "Fees are an important consideration in finance.\n수수료는 금융에서 중요한 고려사항이에요.", time: "11:25" },
-            { role: "agent", sender: "helper", text: "Many people start investing early in life.\n많은 사람들이 일찍 투자를 시작해요.", time: "11:26" },
-            { role: "user", sender: "lisa", text: "What's considered a good expense ratio?\n좋은 보수율은 어느 정도예요?", time: "11:27" },
-            { role: "agent", sender: "helper", text: "Financial literacy is very valuable!\n금융 지식은 매우 가치 있어요!", time: "11:28" },
+            { role: "user", sender: "editor", text: "How should we translate 'I'm not crazy, my mother had me tested'? Direct translation sounds weird in Korean\n'I'm not crazy, my mother had me tested'를 어떻게 번역할까요? 직역하면 한국어로 이상해요", time: "11:20" },
+            { role: "user", sender: "translatorA", text: "Literally it's '나 미친 거 아니야, 엄마가 검사받게 했어' - loses the humor\n직역하면 '나 미친 거 아니야, 엄마가 검사받게 했어' - 유머가 사라져요", time: "11:21" },
+            { role: "user", sender: "translatorB", text: "Maybe '난 정상이야, 의사가 증명했어' captures the defensiveness better?\n'난 정상이야, 의사가 증명했어'가 방어적인 뉘앙스를 더 잘 살릴까요?", time: "11:22" },
+            { role: "agent", sender: "helper", text: "This phrase can be translated as '나는 미친 게 아니야, 엄마가 검사받게 했어' or adapted to '난 정상이야, 의사가 증명했어'. When translating idiomatic expressions, consider the target audience and cultural context. Literal translation preserves the original structure but may lose nuance. Liberal translation captures meaning but changes form. The best approach depends on whether the text prioritizes accuracy or readability. Consider the character's personality and the scene's tone when making this decision.\n이 문구는 '나는 미친 게 아니야, 엄마가 검사받게 했어' 또는 '난 정상이야, 의사가 증명했어'로 번역할 수 있습니다. 관용 표현을 번역할 때는 대상 독자와 문화적 맥락을 고려하세요. 직역은 원문 구조를 보존하지만 뉘앙스를 잃을 수 있습니다. 의역은 의미를 살리지만 형태가 바뀝니다. 최선의 접근법은 텍스트가 정확성과 가독성 중 무엇을 우선시하는지에 달려 있습니다.", time: "11:23" },
+            { role: "user", sender: "editor", text: "So should we add context or keep it vague?\n그럼 맥락을 추가할까요, 모호하게 둘까요?", time: "11:24" },
+            { role: "agent", sender: "helper", text: "Adding context depends on your translation philosophy and target readers.\n맥락 추가는 번역 철학과 대상 독자에 달려 있습니다.", time: "11:25" },
         ]
     },
 
-    // Set 8: LLM usage - prompt writing
+    // Set 8: Database model selection
     {
         type: "text",
-        comparisonType: "NoTopicalFit",
-        topic: "ChatGPT prompt engineering",
-        topicKo: "ChatGPT 프롬프트 작성",
+        comparisonType: "Baseline",
+        topic: "Database model selection",
+        topicKo: "외주 프로젝트 DB 모델 선택",
         full: [
-            { role: "user", sender: "anna", text: "How do I get better responses from ChatGPT? Mine are always too generic\nChatGPT에서 더 좋은 응답을 얻으려면 어떻게 해요? 제 건 항상 너무 일반적이에요", time: "16:10" },
-            { role: "user", sender: "ben", text: "Same here, it keeps giving me surface-level answers\n저도요, 계속 피상적인 답변만 줘요", time: "16:11" },
-            { role: "user", sender: "chloe", text: "Have you tried being more specific in your prompts?\n프롬프트를 더 구체적으로 해봤어요?", time: "16:12" },
-            { role: "agent", sender: "helper", text: "anna: Give context about your use case\nanna: 사용 목적에 대한 맥락을 제공하세요", time: "16:13" },
-            { role: "agent", sender: "helper", text: "Include role, format, and constraints\n역할, 형식, 제약 조건을 포함하세요", time: "16:13" },
-            { role: "user", sender: "anna", text: "Can you give an example?\n예시를 들어줄 수 있어요?", time: "16:14" },
-            { role: "agent", sender: "helper", text: "ben: Try: 'Act as a senior developer reviewing code'\nben: 이렇게 해보세요: '코드를 리뷰하는 시니어 개발자 역할을 해줘'", time: "16:15" },
-            { role: "agent", sender: "helper", text: "anna: Instead of 'write about X', try 'write a 500-word blog post about X for beginners, focusing on Y'\nanna: 'X에 대해 써줘' 대신 '초보자를 위한 X에 대한 500단어 블로그 글을 Y에 초점을 맞춰서 써줘'로 해보세요", time: "16:16" },
-            { role: "user", sender: "anna", text: "Oh that makes sense, I'll try that!\n아 그렇구나, 해볼게요!", time: "16:17" },
+            { role: "user", sender: "pm", text: "Reviewing the vendor's deliverable - why did they use MongoDB instead of PostgreSQL?\n외주 결과물 검토 중인데 왜 PostgreSQL 대신 MongoDB를 썼을까요?", time: "15:40" },
+            { role: "user", sender: "dev", text: "Our data has clear relationships, wouldn't relational DB be better?\n우리 데이터는 관계가 명확한데 관계형 DB가 낫지 않나요?", time: "15:41" },
+            { role: "agent", sender: "helper", text: "pm: MongoDB excels at flexible schemas and rapid prototyping\npm: MongoDB는 유연한 스키마와 빠른 프로토타이핑에 강해요", time: "15:42" },
+            { role: "agent", sender: "helper", text: "If requirements were unclear early on, NoSQL makes iteration easier\n초기에 요구사항이 불명확했다면 NoSQL이 변경에 유리해요", time: "15:42" },
+            { role: "user", sender: "pm", text: "But now we need complex joins for reporting. Is migration difficult?\n근데 이제 리포팅에 복잡한 조인이 필요해요. 마이그레이션 어려워요?", time: "15:43" },
+            { role: "agent", sender: "helper", text: "pm: MongoDB can do lookups but they're slower than SQL joins\npm: MongoDB도 lookup 가능하지만 SQL join보다 느려요", time: "15:44" },
+            { role: "agent", sender: "helper", text: "Migration complexity depends on how deeply nested your documents are\n마이그레이션 복잡도는 문서가 얼마나 중첩되어 있는지에 달려요", time: "15:44" },
+            { role: "agent", sender: "helper", text: "Consider hybrid: keep MongoDB for raw data, use PostgreSQL for analytics\n하이브리드 고려: 원시 데이터는 MongoDB, 분석은 PostgreSQL로", time: "15:45" },
         ],
         comparison: [
-            { role: "user", sender: "anna", text: "How do I get better responses from ChatGPT? Mine are always too generic\nChatGPT에서 더 좋은 응답을 얻으려면 어떻게 해요? 제 건 항상 너무 일반적이에요", time: "16:10" },
-            { role: "user", sender: "ben", text: "Same here, it keeps giving me surface-level answers\n저도요, 계속 피상적인 답변만 줘요", time: "16:11" },
-            { role: "user", sender: "chloe", text: "Have you tried being more specific in your prompts?\n프롬프트를 더 구체적으로 해봤어요?", time: "16:12" },
-            { role: "agent", sender: "helper", text: "anna: For expense ratios, under 0.2% is generally good\nanna: 보수율은 보통 0.2% 미만이면 좋아요", time: "16:13" },
-            { role: "user", sender: "anna", text: "Can you give an example?\n예시를 들어줄 수 있어요?", time: "16:14" },
-            { role: "agent", sender: "helper", text: "ben: ETFs trade on the exchange in real-time\nben: ETF는 거래소에서 실시간으로 거래돼요", time: "16:15" },
-            { role: "agent", sender: "helper", text: "Market cap equals share price times outstanding shares\n시가총액은 주가 곱하기 발행주식수예요", time: "16:16" },
-            { role: "user", sender: "anna", text: "Oh that makes sense, I'll try that!\n아 그렇구나, 해볼게요!", time: "16:17" },
+            { role: "user", sender: "pm", text: "Reviewing the vendor's deliverable - why did they use MongoDB instead of PostgreSQL?\n외주 결과물 검토 중인데 왜 PostgreSQL 대신 MongoDB를 썼을까요?", time: "15:40" },
+            { role: "user", sender: "dev", text: "Our data has clear relationships, wouldn't relational DB be better?\n우리 데이터는 관계가 명확한데 관계형 DB가 낫지 않나요?", time: "15:41" },
+            { role: "agent", sender: "helper", text: "MongoDB and PostgreSQL serve different use cases. MongoDB is a NoSQL document database that stores data in JSON-like documents, offering flexible schemas. PostgreSQL is a relational database that uses tables with predefined schemas and supports complex queries with SQL. MongoDB is better for unstructured data and rapid development, while PostgreSQL excels at complex transactions and data integrity. The choice depends on your data structure, query patterns, and scalability requirements. Both databases have their strengths and are widely used in production environments.\nMongoDB와 PostgreSQL은 다른 용도로 사용됩니다. MongoDB는 JSON 형태 문서를 저장하는 NoSQL 문서 데이터베이스로 유연한 스키마를 제공합니다. PostgreSQL은 미리 정의된 스키마의 테이블을 사용하고 SQL로 복잡한 쿼리를 지원하는 관계형 데이터베이스입니다. MongoDB는 비정형 데이터와 빠른 개발에, PostgreSQL은 복잡한 트랜잭션과 데이터 무결성에 적합합니다.", time: "15:42" },
+            { role: "user", sender: "pm", text: "But now we need complex joins for reporting. Is migration difficult?\n근데 이제 리포팅에 복잡한 조인이 필요해요. 마이그레이션 어려워요?", time: "15:43" },
+            { role: "agent", sender: "helper", text: "Migration complexity varies depending on your specific data and requirements.\n마이그레이션 복잡도는 특정 데이터와 요구사항에 따라 다릅니다.", time: "15:44" },
         ]
-    },
-
-    // ============================================
-    // Sets 9-10: Full vs NoChunking (GIF)
-    // ============================================
-
-    // Set 9: LLM usage - API integration
-    {
-        type: "video",
-        comparisonType: "NoChunking",
-        topic: "VM bridged networking setup",
-        topicKo: "VM 브리지 네트워킹 설정",
-        full: {
-            src: "data/gifs/chunking_full_1.mp4",
-            description: "Response split into natural chunks"
-        },
-        comparison: {
-            src: "data/gifs/chunking_nochunk_1.mp4",
-            description: "Single long message"
-        }
-    },
-
-    // Set 10: LLM usage - token optimization
-    {
-        type: "video",
-        comparisonType: "NoChunking",
-        topic: "GRUB/EFI boot repair",
-        topicKo: "GRUB/EFI 부팅 복구",
-        full: {
-            src: "data/gifs/chunking_full_2.mp4",
-            description: "Instructions appear step by step"
-        },
-        comparison: {
-            src: "data/gifs/chunking_nochunk_2.mp4",
-            description: "All instructions in one message"
-        }
     }
 ];
 
 // GIF conversation data for generation script
 const GIF_CONVERSATIONS = {
-    // Set 5: Office work - email writing (timing comparison)
+    // Set 5: Python version conflict (timing comparison)
     timing_1: {
         messages: [
-            { role: "user", sender: "emma", text: "How do I write a professional email asking for a deadline extension?\n마감 연장 요청하는 비즈니스 이메일 어떻게 써요?", ts: 0 },
-            { role: "user", sender: "frank", text: "Also need help with follow-up emails to clients\n저도 클라이언트한테 팔로업 이메일 쓰는 거 도움 필요해요", ts: 2500 },
-            { role: "user", sender: "grace", text: "Be polite but direct is my advice\n공손하지만 직접적으로 쓰라는 게 제 조언이에요", ts: 5000 },
-            { role: "agent", sender: "helper", text: "emma: Start with appreciation for their time\nemma: 먼저 시간 내주신 것에 감사를 표하세요", ts: 9000, noTimingTs: 5100 },
-            { role: "agent", sender: "helper", text: "Then briefly explain the situation\n그다음 상황을 간략히 설명하세요", ts: 11500, noTimingTs: 5200 },
-            { role: "user", sender: "emma", text: "Should I give a specific new date?\n구체적인 새 날짜를 제시해야 할까요?", ts: 14000 },
-            { role: "agent", sender: "helper", text: "emma: Yes, always propose a concrete alternative\nemma: 네, 항상 구체적인 대안을 제시하세요", ts: 18000, noTimingTs: 14100 },
-            { role: "agent", sender: "helper", text: "frank: For follow-ups, reference the previous email\nfrank: 팔로업은 이전 이메일을 언급하세요", ts: 21000, noTimingTs: 14200 },
-            { role: "user", sender: "frank", text: "How long should I wait before following up?\n팔로업하기 전에 얼마나 기다려야 해요?", ts: 24000 },
-            { role: "agent", sender: "helper", text: "frank: 3-5 business days is standard\nfrank: 영업일 기준 3-5일이 표준이에요", ts: 28000, noTimingTs: 24100 },
+            { role: "user", sender: "david", text: "Code that worked on Python 3.8 throws errors on 3.11\nPython 3.8에서 되던 코드가 3.11에서 에러 나요", ts: 0 },
+            { role: "user", sender: "emma", text: "What kind of error?\n어떤 에러인데?", ts: 2500 },
+            { role: "user", sender: "david", text: "AttributeError when importing tensorflow\ntensorflow import할 때 AttributeError요", ts: 5000 },
+            { role: "agent", sender: "helper", text: "david: Your TensorFlow version might not support Python 3.11\ndavid: TensorFlow 버전이 Python 3.11을 지원 안 할 수 있어요", ts: 9000, noTimingTs: 5100 },
+            { role: "agent", sender: "helper", text: "Check version with: pip show tensorflow\n버전 확인: pip show tensorflow", ts: 11500, noTimingTs: 5200 },
+            { role: "user", sender: "david", text: "It says 2.10.0\n2.10.0이래요", ts: 14000 },
+            { role: "agent", sender: "helper", text: "david: TF 2.10 only supports up to Python 3.10\ndavid: TF 2.10은 Python 3.10까지만 지원해요", ts: 18000, noTimingTs: 14100 },
+            { role: "agent", sender: "helper", text: "Upgrade with: pip install tensorflow==2.15.0\n업그레이드: pip install tensorflow==2.15.0", ts: 21000, noTimingTs: 14200 },
+            { role: "user", sender: "david", text: "Works now, thanks!\n됐어요, 감사합니다!", ts: 24000 },
         ]
     },
 
-    // Set 6: Finance - stock terms (timing comparison)
+    // Set 6: Excel VLOOKUP error (timing comparison)
     timing_2: {
         messages: [
-            { role: "user", sender: "henry", text: "What does P/E ratio mean? I see it everywhere\nP/E 비율이 뭐예요? 어디서나 보여요", ts: 0 },
-            { role: "user", sender: "iris", text: "And what's the difference between market cap and enterprise value?\n시가총액이랑 기업가치 차이는 뭐예요?", ts: 2500 },
-            { role: "user", sender: "jack", text: "P/E is price to earnings, basically how expensive the stock is\nP/E는 주가수익비율, 기본적으로 주식이 얼마나 비싼지예요", ts: 5000 },
-            { role: "agent", sender: "helper", text: "henry: P/E = Stock Price ÷ Earnings Per Share\nhenry: P/E = 주가 ÷ 주당순이익", ts: 9000, noTimingTs: 5100 },
-            { role: "agent", sender: "helper", text: "Lower P/E might mean undervalued\n낮은 P/E는 저평가됐을 수 있어요", ts: 11500, noTimingTs: 5200 },
-            { role: "user", sender: "henry", text: "What's a good P/E ratio to look for?\n어느 정도 P/E 비율이 좋은 거예요?", ts: 14000 },
-            { role: "agent", sender: "helper", text: "henry: Depends on industry, but 15-25 is average\nhenry: 산업마다 다르지만, 15-25가 평균이에요", ts: 18000, noTimingTs: 14100 },
-            { role: "agent", sender: "helper", text: "iris: Market cap = share price × shares outstanding\niris: 시가총액 = 주가 × 발행주식수", ts: 21000, noTimingTs: 14200 },
-            { role: "agent", sender: "helper", text: "Enterprise value adds debt, subtracts cash\n기업가치는 부채를 더하고 현금을 빼요", ts: 24000, noTimingTs: 14300 },
-            { role: "user", sender: "iris", text: "So enterprise value is more accurate for comparing?\n그러면 비교할 때 기업가치가 더 정확한 거예요?", ts: 27000 },
-            { role: "agent", sender: "helper", text: "iris: Yes, especially for companies with different debt levels\niris: 네, 특히 부채 수준이 다른 회사들 비교할 때요", ts: 31000, noTimingTs: 27100 },
+            { role: "user", sender: "amy", text: "My VLOOKUP keeps returning #N/A even though the value exists\nVLOOKUP이 값이 있는데도 #N/A가 나와요", ts: 0 },
+            { role: "user", sender: "brian", text: "Are you using exact or approximate match?\n정확히 일치? 근사 일치?", ts: 2500 },
+            { role: "user", sender: "amy", text: "I put TRUE at the end, isn't that exact match?\n끝에 TRUE 넣었는데 그게 정확히 일치 아니에요?", ts: 5000 },
+            { role: "agent", sender: "helper", text: "amy: TRUE means approximate match, use FALSE for exact\namy: TRUE는 근사 일치예요, 정확히 일치는 FALSE 쓰세요", ts: 9000, noTimingTs: 5100 },
+            { role: "agent", sender: "helper", text: "Approximate match also requires sorted data\n근사 일치는 데이터 정렬도 필요해요", ts: 11500, noTimingTs: 5200 },
+            { role: "user", sender: "amy", text: "Changed to FALSE but still not working\nFALSE로 바꿨는데 여전히 안 돼요", ts: 14000 },
+            { role: "agent", sender: "helper", text: "amy: There might be hidden spaces in your cells\namy: 셀에 숨겨진 공백이 있을 수 있어요", ts: 18000, noTimingTs: 14100 },
+            { role: "agent", sender: "helper", text: "Try: =VLOOKUP(TRIM(A1),B:C,2,FALSE)\n시도: =VLOOKUP(TRIM(A1),B:C,2,FALSE)", ts: 21000, noTimingTs: 14200 },
+            { role: "user", sender: "amy", text: "That was it! Hidden spaces were the problem\n그거였어요! 숨겨진 공백이 문제였네요", ts: 24000 },
         ]
-    },
-
-    // Set 9: LLM API integration (chunking comparison)
-    chunking_1: {
-        messages: [
-            { role: "user", sender: "kate", text: "How do I integrate OpenAI API into my Python app?\n내 Python 앱에 OpenAI API 어떻게 연동해요?", ts: 0 },
-            { role: "user", sender: "leo", text: "I'm also trying to figure out streaming responses\n저도 스트리밍 응답 구현하려고 해요", ts: 3000 },
-            { role: "user", sender: "mia", text: "Make sure you don't expose your API key!\nAPI 키 노출하지 않게 조심하세요!", ts: 5500 },
-            { role: "agent", sender: "helper", text: "kate: First, pip install openai\nkate: 먼저, pip install openai", ts: 9000, chunkDelay: 2500 },
-            { role: "agent", sender: "helper", text: "Store your API key in environment variable\nAPI 키는 환경변수에 저장하세요", ts: 11500, chunkDelay: 2500 },
-            { role: "user", sender: "kate", text: "What's the basic code structure?\n기본 코드 구조가 어떻게 돼요?", ts: 14000 },
-            { role: "agent", sender: "helper", text: "kate: Import openai, then client = OpenAI()\nkate: openai를 import하고, client = OpenAI()", ts: 18000, chunkDelay: 2500 },
-            { role: "agent", sender: "helper", text: "Call client.chat.completions.create()\nclient.chat.completions.create() 호출", ts: 20500, chunkDelay: 2500 },
-            { role: "agent", sender: "helper", text: "Pass model='gpt-4' and messages list\nmodel='gpt-4'와 messages 리스트 전달", ts: 23000, chunkDelay: 2500 },
-            { role: "user", sender: "leo", text: "And for streaming?\n스트리밍은요?", ts: 26000 },
-            { role: "agent", sender: "helper", text: "leo: Add stream=True parameter\nleo: stream=True 매개변수 추가", ts: 30000, chunkDelay: 2500 },
-            { role: "agent", sender: "helper", text: "Then iterate over response chunks\n그다음 응답 청크를 반복하세요", ts: 32500, chunkDelay: 2500 },
-        ],
-        fullChunked: true,
-        comparisonSingleMessage: "kate: To integrate OpenAI API into your Python app, first install the package with 'pip install openai'. Store your API key securely in an environment variable (never hardcode it). The basic structure is: import openai, create a client with client = OpenAI(), then call client.chat.completions.create() with model='gpt-4' and a messages list containing your conversation. For streaming responses, add stream=True to the create() call and iterate over the response chunks with a for loop. Example: for chunk in response: print(chunk.choices[0].delta.content). Remember to handle rate limits and errors appropriately.\nkate: Python 앱에 OpenAI API를 연동하려면, 먼저 'pip install openai'로 패키지를 설치하세요. API 키는 환경변수에 안전하게 저장하세요 (절대 하드코딩하지 마세요). 기본 구조는: openai를 import하고, client = OpenAI()로 클라이언트를 생성한 후, model='gpt-4'와 대화가 담긴 messages 리스트로 client.chat.completions.create()를 호출합니다. 스트리밍 응답은 create() 호출에 stream=True를 추가하고 for 루프로 응답 청크를 반복합니다. 예시: for chunk in response: print(chunk.choices[0].delta.content). 속도 제한과 에러를 적절히 처리하는 것을 잊지 마세요."
-    },
-
-    // Set 10: LLM token optimization (chunking comparison)
-    chunking_2: {
-        messages: [
-            { role: "user", sender: "nina", text: "My OpenAI bill is getting expensive. How do I reduce token usage?\nOpenAI 비용이 너무 많이 나와요. 토큰 사용량 어떻게 줄여요?", ts: 0 },
-            { role: "user", sender: "oscar", text: "Same problem here, especially with long conversations\n저도 같은 문제예요, 특히 긴 대화에서요", ts: 3000 },
-            { role: "user", sender: "paul", text: "Have you tried using gpt-3.5-turbo instead of gpt-4?\ngpt-4 대신 gpt-3.5-turbo 써봤어요?", ts: 5500 },
-            { role: "agent", sender: "helper", text: "nina: First, shorten your system prompts\nnina: 먼저, 시스템 프롬프트를 줄이세요", ts: 9000, chunkDelay: 3000 },
-            { role: "agent", sender: "helper", text: "Remove unnecessary instructions\n불필요한 지시사항을 제거하세요", ts: 12000, chunkDelay: 3000 },
-            { role: "user", sender: "nina", text: "What else can I do?\n다른 건 뭐가 있어요?", ts: 15000 },
-            { role: "agent", sender: "helper", text: "nina: Summarize long conversation histories\nnina: 긴 대화 기록은 요약하세요", ts: 19000, chunkDelay: 3000 },
-            { role: "agent", sender: "helper", text: "Only keep recent messages in context\n최근 메시지만 맥락에 유지하세요", ts: 22000, chunkDelay: 3000 },
-            { role: "agent", sender: "helper", text: "oscar: Use max_tokens to limit response length\noscar: max_tokens로 응답 길이를 제한하세요", ts: 25000, chunkDelay: 3000 },
-            { role: "user", sender: "oscar", text: "Does the model choice matter much?\n모델 선택이 많이 중요해요?", ts: 28000 },
-            { role: "agent", sender: "helper", text: "oscar: gpt-3.5-turbo is 10-20x cheaper\noscar: gpt-3.5-turbo가 10-20배 저렴해요", ts: 32000, chunkDelay: 3000 },
-            { role: "agent", sender: "helper", text: "Use gpt-4 only when quality is critical\ngpt-4는 품질이 중요할 때만 쓰세요", ts: 35000, chunkDelay: 3000 },
-        ],
-        fullChunked: true,
-        comparisonSingleMessage: "nina: To reduce OpenAI API token usage and costs: 1) Shorten system prompts - remove verbose instructions and keep only essential guidance, 2) Summarize conversation history - instead of passing entire chat history, summarize older messages and only keep recent ones in full, 3) Set max_tokens parameter to limit response length, 4) Use gpt-3.5-turbo instead of gpt-4 when possible (10-20x cheaper, still good for many tasks), 5) Implement caching for repeated queries, 6) Use tiktoken library to count tokens before sending to estimate costs. For long conversations, consider implementing a sliding window that keeps only the last N messages, or periodically summarize the conversation and start fresh with the summary.\nnina: OpenAI API 토큰 사용량과 비용을 줄이려면: 1) 시스템 프롬프트 줄이기 - 장황한 지시사항을 제거하고 필수적인 안내만 유지, 2) 대화 기록 요약 - 전체 채팅 기록 대신 오래된 메시지를 요약하고 최근 것만 전체로 유지, 3) max_tokens 매개변수로 응답 길이 제한, 4) 가능하면 gpt-4 대신 gpt-3.5-turbo 사용 (10-20배 저렴, 많은 작업에 여전히 좋음), 5) 반복 쿼리에 캐싱 구현, 6) tiktoken 라이브러리로 전송 전 토큰 수를 세어 비용 추정. 긴 대화의 경우 마지막 N개 메시지만 유지하는 슬라이딩 윈도우를 구현하거나, 주기적으로 대화를 요약하고 요약으로 새로 시작하는 것을 고려하세요."
     }
 };
 

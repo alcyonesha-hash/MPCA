@@ -376,125 +376,31 @@ def generate_timing_video(messages, output_path, with_timing=True):
     print(f"Generated: {mp4_path}")
 
 
-def generate_chunking_video(messages, single_response, output_path, with_chunking=True):
-    """
-    Generate video showing chunked vs single response
-    Uses 'chunkDelay' field for chunked timing
-    """
-    os.makedirs(os.path.dirname(output_path), exist_ok=True)
-
-    font = get_font()
-    frames = []
-
-    messages_shown = []
-    last_ts = 0
-
-    if with_chunking:
-        # Show messages with chunked agent responses
-        for i, msg in enumerate(messages):
-            msg_ts = msg.get('ts', i * 2000) * TIMING_MULTIPLIER
-
-            # Calculate delay
-            if i > 0:
-                delay_ms = msg_ts - last_ts
-                delay_seconds = min(delay_ms / 1000.0, 6.0)
-
-                if delay_seconds > 0.1:
-                    delay_frames = int(delay_seconds * FPS)
-                    frame = create_frame(messages_shown, font)
-                    for _ in range(delay_frames):
-                        frames.append(frame)
-
-            last_ts = msg_ts
-
-            messages_shown.append(msg)
-            frame = create_frame(messages_shown, font)
-
-            # Hold time
-            hold_time = calculate_reading_time(msg['text']) * 0.5
-            hold_frames = max(1, int(hold_time * FPS))
-            for _ in range(hold_frames):
-                frames.append(frame)
-    else:
-        # No chunking: user messages appear at same timing as chunked version
-        # Only agent response differs (single long message instead of chunks)
-        for i, msg in enumerate(messages):
-            msg_ts = msg.get('ts', i * 2000) * TIMING_MULTIPLIER
-
-            # Calculate delay
-            if i > 0:
-                delay_ms = msg_ts - last_ts
-                delay_seconds = min(delay_ms / 1000.0, 6.0)
-
-                if delay_seconds > 0.1:
-                    delay_frames = int(delay_seconds * FPS)
-                    frame = create_frame(messages_shown, font)
-                    for _ in range(delay_frames):
-                        frames.append(frame)
-
-            last_ts = msg_ts
-
-            if msg['role'] == 'user':
-                # User messages: same timing as chunked version
-                messages_shown.append(msg)
-                frame = create_frame(messages_shown, font)
-                hold_time = calculate_reading_time(msg['text']) * 0.5
-                hold_frames = max(1, int(hold_time * FPS))
-                for _ in range(hold_frames):
-                    frames.append(frame)
-            else:
-                # Skip agent messages - we'll add single response at the end
-                pass
-
-        # Brief delay then single long response
-        for _ in range(int(1.5 * FPS)):
-            frames.append(create_frame(messages_shown, font))
-
-        # Add single long response
-        single_msg = {'role': 'agent', 'sender': 'helper', 'text': single_response}
-        messages_shown.append(single_msg)
-
-        frame = create_frame(messages_shown, font)
-        hold_time = calculate_reading_time(single_response) * 0.4
-        for _ in range(int(hold_time * FPS)):
-            frames.append(frame)
-
-    # Hold final state
-    for _ in range(int(3 * FPS)):
-        frames.append(frames[-1])
-
-    # Save as MP4 video (no loop issue)
-    mp4_path = output_path.replace('.gif', '.mp4')
-    if not mp4_path.endswith('.mp4'):
-        mp4_path = output_path
-
-    # Use imageio-ffmpeg to save as MP4 with high quality
-    imageio.mimsave(mp4_path, frames, fps=FPS, codec='libx264', quality=9, pixelformat='yuv420p')
-    print(f"Generated: {mp4_path}")
 
 
 def main():
-    """Generate all survey GIFs using real IRC conversation data"""
+    """Generate survey videos for timing comparison (Sets 5 and 6)"""
 
-    print("Generating survey GIFs with real IRC conversations...")
+    print("Generating survey videos for timing comparison...")
     print(f"Output directory: {OUTPUT_DIR}")
 
     # ============================================
-    # Set 5: System suspend/resume + dark theme (timing comparison)
-    # Source: Lines 286-334 from ubuntu_merged.txt
+    # Set 5: Python version library conflicts (timing comparison)
+    # Topic: Python 버전별 라이브러리 충돌
     # ============================================
     timing_1_messages = [
-        {'role': 'user', 'sender': 'arkanoid', 'text': 'My system fails to resume to gnome desktop after suspend. When it resumes gnome shell is a black screen\n절전 모드 후 그놈 데스크톱이 안 켜져요. 검은 화면만 나와요', 'ts': 0},
-        {'role': 'user', 'sender': 'derek-shnosh', 'text': 'In Ubuntu 23.10, some apps are not honoring the dark theme for parts of the window\n우분투 23.10에서 일부 앱이 다크 테마를 적용 안 해요', 'ts': 2000},
-        {'role': 'user', 'sender': 'lotuspsychje', 'text': 'arkanoid: can you share your dmesg with the volunteers please\narkanoid: dmesg 로그 공유해 주세요', 'ts': 4000},
-        {'role': 'agent', 'sender': 'helper', 'text': 'arkanoid: Try loginctl terminate-session\narkanoid: loginctl terminate-session 해보세요', 'ts': 8000, 'noTimingTs': 4100},
-        {'role': 'agent', 'sender': 'helper', 'text': 'This resets the gnome session without reboot\n재부팅 없이 그놈 세션을 재시작해요', 'ts': 10500, 'noTimingTs': 4200},
-        {'role': 'user', 'sender': 'arkanoid', 'text': 'just tried systemctl restart systemd-logind, got visual login back\nsystemctl restart systemd-logind 했더니 로그인 화면 돌아왔어요', 'ts': 13000},
-        {'role': 'user', 'sender': 'ioria', 'text': "derek-shnosh: run in terminal 'G_MESSAGES_DEBUG=all hexchat'\nderek-shnosh: 터미널에서 G_MESSAGES_DEBUG=all hexchat 실행해봐요", 'ts': 15000},
-        {'role': 'agent', 'sender': 'helper', 'text': 'derek-shnosh: Check your gtk-theme setting\nderek-shnosh: gtk-theme 설정 확인해보세요', 'ts': 19000, 'noTimingTs': 15100},
-        {'role': 'user', 'sender': 'derek-shnosh', 'text': 'Figured it out! gtk-theme was set to Yaru-blue, changed to Yaru-blue-dark\n해결! gtk-theme이 Yaru-blue였는데 Yaru-blue-dark로 바꿨어요', 'ts': 23000},
-        {'role': 'agent', 'sender': 'helper', 'text': 'arkanoid: Good, the session restart worked\narkanoid: 세션 재시작이 됐네요', 'ts': 26000, 'noTimingTs': 23100},
-        {'role': 'agent', 'sender': 'helper', 'text': 'This is likely bug #1968907 in gnome-shell\ngnome-shell 버그 #1968907일 가능성이 높아요', 'ts': 28500, 'noTimingTs': 23200},
+        {'role': 'user', 'sender': 'david', 'text': 'Code that worked on Python 3.8 throws errors on 3.11\nPython 3.8에서 되던 코드가 3.11에서 에러 나요', 'ts': 0},
+        {'role': 'user', 'sender': 'emma', 'text': 'I also got the same issue after upgrading\n저도 업그레이드 후에 같은 문제 생겼어요', 'ts': 2500},
+        {'role': 'user', 'sender': 'frank', 'text': 'david: Which packages are you using? Numpy? Pandas?\ndavid: 어떤 패키지 쓰세요? Numpy? Pandas?', 'ts': 5000},
+        {'role': 'agent', 'sender': 'helper', 'text': 'david: This is likely due to deprecated syntax removal\ndavid: 아마 deprecated 문법이 삭제된 것 같아요', 'ts': 9000, 'noTimingTs': 5100},
+        {'role': 'agent', 'sender': 'helper', 'text': 'Check if you\'re using "collections.Callable" - it moved to collections.abc\ncollections.Callable 쓰는지 확인해보세요 - collections.abc로 이동됐어요', 'ts': 12000, 'noTimingTs': 5200},
+        {'role': 'user', 'sender': 'david', 'text': 'Yes! I\'m using some older ML libraries that depend on that\n맞아요! 그걸 사용하는 오래된 ML 라이브러리를 쓰고 있어요', 'ts': 15000},
+        {'role': 'user', 'sender': 'emma', 'text': 'frank: I\'m using scikit-learn and tensorflow\nfrank: scikit-learn이랑 tensorflow 쓰고 있어요', 'ts': 17500},
+        {'role': 'agent', 'sender': 'helper', 'text': 'emma: Check tensorflow version compatibility\nemma: tensorflow 버전 호환성 확인해보세요', 'ts': 21500, 'noTimingTs': 17600},
+        {'role': 'agent', 'sender': 'helper', 'text': 'TF 2.10+ is needed for Python 3.11\nPython 3.11에는 TF 2.10 이상이 필요해요', 'ts': 24500, 'noTimingTs': 17700},
+        {'role': 'user', 'sender': 'frank', 'text': 'You can also try pyenv to manage multiple Python versions\npyenv로 여러 Python 버전을 관리할 수도 있어요', 'ts': 27500},
+        {'role': 'agent', 'sender': 'helper', 'text': 'david: Consider using a virtual environment with Python 3.8\ndavid: Python 3.8로 가상환경 쓰는 것도 고려해보세요', 'ts': 31500, 'noTimingTs': 27600},
+        {'role': 'user', 'sender': 'david', 'text': 'Thanks, I\'ll try creating a separate venv for this project\n감사해요, 이 프로젝트용으로 별도 venv 만들어볼게요', 'ts': 34500},
     ]
 
     generate_timing_video(
@@ -509,22 +415,22 @@ def main():
     )
 
     # ============================================
-    # Set 6: Terminal ctrl-a + phased updates (timing comparison)
-    # Source: Lines 450-499, 623-645 from ubuntu_merged.txt
+    # Set 6: Excel VLOOKUP formula (timing comparison)
+    # Topic: 엑셀 VLOOKUP 수식
     # ============================================
     timing_2_messages = [
-        {'role': 'user', 'sender': 'en1gma', 'text': 'ctrl-a does not copy all in terminal but works in firefox. why?\n터미널에서 ctrl-a가 전체선택이 안 되는데 파이어폭스에선 돼요. 왜죠?', 'ts': 0},
-        {'role': 'user', 'sender': 'ELFrederich', 'text': '7 packages can be upgraded but apt upgrade keeps them back\n7개 패키지 업그레이드 가능한데 apt upgrade가 보류해요', 'ts': 2500},
-        {'role': 'user', 'sender': 'pragmaticenigma', 'text': "ctrl+a doesn't copy anything, it's select all. Terminal doesn't support that command\nctrl+a는 복사가 아니라 전체선택이에요. 터미널은 그 명령을 지원 안 해요", 'ts': 5000},
-        {'role': 'agent', 'sender': 'helper', 'text': 'en1gma: Terminal apps handle shortcuts differently\nen1gma: 터미널 앱은 단축키를 다르게 처리해요', 'ts': 9000, 'noTimingTs': 5100},
-        {'role': 'agent', 'sender': 'helper', 'text': 'ctrl-a in bash moves cursor to line start\nbash에서 ctrl-a는 커서를 줄 처음으로 이동해요', 'ts': 11500, 'noTimingTs': 5200},
-        {'role': 'user', 'sender': 'lotuspsychje', 'text': 'ELFrederich: those are phased updates\nELFrederich: 그건 단계적 업데이트예요', 'ts': 14000},
-        {'role': 'user', 'sender': 'en1gma', 'text': 'i was reading that /etc/bash.bashrc needs to be edited\n/etc/bash.bashrc를 수정해야 한다고 읽었어요', 'ts': 16500},
-        {'role': 'agent', 'sender': 'helper', 'text': 'ELFrederich: Phased updates roll out gradually\nELFrederich: 단계적 업데이트는 점진적으로 배포돼요', 'ts': 20500, 'noTimingTs': 16600},
-        {'role': 'agent', 'sender': 'helper', 'text': "Just wait a few days and they'll be available\n며칠 기다리면 사용 가능해져요", 'ts': 23000, 'noTimingTs': 16700},
-        {'role': 'user', 'sender': 'pragmaticenigma', 'text': "en1gma: don't edit that file, it could break your system\nen1gma: 그 파일 수정하지 마세요, 시스템 망가질 수 있어요", 'ts': 26000},
-        {'role': 'agent', 'sender': 'helper', 'text': "en1gma: Edit ~/.bashrc instead, it's safer\nen1gma: 대신 ~/.bashrc를 수정하세요, 더 안전해요", 'ts': 30000, 'noTimingTs': 26100},
-        {'role': 'user', 'sender': 'en1gma', 'text': 'ok thanks, will try that\n네 감사해요, 해볼게요', 'ts': 33000},
+        {'role': 'user', 'sender': 'grace', 'text': 'My VLOOKUP returns #N/A even though the value exists in the table\nVLOOKUP이 #N/A를 반환하는데 값이 테이블에 분명히 있어요', 'ts': 0},
+        {'role': 'user', 'sender': 'henry', 'text': 'grace: Are you using exact match or approximate match?\ngrace: 정확히 일치로 찾고 있어요? 아니면 유사 일치?', 'ts': 2500},
+        {'role': 'user', 'sender': 'iris', 'text': 'I had the same issue last week, turned out to be extra spaces\n저도 지난주에 같은 문제 있었는데, 공백이 원인이었어요', 'ts': 5000},
+        {'role': 'agent', 'sender': 'helper', 'text': 'grace: Most common cause is trailing spaces in cells\ngrace: 가장 흔한 원인은 셀에 있는 뒤쪽 공백이에요', 'ts': 9000, 'noTimingTs': 5100},
+        {'role': 'agent', 'sender': 'helper', 'text': 'Try wrapping your lookup value with TRIM()\nlookup 값을 TRIM()으로 감싸보세요', 'ts': 12000, 'noTimingTs': 5200},
+        {'role': 'user', 'sender': 'grace', 'text': 'henry: I\'m using FALSE for exact match\nhenry: 정확히 일치하려고 FALSE 쓰고 있어요', 'ts': 15000},
+        {'role': 'user', 'sender': 'henry', 'text': 'Also check if the data types match - text vs number\n데이터 타입도 확인해보세요 - 텍스트 vs 숫자', 'ts': 17500},
+        {'role': 'agent', 'sender': 'helper', 'text': 'grace: You can use =VLOOKUP(TRIM(A1),B:C,2,FALSE)\ngrace: =VLOOKUP(TRIM(A1),B:C,2,FALSE)로 써보세요', 'ts': 21500, 'noTimingTs': 17600},
+        {'role': 'agent', 'sender': 'helper', 'text': 'Or use XLOOKUP if you have Excel 365\n엑셀 365 있으면 XLOOKUP도 좋아요', 'ts': 24500, 'noTimingTs': 17700},
+        {'role': 'user', 'sender': 'iris', 'text': 'XLOOKUP is so much better, no more column index counting\nXLOOKUP 진짜 좋아요, 열 번호 안 세도 돼요', 'ts': 27500},
+        {'role': 'agent', 'sender': 'helper', 'text': 'grace: If it\'s a number stored as text, use VALUE() function\ngrace: 텍스트로 저장된 숫자면 VALUE() 함수 쓰세요', 'ts': 31500, 'noTimingTs': 27600},
+        {'role': 'user', 'sender': 'grace', 'text': 'TRIM() worked! There were invisible spaces. Thank you all!\nTRIM()으로 됐어요! 보이지 않는 공백이 있었네요. 모두 감사해요!', 'ts': 34500},
     ]
 
     generate_timing_video(
@@ -538,76 +444,8 @@ def main():
         with_timing=False
     )
 
-    # ============================================
-    # Set 9: Network bridge setup (chunking comparison)
-    # Source: Lines 521-586 from ubuntu_merged.txt
-    # ============================================
-    chunking_1_messages = [
-        {'role': 'user', 'sender': 'alcosta', 'text': 'I want to setup bridged networking with Virtual Machines on ubuntu 20.04\n우분투 20.04에서 가상머신 브리지 네트워킹 설정하고 싶어요', 'ts': 0},
-        {'role': 'user', 'sender': 'sarnold', 'text': 'usual approach is to create a new bridge, add physical NICs, set IP on bridge\n보통 새 브리지 만들고, 물리 NIC 추가하고, 브리지에 IP 설정해요', 'ts': 3000},
-        {'role': 'user', 'sender': 'leftyfb', 'text': 'alcosta: they should only need a network bridge\nalcosta: 네트워크 브리지만 있으면 돼요', 'ts': 5500},
-        {'role': 'agent', 'sender': 'helper', 'text': 'alcosta: First run nmcli con add ifname br0 type bridge con-name br0\nalcosta: 먼저 nmcli con add ifname br0 type bridge con-name br0 실행', 'ts': 9500},
-        {'role': 'agent', 'sender': 'helper', 'text': 'Then: nmcli con add type bridge-slave ifname enp6s0 master br0\n그다음: nmcli con add type bridge-slave ifname enp6s0 master br0', 'ts': 12500},
-        {'role': 'user', 'sender': 'alcosta', 'text': "Something isn't right, the commands don't match my case\n뭔가 이상해요, 명령어가 제 경우에 안 맞아요", 'ts': 16000},
-        {'role': 'user', 'sender': 'leftyfb', 'text': 'it looks like you did lots of bad things, delete the bridge interfaces\n뭔가 많이 잘못된 것 같네요, 브리지 인터페이스 삭제하세요', 'ts': 18500},
-        {'role': 'agent', 'sender': 'helper', 'text': 'alcosta: Check nmcli con show to see current connections\nalcosta: nmcli con show로 현재 연결 확인하세요', 'ts': 22500},
-        {'role': 'agent', 'sender': 'helper', 'text': 'Delete the broken ones with nmcli con delete <uuid>\n망가진 건 nmcli con delete <uuid>로 삭제하세요', 'ts': 25500},
-        {'role': 'agent', 'sender': 'helper', 'text': 'Then start fresh with the bridge commands\n그다음 브리지 명령어로 새로 시작하세요', 'ts': 28500},
-        {'role': 'user', 'sender': 'alcosta', 'text': 'OK, deleted them. Now what?\n네, 삭제했어요. 이제 뭐해요?', 'ts': 32000},
-        {'role': 'user', 'sender': 'leftyfb', 'text': 'reboot, then br0 should have an IP address\n재부팅하면 br0에 IP 주소가 있을 거예요', 'ts': 34500},
-    ]
-    chunking_1_single = "alcosta: To set up bridged networking, run these commands in order: First, nmcli con add ifname br0 type bridge con-name br0. Then nmcli con add type bridge-slave ifname enp6s0 master br0. If you have existing broken bridge configs, delete them with nmcli con delete <uuid> first. You can check current connections with nmcli con show. After creating the bridge, reboot and br0 should get an IP address. Then configure your VMs to use br0 as the network interface.\nalcosta: 브리지 네트워킹 설정하려면 순서대로: 먼저 nmcli con add ifname br0 type bridge con-name br0. 그다음 nmcli con add type bridge-slave ifname enp6s0 master br0. 기존 브리지 설정이 망가졌으면 nmcli con delete <uuid>로 먼저 삭제. nmcli con show로 현재 연결 확인 가능. 브리지 만든 후 재부팅하면 br0에 IP 주소가 할당돼요. 그다음 VM을 br0 네트워크 인터페이스로 설정하세요."
-
-    generate_chunking_video(
-        chunking_1_messages,
-        chunking_1_single,
-        os.path.join(OUTPUT_DIR, 'chunking_full_1.mp4'),
-        with_chunking=True
-    )
-    generate_chunking_video(
-        chunking_1_messages,
-        chunking_1_single,
-        os.path.join(OUTPUT_DIR, 'chunking_nochunk_1.mp4'),
-        with_chunking=False
-    )
-
-    # ============================================
-    # Set 10: GRUB/EFI boot repair (chunking comparison)
-    # Source: Lines 716-799 from ubuntu_merged.txt
-    # ============================================
-    chunking_2_messages = [
-        {'role': 'user', 'sender': 'cahoots', 'text': 'grub-install gives warning: EFI variables cannot be set on this system\ngrub-install이 경고해요: 이 시스템에서 EFI 변수를 설정할 수 없다고', 'ts': 0},
-        {'role': 'user', 'sender': 'EriC^^', 'text': 'in which mode are you booting? uefi? csm legacy?\n어떤 모드로 부팅하고 있어요? uefi? csm legacy?', 'ts': 3000},
-        {'role': 'user', 'sender': 'cahoots', 'text': "I'm in uefi, csm legacy is disabled\nuefi예요, csm legacy는 비활성화됐어요", 'ts': 6000},
-        {'role': 'agent', 'sender': 'helper', 'text': 'cahoots: First mount your root partition\ncahoots: 먼저 루트 파티션을 마운트하세요', 'ts': 10000},
-        {'role': 'agent', 'sender': 'helper', 'text': 'sudo mount /dev/nvme0n1p3 /mnt\nsudo mount /dev/nvme0n1p3 /mnt', 'ts': 13500},
-        {'role': 'user', 'sender': 'EriC^^', 'text': 'then run the for loop to bind mount /dev /proc /sys /run\n그다음 for 루프로 /dev /proc /sys /run 바인드 마운트하세요', 'ts': 17000},
-        {'role': 'agent', 'sender': 'helper', 'text': 'Next: for i in /dev /proc /sys /run; do sudo mount -R $i /mnt$i; done\n다음: for i in /dev /proc /sys /run; do sudo mount -R $i /mnt$i; done', 'ts': 21000},
-        {'role': 'agent', 'sender': 'helper', 'text': 'Then: sudo chroot /mnt\n그다음: sudo chroot /mnt', 'ts': 24500},
-        {'role': 'user', 'sender': 'cahoots', 'text': "mount /boot/efi says can't find UUID\nmount /boot/efi가 UUID를 찾을 수 없다고 해요", 'ts': 28000},
-        {'role': 'user', 'sender': 'EriC^^', 'text': 'the uuid changed, edit /etc/fstab with the new one from blkid\nuuid가 바뀌었어요, blkid에서 새 uuid로 /etc/fstab 수정하세요', 'ts': 31000},
-        {'role': 'agent', 'sender': 'helper', 'text': 'cahoots: Run blkid to find the new UUID\ncahoots: blkid로 새 UUID 확인하세요', 'ts': 35000},
-        {'role': 'agent', 'sender': 'helper', 'text': 'Update /etc/fstab, then mount /boot/efi\n/etc/fstab 수정하고 mount /boot/efi 하세요', 'ts': 38500},
-        {'role': 'agent', 'sender': 'helper', 'text': 'Finally: grub-install --target=x86_64-efi\n마지막으로: grub-install --target=x86_64-efi', 'ts': 42000},
-        {'role': 'user', 'sender': 'cahoots', 'text': 'installation finished, no error reported!\n설치 완료, 에러 없어요!', 'ts': 46000},
-    ]
-    chunking_2_single = "cahoots: To fix grub installation, follow these steps: Mount your root partition with sudo mount /dev/nvme0n1p3 /mnt. Then bind mount the virtual filesystems with for i in /dev /proc /sys /run; do sudo mount -R $i /mnt$i; done. Chroot into the system with sudo chroot /mnt. If mount /boot/efi fails due to UUID mismatch, run blkid to find the new UUID, update /etc/fstab with the correct UUID, then mount /boot/efi again. Finally run grub-install --target=x86_64-efi to install grub. After that, exit the chroot and reboot.\ncahoots: grub 설치를 수정하려면: sudo mount /dev/nvme0n1p3 /mnt로 루트 파티션 마운트. 그다음 for i in /dev /proc /sys /run; do sudo mount -R $i /mnt$i; done으로 가상 파일시스템 바인드 마운트. sudo chroot /mnt로 시스템에 진입. UUID 불일치로 mount /boot/efi가 실패하면 blkid로 새 UUID 확인, /etc/fstab 수정 후 다시 마운트. 마지막으로 grub-install --target=x86_64-efi로 grub 설치. 그 후 chroot 나와서 재부팅."
-
-    generate_chunking_video(
-        chunking_2_messages,
-        chunking_2_single,
-        os.path.join(OUTPUT_DIR, 'chunking_full_2.mp4'),
-        with_chunking=True
-    )
-    generate_chunking_video(
-        chunking_2_messages,
-        chunking_2_single,
-        os.path.join(OUTPUT_DIR, 'chunking_nochunk_2.mp4'),
-        with_chunking=False
-    )
-
-    print("\nAll GIFs generated successfully!")
-    print(f"Total: 8 GIFs in {OUTPUT_DIR}")
+    print("\nAll videos generated successfully!")
+    print(f"Total: 4 videos in {OUTPUT_DIR}")
 
 
 if __name__ == "__main__":

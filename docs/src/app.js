@@ -36,11 +36,11 @@ class SurveyApp {
     }
 
     generateSetOrder() {
-        // Fixed order: sets 0-9 in sequence, attention check after set 5
+        // Fixed order: sets 0-7 in sequence, attention check after set 4
         const order = [];
         for (let i = 0; i < SURVEY_SETS.length; i++) {
             order.push({ type: 'survey', index: i });
-            if (i === 4) {
+            if (i === 3) {
                 order.push({ type: 'attention' });
             }
         }
@@ -359,7 +359,7 @@ class SurveyApp {
                 this.showScreen('survey');
                 this.loadCurrentSet();
             } else {
-                this.completesurvey();
+                this.completeSurvey();
             }
         }, 500);
     }
