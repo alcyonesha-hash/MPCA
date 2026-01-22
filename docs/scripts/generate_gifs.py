@@ -35,7 +35,22 @@ SENDER_COLOR = (85, 85, 85)
 
 
 def get_font(size=FONT_SIZE):
-    """Get a font, falling back to default if needed"""
+    """Get a font that supports Korean, falling back to default if needed"""
+    # Try Korean-supporting fonts first
+    korean_fonts = [
+        "/System/Library/Fonts/AppleSDGothicNeo.ttc",  # macOS Korean font
+        "/System/Library/Fonts/Supplemental/AppleGothic.ttf",  # macOS fallback
+        "/usr/share/fonts/truetype/nanum/NanumGothic.ttf",  # Linux Korean font
+        "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",  # Linux Noto CJK
+    ]
+
+    for font_path in korean_fonts:
+        try:
+            return ImageFont.truetype(font_path, size)
+        except:
+            continue
+
+    # Fallback to system fonts
     try:
         return ImageFont.truetype("/System/Library/Fonts/Helvetica.ttc", size)
     except:
