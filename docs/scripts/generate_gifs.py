@@ -27,11 +27,11 @@ OUTPUT_DIR = os.path.join(os.path.dirname(__file__), '..', 'data', 'gifs')
 FPS = 15  # Frames per second (higher for smoother video)
 WIDTH = 960  # Higher resolution (divisible by 16)
 HEIGHT = 720  # Higher resolution (divisible by 16)
-FONT_SIZE = 18  # Larger font for better readability
-BUBBLE_PADDING = 12
-MESSAGE_GAP = 18
-AVATAR_SIZE = 40  # Larger avatars
-AVATAR_MARGIN = 12
+FONT_SIZE = 22  # Even larger font for better readability
+BUBBLE_PADDING = 14
+MESSAGE_GAP = 20
+AVATAR_SIZE = 44  # Larger avatars
+AVATAR_MARGIN = 14
 
 # Timing multiplier - higher = slower messages (more natural)
 TIMING_MULTIPLIER = 2.5  # 2.5x slower than before
@@ -134,7 +134,7 @@ def draw_avatar(draw, x, y, username, is_agent=False):
     if len(username) > 1 and username[1].isalpha():
         initials = username[:2].upper()
 
-    font = get_font(14)  # Larger font for avatar initials
+    font = get_font(16)  # Larger font for avatar initials
     bbox = draw.textbbox((0, 0), initials, font=font)
     text_width = bbox[2] - bbox[0]
     text_height = bbox[3] - bbox[1]
@@ -152,7 +152,7 @@ def calculate_message_height(message, font, draw, max_bubble_width):
     ko_text = text_parts[1] if len(text_parts) > 1 else None
 
     en_lines = wrap_text(en_text, font, max_bubble_width - 2 * BUBBLE_PADDING, draw)
-    ko_font = get_font(15)
+    ko_font = get_font(18)
     ko_lines = wrap_text(ko_text, ko_font, max_bubble_width - 2 * BUBBLE_PADDING, draw) if ko_text else []
 
     line_height = font.size + 3
@@ -180,7 +180,7 @@ def draw_message(draw, y_pos, message, font, is_agent=False):
     en_lines = wrap_text(en_text, font, max_bubble_width - 2 * BUBBLE_PADDING, draw)
 
     # Wrap Korean text with smaller font
-    ko_font = get_font(15)  # Slightly smaller font for Korean
+    ko_font = get_font(18)  # Slightly smaller font for Korean
     ko_lines = wrap_text(ko_text, ko_font, max_bubble_width - 2 * BUBBLE_PADDING, draw) if ko_text else []
 
     # Calculate bubble size
@@ -227,7 +227,7 @@ def draw_message(draw, y_pos, message, font, is_agent=False):
     )
 
     # Draw sender name
-    small_font = get_font(12)  # Larger sender name font
+    small_font = get_font(14)  # Larger sender name font
     draw.text((bubble_x + BUBBLE_PADDING, y_pos + 4), sender, font=small_font, fill=SENDER_COLOR if not is_agent else (200, 200, 255))
 
     # Draw English text
