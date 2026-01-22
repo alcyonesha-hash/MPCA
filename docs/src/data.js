@@ -1,14 +1,26 @@
 /**
  * Survey Data - 10 Comparison Sets
  *
- * REAL IRC conversations extracted from Ubuntu IRC channel
- * Multi-party conversations with interleaved threads
+ * Mock conversations for various topics
+ * Each message has English text + Korean translation
  *
  * Structure:
  * - Sets 1-4: Full vs Baseline (text)
- * - Sets 5-6: Full vs (Full - Timing) (GIF)
- * - Sets 7-8: Full vs (Full - Topical Fit) (text)
- * - Sets 9-10: Full vs (Full - Chunking) (GIF)
+ * - Sets 5-6: Full vs NoTiming (GIF)
+ * - Sets 7-8: Full vs NoTopicalFit (text)
+ * - Sets 9-10: Full vs NoChunking (GIF)
+ *
+ * Topics:
+ * 1. Ubuntu (package installation)
+ * 2. Python (pip conflict)
+ * 3. Python (virtual environment)
+ * 4. Office work (Excel formula)
+ * 5. Office work (email writing) - GIF
+ * 6. Finance (stock terms) - GIF
+ * 7. Finance (ETF recommendation)
+ * 8. LLM usage (prompt writing)
+ * 9. LLM usage (API integration) - GIF
+ * 10. LLM usage (token optimization) - GIF
  */
 
 const SURVEY_SETS = [
@@ -16,168 +28,130 @@ const SURVEY_SETS = [
     // Sets 1-4: Full vs Baseline
     // ============================================
 
-    // Set 1: Real IRC - apt/snap chromium discussion + webchat samba issue
-    // Source: Lines 14-26, 206-209 from ubuntu_merged.txt
+    // Set 1: Ubuntu - package installation
     {
         type: "text",
         comparisonType: "Baseline",
-        topic: "package installation and file sharing",
+        topic: "Ubuntu package installation",
         full: [
-            { role: "user", sender: "marcopolo", text: "Guys, can you make apt show deb packages instead of snaps?", time: "06:49" },
-            { role: "user", sender: "webchat47", text: "I get this error when I try and allow others to create and delete files: net usershare add: share name contains invalid characters", time: "06:50" },
-            { role: "user", sender: "ravage", text: "apt only shows apt", time: "06:50" },
-            { role: "user", sender: "marcopolo", text: "it seems like apt repositories only show snaps", time: "06:50" },
-            { role: "agent", sender: "helper", text: "marcopolo: apt doesn't show snaps", time: "06:51 (+3s)" },
-            { role: "agent", sender: "helper", text: "What package are you looking for?", time: "06:51 (+2s)" },
-            { role: "user", sender: "marcopolo", text: "In software center there are only snaps packages", time: "06:51" },
-            { role: "user", sender: "marcopolo", text: "it says transitional package to snap", time: "06:53" },
-            { role: "agent", sender: "helper", text: "webchat47: The error means the share name has invalid chars", time: "06:53 (+4s)" },
-            { role: "agent", sender: "helper", text: "Don't use / in the share name", time: "06:53 (+2s)" },
-            { role: "user", sender: "ravage", text: "that is probably firefox then", time: "06:54" },
-            { role: "user", sender: "marcopolo", text: "no its chromium", time: "06:54" },
-            { role: "agent", sender: "helper", text: "marcopolo: Ubuntu doesn't provide deb versions of chromium anymore", time: "06:54 (+3s)" },
-            { role: "agent", sender: "helper", text: "It's snap only. Same for firefox.", time: "06:54 (+2s)" },
+            { role: "user", sender: "alex", text: "How do I install Chrome on Ubuntu? The software center only shows Chromium.\n우분투에서 크롬 설치하려면 어떻게 해요? 소프트웨어 센터에는 크로미움만 있네요.", time: "14:23" },
+            { role: "user", sender: "maya", text: "Also having issues with my apt - it says some packages are held back\n저도 apt 문제가 있어요 - 일부 패키지가 보류됐다고 나와요", time: "14:24" },
+            { role: "user", sender: "jordan", text: "Chrome isn't in the repos, you need the .deb from Google\n크롬은 저장소에 없어요, 구글에서 .deb 파일 받아야 해요", time: "14:25" },
+            { role: "agent", sender: "helper", text: "alex: Download from google.com/chrome\nalex: google.com/chrome에서 다운로드하세요", time: "14:26" },
+            { role: "agent", sender: "helper", text: "Then run: sudo dpkg -i google-chrome*.deb\n그다음 실행: sudo dpkg -i google-chrome*.deb", time: "14:26" },
+            { role: "user", sender: "alex", text: "Got it, downloading now\n알겠어요, 지금 다운로드 중이에요", time: "14:27" },
+            { role: "agent", sender: "helper", text: "maya: Run sudo apt update first\nmaya: 먼저 sudo apt update 실행해보세요", time: "14:28" },
+            { role: "agent", sender: "helper", text: "Then try sudo apt upgrade\n그다음 sudo apt upgrade 해보세요", time: "14:28" },
+            { role: "user", sender: "maya", text: "The held back packages are still there after update\n업데이트 후에도 보류된 패키지가 그대로예요", time: "14:30" },
+            { role: "agent", sender: "helper", text: "maya: Those are phased updates, just wait a few days\nmaya: 단계적 업데이트예요, 며칠 기다리면 돼요", time: "14:31" },
         ],
         comparison: [
-            { role: "user", sender: "marcopolo", text: "Guys, can you make apt show deb packages instead of snaps?", time: "06:49" },
-            { role: "user", sender: "webchat47", text: "I get this error when I try and allow others to create and delete files: net usershare add: share name contains invalid characters", time: "06:50" },
-            { role: "user", sender: "ravage", text: "apt only shows apt", time: "06:50" },
-            { role: "user", sender: "marcopolo", text: "it seems like apt repositories only show snaps", time: "06:50" },
-            { role: "agent", sender: "helper", text: "Let me address both questions. For the apt/snap issue: apt doesn't show snaps at all - they're separate package managers. When you see 'transitional package to snap' for certain packages like Chromium or Firefox, it means Ubuntu has decided to distribute those applications exclusively as snaps. There's no deb version available in the official repos anymore. You can either use the snap versions, install from a third-party PPA (not recommended), or use flatpak alternatives. For the samba share error: the message 'share name contains invalid characters' means you're using characters that aren't allowed in share names. Characters like %<>*?|/\\+=;:\", are not permitted. Use a simple alphanumeric name without special characters.", time: "06:50 (+0s)" },
-            { role: "user", sender: "marcopolo", text: "In software center there are only snaps packages", time: "06:51" },
-            { role: "user", sender: "marcopolo", text: "it says transitional package to snap", time: "06:53" },
-            { role: "user", sender: "ravage", text: "that is probably firefox then", time: "06:54" },
-            { role: "user", sender: "marcopolo", text: "no its chromium", time: "06:54" },
-            { role: "agent", sender: "helper", text: "Yes, as I mentioned, both Chromium and Firefox are snap-only in Ubuntu now. This was a decision by Canonical to make updates easier and more secure. If you really need a deb version, you'd have to use unofficial PPAs.", time: "06:54 (+0s)" },
+            { role: "user", sender: "alex", text: "How do I install Chrome on Ubuntu? The software center only shows Chromium.\n우분투에서 크롬 설치하려면 어떻게 해요? 소프트웨어 센터에는 크로미움만 있네요.", time: "14:23" },
+            { role: "user", sender: "maya", text: "Also having issues with my apt - it says some packages are held back\n저도 apt 문제가 있어요 - 일부 패키지가 보류됐다고 나와요", time: "14:24" },
+            { role: "user", sender: "jordan", text: "Chrome isn't in the repos, you need the .deb from Google\n크롬은 저장소에 없어요, 구글에서 .deb 파일 받아야 해요", time: "14:25" },
+            { role: "agent", sender: "helper", text: "For Chrome installation: Google Chrome is not available in Ubuntu's official repositories because it's proprietary software. You need to download the .deb package directly from google.com/chrome. Once downloaded, install it using 'sudo dpkg -i google-chrome-stable_current_amd64.deb'. If there are dependency errors, run 'sudo apt -f install' to fix them. For the held back packages issue: This is normal behavior called 'phased updates' where Ubuntu gradually rolls out updates to detect issues. Run 'sudo apt update' followed by 'sudo apt upgrade'. If packages are still held back, you can either wait a few days or force the upgrade with 'sudo apt full-upgrade', though waiting is recommended.\n크롬 설치: 구글 크롬은 독점 소프트웨어라 우분투 공식 저장소에 없습니다. google.com/chrome에서 .deb 패키지를 직접 다운로드해야 합니다. 다운로드 후 'sudo dpkg -i google-chrome-stable_current_amd64.deb'로 설치하세요. 의존성 오류가 있으면 'sudo apt -f install'로 해결하세요. 보류된 패키지 문제: 이것은 우분투가 문제를 감지하기 위해 점진적으로 업데이트를 배포하는 '단계적 업데이트'라는 정상적인 동작입니다. 'sudo apt update' 후 'sudo apt upgrade'를 실행하세요. 여전히 보류되면 며칠 기다리거나 'sudo apt full-upgrade'로 강제 업그레이드할 수 있지만, 기다리는 것을 권장합니다.", time: "14:25" },
+            { role: "user", sender: "alex", text: "Got it, downloading now\n알겠어요, 지금 다운로드 중이에요", time: "14:27" },
+            { role: "user", sender: "maya", text: "The held back packages are still there after update\n업데이트 후에도 보류된 패키지가 그대로예요", time: "14:30" },
+            { role: "agent", sender: "helper", text: "As I mentioned, phased updates are normal. Just wait a few days.\n말씀드렸듯이, 단계적 업데이트는 정상입니다. 며칠만 기다리세요.", time: "14:31" },
         ]
     },
 
-    // Set 2: Real IRC - Nano text wrapping discussion
-    // Source: Lines 70-82 from ubuntu_merged.txt
+    // Set 2: Python - pip conflict
     {
         type: "text",
         comparisonType: "Baseline",
-        topic: "nano editor line wrapping",
+        topic: "Python pip dependency conflict",
         full: [
-            { role: "user", sender: "charles_", text: "Does anyone know how to cause the text editor Nano to show the whole line of text, I think they call it scrolling?", time: "15:33" },
-            { role: "user", sender: "leftyfb", text: "charles_ https://blog.wplauncher.com/line-wrapping-in-nano-editor/", time: "15:35" },
-            { role: "user", sender: "charles_", text: "thanks leftyfb!", time: "15:36" },
-            { role: "agent", sender: "helper", text: "charles_: You can use -w flag to disable wrapping", time: "15:37 (+4s)" },
-            { role: "agent", sender: "helper", text: "Or set softwrap in nanorc", time: "15:37 (+2s)" },
-            { role: "user", sender: "PeGaSuS", text: "still, be careful with line wrapping when copying text, because what's on the next line is copied as a newline", time: "15:38" },
-            { role: "user", sender: "charles_", text: "interesting, PeGaSuS", time: "15:44" },
-            { role: "user", sender: "PeGaSuS", text: "and be especially careful when editing config files or soft-wrap might break them", time: "15:45" },
-            { role: "user", sender: "charles_", text: "usually on Nano I send out blocks by Ctrl+O, do you think scrolled lines might appear as separate lines?", time: "15:46" },
-            { role: "agent", sender: "helper", text: "charles_: The wrap is visual only for saving", time: "15:47 (+5s)" },
-            { role: "agent", sender: "helper", text: "It affects copy/paste but not the file itself", time: "15:47 (+2s)" },
-            { role: "user", sender: "PeGaSuS", text: "I don't think so. I remember it only affected copy/paste when selecting with the mouse", time: "15:50" },
-            { role: "user", sender: "PeGaSuS", text: "as far as nano is aware, when you use Ctrl+K/U the file doesn't have lines wrapped", time: "15:53" },
+            { role: "user", sender: "sam", text: "pip install keeps failing with dependency conflicts between numpy and pandas\npip install이 numpy랑 pandas 의존성 충돌로 계속 실패해요", time: "10:15" },
+            { role: "user", sender: "taylor", text: "What versions are you trying to install?\n어떤 버전을 설치하려고 해요?", time: "10:16" },
+            { role: "user", sender: "sam", text: "numpy 1.21 and pandas 2.0\nnumpy 1.21이랑 pandas 2.0이요", time: "10:17" },
+            { role: "agent", sender: "helper", text: "sam: pandas 2.0 needs numpy >= 1.23\nsam: pandas 2.0은 numpy 1.23 이상이 필요해요", time: "10:18" },
+            { role: "agent", sender: "helper", text: "Either upgrade numpy or use pandas 1.5\nnumpy를 업그레이드하거나 pandas 1.5를 쓰세요", time: "10:18" },
+            { role: "user", sender: "riley", text: "I had the same issue last week\n저도 지난주에 같은 문제 있었어요", time: "10:19" },
+            { role: "user", sender: "sam", text: "But my other package needs numpy < 1.22\n근데 다른 패키지가 numpy 1.22 미만을 필요로 해요", time: "10:20" },
+            { role: "agent", sender: "helper", text: "sam: Then you need separate virtual environments\nsam: 그러면 가상환경을 분리해야 해요", time: "10:21" },
+            { role: "agent", sender: "helper", text: "One for each incompatible project\n호환 안 되는 프로젝트마다 하나씩요", time: "10:21" },
+            { role: "user", sender: "sam", text: "Makes sense, thanks!\n이해됐어요, 감사합니다!", time: "10:22" },
         ],
         comparison: [
-            { role: "user", sender: "charles_", text: "Does anyone know how to cause the text editor Nano to show the whole line of text, I think they call it scrolling?", time: "15:33" },
-            { role: "user", sender: "leftyfb", text: "charles_ https://blog.wplauncher.com/line-wrapping-in-nano-editor/", time: "15:35" },
-            { role: "user", sender: "charles_", text: "thanks leftyfb!", time: "15:36" },
-            { role: "agent", sender: "helper", text: "For nano line wrapping/scrolling: You can disable hard wrapping with the -w flag when starting nano ('nano -w filename'), or enable soft wrapping which allows horizontal scrolling. To make this permanent, add 'set nowrap' or 'set softwrap' to your ~/.nanorc file. Be aware that soft wrapping is purely visual - it doesn't actually add newlines to your file. However, when you copy text from a wrapped display using the mouse and system clipboard (Ctrl+Shift+C), the visual line breaks may be included. When using nano's internal cut/paste (Ctrl+K and Ctrl+U), the wrapping doesn't affect the actual content since nano knows the real line structure.", time: "15:36 (+0s)" },
-            { role: "user", sender: "PeGaSuS", text: "still, be careful with line wrapping when copying text, because what's on the next line is copied as a newline", time: "15:38" },
-            { role: "user", sender: "charles_", text: "interesting, PeGaSuS", time: "15:44" },
-            { role: "user", sender: "PeGaSuS", text: "and be especially careful when editing config files or soft-wrap might break them", time: "15:45" },
-            { role: "user", sender: "charles_", text: "usually on Nano I send out blocks by Ctrl+O, do you think scrolled lines might appear as separate lines?", time: "15:46" },
-            { role: "user", sender: "PeGaSuS", text: "I don't think so. I remember it only affected copy/paste when selecting with the mouse", time: "15:50" },
-            { role: "user", sender: "PeGaSuS", text: "as far as nano is aware, when you use Ctrl+K/U the file doesn't have lines wrapped", time: "15:53" },
-            { role: "agent", sender: "helper", text: "Exactly as mentioned earlier, the wrapping is visual only. Nano's internal operations work on the actual file content, not the displayed representation.", time: "15:53 (+0s)" },
+            { role: "user", sender: "sam", text: "pip install keeps failing with dependency conflicts between numpy and pandas\npip install이 numpy랑 pandas 의존성 충돌로 계속 실패해요", time: "10:15" },
+            { role: "user", sender: "taylor", text: "What versions are you trying to install?\n어떤 버전을 설치하려고 해요?", time: "10:16" },
+            { role: "user", sender: "sam", text: "numpy 1.21 and pandas 2.0\nnumpy 1.21이랑 pandas 2.0이요", time: "10:17" },
+            { role: "agent", sender: "helper", text: "The dependency conflict occurs because pandas 2.0 requires numpy version 1.23 or higher, but you're trying to install numpy 1.21. You have several options: 1) Upgrade numpy to 1.23+ with 'pip install numpy>=1.23 pandas==2.0', 2) Downgrade pandas to 1.5.x which supports older numpy with 'pip install numpy==1.21 pandas==1.5.3', 3) If you have conflicting requirements from different packages, create separate virtual environments for each project using 'python -m venv env_name'. You can also use pip's dependency resolver with 'pip install --use-feature=2020-resolver' for better conflict resolution. Check the exact requirements with 'pip show pandas' to see version constraints.\n의존성 충돌은 pandas 2.0이 numpy 1.23 이상을 요구하는데 numpy 1.21을 설치하려고 해서 발생합니다. 여러 옵션이 있습니다: 1) 'pip install numpy>=1.23 pandas==2.0'으로 numpy를 1.23+로 업그레이드, 2) 'pip install numpy==1.21 pandas==1.5.3'으로 이전 numpy를 지원하는 pandas 1.5.x로 다운그레이드, 3) 다른 패키지에서 충돌하는 요구사항이 있으면 'python -m venv env_name'으로 각 프로젝트별 가상환경을 만드세요. 'pip install --use-feature=2020-resolver'로 pip의 의존성 해결기를 사용할 수도 있습니다. 'pip show pandas'로 정확한 요구사항을 확인하세요.", time: "10:17" },
+            { role: "user", sender: "riley", text: "I had the same issue last week\n저도 지난주에 같은 문제 있었어요", time: "10:19" },
+            { role: "user", sender: "sam", text: "But my other package needs numpy < 1.22\n근데 다른 패키지가 numpy 1.22 미만을 필요로 해요", time: "10:20" },
+            { role: "agent", sender: "helper", text: "As mentioned, use separate virtual environments for incompatible projects.\n말씀드렸듯이, 호환되지 않는 프로젝트는 별도 가상환경을 사용하세요.", time: "10:21" },
+            { role: "user", sender: "sam", text: "Makes sense, thanks!\n이해됐어요, 감사합니다!", time: "10:22" },
         ]
     },
 
-    // Set 3: Real IRC - DHCP/DNS domain search + network speed issues
-    // Source: Lines 87-103, 432-448 from ubuntu_merged.txt
+    // Set 3: Python - virtual environment
     {
         type: "text",
         comparisonType: "Baseline",
-        topic: "network configuration issues",
+        topic: "Python virtual environment setup",
         full: [
-            { role: "user", sender: "Tabmow", text: "My DHCP server is set with a domain search that works fine on Windows, but doesn't seem to work on my ubuntu machine", time: "17:10" },
-            { role: "user", sender: "Guest24", text: "just need to know if settings/network/wired shows 100mbs does this mean my network driver will not connect higher speed?", time: "17:11" },
-            { role: "user", sender: "rbox", text: "Tabmow: what doesn't work?", time: "17:13" },
-            { role: "user", sender: "Tabmow", text: "My local domain - if I ping blah.local it works, but if I ping blah it does not", time: "17:18" },
-            { role: "agent", sender: "helper", text: "Guest24: That shows the negotiated link speed", time: "17:18 (+4s)" },
-            { role: "agent", sender: "helper", text: "Could be cable or switch issue", time: "17:18 (+2s)" },
-            { role: "user", sender: "rbox", text: ".local is gonna conflict with multicast dns", time: "17:19" },
-            { role: "user", sender: "Tabmow", text: "That was an example", time: "17:19" },
-            { role: "user", sender: "rbox", text: "what does /etc/resolv.conf say", time: "17:19" },
-            { role: "user", sender: "Tabmow", text: "It has 'search .'", time: "17:20" },
-            { role: "agent", sender: "helper", text: "Tabmow: Check resolvectl status", time: "17:20 (+3s)" },
-            { role: "agent", sender: "helper", text: "It should list dns domain from DHCP", time: "17:20 (+2s)" },
-            { role: "user", sender: "Tabmow", text: "resolvectl status mentions the correct DNS but doesn't say anything about search domains", time: "17:22" },
-            { role: "user", sender: "mybalzitch", text: "Guest24: Some drivers don't autonegotiate properly so you have to force it to 1000 mbps", time: "17:22" },
+            { role: "user", sender: "jamie", text: "How do I set up a virtual environment? I keep messing up my global packages\n가상환경 어떻게 설정해요? 전역 패키지를 계속 망치고 있어요", time: "15:40" },
+            { role: "user", sender: "casey", text: "Are you on Windows or Mac?\n윈도우예요 맥이에요?", time: "15:41" },
+            { role: "user", sender: "jamie", text: "Windows 11\n윈도우 11이요", time: "15:41" },
+            { role: "agent", sender: "helper", text: "jamie: Run python -m venv myenv\njamie: python -m venv myenv 실행하세요", time: "15:42" },
+            { role: "agent", sender: "helper", text: "Then activate with myenv\\Scripts\\activate\n그다음 myenv\\Scripts\\activate로 활성화", time: "15:42" },
+            { role: "user", sender: "morgan", text: "Don't forget to add myenv to .gitignore!\nmyenv를 .gitignore에 추가하는 거 잊지 마세요!", time: "15:43" },
+            { role: "user", sender: "jamie", text: "It says 'running scripts is disabled on this system'\n'이 시스템에서 스크립트 실행이 비활성화되어 있습니다'래요", time: "15:44" },
+            { role: "agent", sender: "helper", text: "jamie: PowerShell execution policy issue\njamie: PowerShell 실행 정책 문제예요", time: "15:45" },
+            { role: "agent", sender: "helper", text: "Run: Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned\n실행: Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned", time: "15:45" },
+            { role: "user", sender: "jamie", text: "That worked! Thanks everyone\n됐어요! 다들 감사해요", time: "15:47" },
         ],
         comparison: [
-            { role: "user", sender: "Tabmow", text: "My DHCP server is set with a domain search that works fine on Windows, but doesn't seem to work on my ubuntu machine", time: "17:10" },
-            { role: "user", sender: "Guest24", text: "just need to know if settings/network/wired shows 100mbs does this mean my network driver will not connect higher speed?", time: "17:11" },
-            { role: "user", sender: "rbox", text: "Tabmow: what doesn't work?", time: "17:13" },
-            { role: "user", sender: "Tabmow", text: "My local domain - if I ping blah.local it works, but if I ping blah it does not", time: "17:18" },
-            { role: "agent", sender: "helper", text: "Let me address both issues. For the DHCP domain search problem: Ubuntu uses systemd-resolved for DNS, which handles search domains differently than Windows. Check /etc/resolv.conf to see what's configured (it should be a symlink to systemd's stub resolver). Run 'resolvectl status' to see if the search domain is being received from DHCP. If it shows 'search .' that means no search domain is set. Also note that .local domains can conflict with mDNS (Avahi). For the network speed showing 100Mbps: this is the negotiated link speed between your NIC and switch/router. It could indicate a cable issue (bad cable, only 2 pairs connected), switch port problem, or driver autonegotiation issues. Try a different cable or port. Some drivers need manual speed configuration via ethtool.", time: "17:13 (+0s)" },
-            { role: "user", sender: "rbox", text: ".local is gonna conflict with multicast dns", time: "17:19" },
-            { role: "user", sender: "Tabmow", text: "That was an example", time: "17:19" },
-            { role: "user", sender: "rbox", text: "what does /etc/resolv.conf say", time: "17:19" },
-            { role: "user", sender: "Tabmow", text: "It has 'search .'", time: "17:20" },
-            { role: "user", sender: "Tabmow", text: "resolvectl status mentions the correct DNS but doesn't say anything about search domains", time: "17:22" },
-            { role: "user", sender: "mybalzitch", text: "Guest24: Some drivers don't autonegotiate properly so you have to force it to 1000 mbps", time: "17:22" },
-            { role: "agent", sender: "helper", text: "As I mentioned, use resolvectl status to check. If search domain isn't showing, your DHCP server might not be sending it properly, or NetworkManager isn't processing it correctly.", time: "17:22 (+0s)" },
+            { role: "user", sender: "jamie", text: "How do I set up a virtual environment? I keep messing up my global packages\n가상환경 어떻게 설정해요? 전역 패키지를 계속 망치고 있어요", time: "15:40" },
+            { role: "user", sender: "casey", text: "Are you on Windows or Mac?\n윈도우예요 맥이에요?", time: "15:41" },
+            { role: "user", sender: "jamie", text: "Windows 11\n윈도우 11이요", time: "15:41" },
+            { role: "agent", sender: "helper", text: "To set up a Python virtual environment on Windows 11: 1) Open PowerShell or Command Prompt, 2) Navigate to your project folder with 'cd your_project', 3) Create the virtual environment with 'python -m venv myenv' (myenv is the folder name), 4) Activate it with 'myenv\\Scripts\\activate' (PowerShell) or 'myenv\\Scripts\\activate.bat' (CMD). Your prompt will show (myenv) when activated. If you get an error about scripts being disabled, run 'Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned' in PowerShell as administrator. To deactivate, just type 'deactivate'. Always add the venv folder to .gitignore to avoid committing it. You can also use 'pip freeze > requirements.txt' to save your dependencies.\nWindows 11에서 Python 가상환경 설정: 1) PowerShell 또는 명령 프롬프트 열기, 2) 'cd your_project'로 프로젝트 폴더로 이동, 3) 'python -m venv myenv'로 가상환경 생성 (myenv는 폴더 이름), 4) 'myenv\\Scripts\\activate' (PowerShell) 또는 'myenv\\Scripts\\activate.bat' (CMD)로 활성화. 활성화되면 프롬프트에 (myenv)가 표시됩니다. 스크립트 비활성화 오류가 나면 PowerShell에서 관리자 권한으로 'Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned' 실행하세요. 비활성화는 'deactivate' 입력. venv 폴더는 항상 .gitignore에 추가하세요. 'pip freeze > requirements.txt'로 의존성을 저장할 수 있습니다.", time: "15:41" },
+            { role: "user", sender: "morgan", text: "Don't forget to add myenv to .gitignore!\nmyenv를 .gitignore에 추가하는 거 잊지 마세요!", time: "15:43" },
+            { role: "user", sender: "jamie", text: "It says 'running scripts is disabled on this system'\n'이 시스템에서 스크립트 실행이 비활성화되어 있습니다'래요", time: "15:44" },
+            { role: "agent", sender: "helper", text: "As I mentioned, run the Set-ExecutionPolicy command to fix the script execution error.\n말씀드렸듯이, Set-ExecutionPolicy 명령어로 스크립트 실행 오류를 해결하세요.", time: "15:45" },
+            { role: "user", sender: "jamie", text: "That worked! Thanks everyone\n됐어요! 다들 감사해요", time: "15:47" },
         ]
     },
 
-    // Set 4: Real IRC - Obsidian installation troubleshooting
-    // Source: Lines 204-249 from ubuntu_merged.txt
+    // Set 4: Office work - Excel formula
     {
         type: "text",
         comparisonType: "Baseline",
-        topic: "application installation troubleshooting",
+        topic: "Excel VLOOKUP formula",
         full: [
-            { role: "user", sender: "chirpingbird", text: "There's a program I installed a year ago and pinned to my dash bar, but I cannot remember if I installed it via a .deb or through snap", time: "22:16" },
-            { role: "user", sender: "chirpingbird", text: "Is there an easy way to find that information?", time: "22:16" },
-            { role: "user", sender: "rbox", text: "well just look at whats installed in dpkg and snap", time: "22:17" },
-            { role: "agent", sender: "helper", text: "chirpingbird: Check ~/.local/share/applications/", time: "22:18 (+4s)" },
-            { role: "agent", sender: "helper", text: "Look for .desktop files with Exec line", time: "22:18 (+2s)" },
-            { role: "user", sender: "chirpingbird", text: "I went to the directory and ran grep -rni 'obsidian' but didn't see anything", time: "22:23" },
-            { role: "user", sender: "EriC^^", text: "chirpingbird: try dpkg -l | grep obsidian", time: "22:25" },
-            { role: "user", sender: "chirpingbird", text: "I did get something for dpkg! It shows: rc obsidian 1.5.3", time: "22:28" },
-            { role: "agent", sender: "helper", text: "chirpingbird: 'rc' means removed but config remains", time: "22:29 (+5s)" },
-            { role: "user", sender: "EriC^^", text: "that means it's been removed but the config files are still there", time: "22:29" },
-            { role: "user", sender: "oerheks", text: "appimage?", time: "22:32" },
-            { role: "user", sender: "chirpingbird", text: "snap list | grep obsidian shows empty", time: "22:32" },
-            { role: "agent", sender: "helper", text: "oerheks: Good thought. Check ~/bin for AppImage", time: "22:33 (+3s)" },
-            { role: "user", sender: "EriC^^", text: "if you want try pressing the dash icon, and with it running look at ps -e", time: "22:35" },
-            { role: "user", sender: "chirpingbird", text: "It points to an AppImage! /home/chirpingbird/bin/Obsidian-0.15.6.AppImage", time: "22:38" },
-            { role: "user", sender: "chirpingbird", text: "Thank you so much! I have the information I needed!", time: "22:39" },
+            { role: "user", sender: "chris", text: "My VLOOKUP keeps returning #N/A even though the value exists\nVLOOKUP이 값이 있는데도 계속 #N/A를 반환해요", time: "09:30" },
+            { role: "user", sender: "pat", text: "Are you using exact match or approximate?\n정확히 일치로 하고 있어요, 근사치로 하고 있어요?", time: "09:31" },
+            { role: "user", sender: "chris", text: "I think exact match? I have TRUE at the end\n정확히 일치인 것 같아요? 끝에 TRUE 넣었어요", time: "09:32" },
+            { role: "agent", sender: "helper", text: "chris: TRUE means approximate match\nchris: TRUE는 근사 일치예요", time: "09:33" },
+            { role: "agent", sender: "helper", text: "Use FALSE for exact match\n정확히 일치는 FALSE를 쓰세요", time: "09:33" },
+            { role: "user", sender: "drew", text: "Also check for extra spaces in your data\n데이터에 여분의 공백이 있는지도 확인해보세요", time: "09:34" },
+            { role: "user", sender: "chris", text: "Changed to FALSE but still not working\nFALSE로 바꿨는데 여전히 안 돼요", time: "09:35" },
+            { role: "agent", sender: "helper", text: "chris: Try wrapping lookup value with TRIM()\nchris: 찾는 값을 TRIM()으로 감싸보세요", time: "09:36" },
+            { role: "agent", sender: "helper", text: "=VLOOKUP(TRIM(A1),B:C,2,FALSE)\n=VLOOKUP(TRIM(A1),B:C,2,FALSE)", time: "09:36" },
+            { role: "user", sender: "chris", text: "That was it! Hidden spaces were the problem\n그거였어요! 숨겨진 공백이 문제였네요", time: "09:38" },
         ],
         comparison: [
-            { role: "user", sender: "chirpingbird", text: "There's a program I installed a year ago and pinned to my dash bar, but I cannot remember if I installed it via a .deb or through snap", time: "22:16" },
-            { role: "user", sender: "chirpingbird", text: "Is there an easy way to find that information?", time: "22:16" },
-            { role: "user", sender: "rbox", text: "well just look at whats installed in dpkg and snap", time: "22:17" },
-            { role: "agent", sender: "helper", text: "To find out how an application was installed, there are several methods: 1) Check dpkg with 'dpkg -l | grep appname' - if it shows 'ii' status, it's installed via apt/deb. If 'rc' status, it was installed but removed (configs remain). 2) Check snap with 'snap list | grep appname'. 3) Check flatpak with 'flatpak list | grep appname'. 4) For AppImages, check your home directory, typically ~/Applications or ~/bin. 5) Desktop files in ~/.local/share/applications/ contain the Exec path which reveals the location. 6) You can also run the app and check 'ps aux | grep appname' to see the process path. The 'which appname' or 'whereis appname' commands can also help locate binaries.", time: "22:17 (+0s)" },
-            { role: "user", sender: "chirpingbird", text: "I went to the directory and ran grep -rni 'obsidian' but didn't see anything", time: "22:23" },
-            { role: "user", sender: "EriC^^", text: "chirpingbird: try dpkg -l | grep obsidian", time: "22:25" },
-            { role: "user", sender: "chirpingbird", text: "I did get something for dpkg! It shows: rc obsidian 1.5.3", time: "22:28" },
-            { role: "user", sender: "EriC^^", text: "that means it's been removed but the config files are still there", time: "22:29" },
-            { role: "user", sender: "oerheks", text: "appimage?", time: "22:32" },
-            { role: "user", sender: "chirpingbird", text: "snap list | grep obsidian shows empty", time: "22:32" },
-            { role: "user", sender: "EriC^^", text: "if you want try pressing the dash icon, and with it running look at ps -e", time: "22:35" },
-            { role: "user", sender: "chirpingbird", text: "It points to an AppImage! /home/chirpingbird/bin/Obsidian-0.15.6.AppImage", time: "22:38" },
-            { role: "user", sender: "chirpingbird", text: "Thank you so much! I have the information I needed!", time: "22:39" },
-            { role: "agent", sender: "helper", text: "Great, as I mentioned earlier, AppImages are often stored in home directories. The process of checking running processes is a reliable way to find the actual executable path.", time: "22:39 (+0s)" },
+            { role: "user", sender: "chris", text: "My VLOOKUP keeps returning #N/A even though the value exists\nVLOOKUP이 값이 있는데도 계속 #N/A를 반환해요", time: "09:30" },
+            { role: "user", sender: "pat", text: "Are you using exact match or approximate?\n정확히 일치로 하고 있어요, 근사치로 하고 있어요?", time: "09:31" },
+            { role: "user", sender: "chris", text: "I think exact match? I have TRUE at the end\n정확히 일치인 것 같아요? 끝에 TRUE 넣었어요", time: "09:32" },
+            { role: "agent", sender: "helper", text: "The VLOOKUP #N/A error with TRUE at the end is a common mistake. In VLOOKUP syntax =VLOOKUP(lookup_value, table_array, col_index, [range_lookup]), the last parameter TRUE means approximate match (data must be sorted), while FALSE means exact match. For exact matching, always use FALSE. Other common causes of #N/A: 1) Extra spaces - use TRIM() on your lookup value like =VLOOKUP(TRIM(A1),B:C,2,FALSE), 2) Different data types - numbers stored as text vs actual numbers, use VALUE() or TEXT() to convert, 3) The lookup value is in a column to the right of the return column - VLOOKUP only searches leftmost column, 4) Table array doesn't include the lookup column. Consider using INDEX/MATCH or XLOOKUP (Excel 365) for more flexibility.\nVLOOKUP에서 끝에 TRUE를 넣고 #N/A 오류가 나는 것은 흔한 실수입니다. VLOOKUP 문법 =VLOOKUP(찾는값, 테이블범위, 열번호, [범위검색])에서 마지막 매개변수 TRUE는 근사 일치(데이터 정렬 필요), FALSE는 정확히 일치입니다. 정확한 일치에는 항상 FALSE를 사용하세요. #N/A의 다른 원인: 1) 여분의 공백 - =VLOOKUP(TRIM(A1),B:C,2,FALSE)처럼 TRIM() 사용, 2) 다른 데이터 유형 - 텍스트로 저장된 숫자 vs 실제 숫자, VALUE() 또는 TEXT()로 변환, 3) 찾는 값이 반환 열의 오른쪽에 있음 - VLOOKUP은 맨 왼쪽 열만 검색, 4) 테이블 범위에 검색 열이 포함되지 않음. 더 유연하게 INDEX/MATCH 또는 XLOOKUP(Excel 365)을 고려하세요.", time: "09:32" },
+            { role: "user", sender: "drew", text: "Also check for extra spaces in your data\n데이터에 여분의 공백이 있는지도 확인해보세요", time: "09:34" },
+            { role: "user", sender: "chris", text: "Changed to FALSE but still not working\nFALSE로 바꿨는데 여전히 안 돼요", time: "09:35" },
+            { role: "agent", sender: "helper", text: "As I mentioned, try TRIM() to remove hidden spaces.\n말씀드렸듯이, TRIM()으로 숨겨진 공백을 제거해보세요.", time: "09:36" },
+            { role: "user", sender: "chris", text: "That was it! Hidden spaces were the problem\n그거였어요! 숨겨진 공백이 문제였네요", time: "09:38" },
         ]
     },
 
     // ============================================
-    // Sets 5-6: Full vs No Timing (GIF)
+    // Sets 5-6: Full vs NoTiming (GIF)
     // ============================================
 
-    // Set 5: Real IRC - System suspend/resume + dark theme (interleaved)
-    // Source: Lines 286-334 from ubuntu_merged.txt
+    // Set 5: Office work - email writing
     {
         type: "gif",
         comparisonType: "NoTiming",
-        topic: "system issues troubleshooting",
+        topic: "professional email writing",
         full: {
             src: "data/gifs/timing_full_1.gif",
             description: "Messages appear with natural delays"
@@ -188,12 +162,11 @@ const SURVEY_SETS = [
         }
     },
 
-    // Set 6: Real IRC - Terminal ctrl-a and phased updates
-    // Source: Lines 450-499, 623-645 from ubuntu_merged.txt
+    // Set 6: Finance - stock terms
     {
         type: "gif",
         comparisonType: "NoTiming",
-        topic: "terminal and package updates",
+        topic: "stock market terminology",
         full: {
             src: "data/gifs/timing_full_2.gif",
             description: "Messages appear with natural delays"
@@ -205,97 +178,76 @@ const SURVEY_SETS = [
     },
 
     // ============================================
-    // Sets 7-8: Full vs No Topical Fit
+    // Sets 7-8: Full vs NoTopicalFit
     // ============================================
 
-    // Set 7: Real IRC - VM networking + gsettings keybindings (interleaved threads)
-    // Source: Lines 360-412 from ubuntu_merged.txt
+    // Set 7: Finance - ETF recommendation
     {
         type: "text",
         comparisonType: "NoTopicalFit",
-        topic: "VM networking and keybindings",
+        topic: "ETF investment advice",
         full: [
-            { role: "user", sender: "alcosta", text: "I have two PCs with Virtual Machines, I want all machines to communicate together", time: "18:29" },
-            { role: "user", sender: "Yakov", text: "I just installed sublime from source but there is no preferences. How to fix it?", time: "18:31" },
-            { role: "user", sender: "leftyfb", text: "alcosta: which hypervisor?", time: "18:29" },
-            { role: "user", sender: "alcosta", text: "qemu/KVM with Virtual Machine Manager GUI", time: "18:30" },
-            { role: "agent", sender: "helper", text: "alcosta: Create a bridge in netplan first", time: "18:31 (+4s)" },
-            { role: "agent", sender: "helper", text: "Yakov: Seek support from the vendor for that", time: "18:32 (+3s)" },
-            { role: "user", sender: "alcosta", text: "At reboot time, the old configuration for internet disappeared!", time: "18:31" },
-            { role: "user", sender: "leftyfb", text: "Yakov: you'll have to seek support from the 3rd party vendor", time: "18:32" },
-            { role: "user", sender: "Yakov", text: "got it", time: "18:32" },
-            { role: "agent", sender: "helper", text: "alcosta: Provide your netplan configs via pastebin", time: "18:33 (+4s)" },
-            { role: "user", sender: "leftyfb", text: "alcosta: you should provide netplan configs for the host and guests", time: "18:33" },
-            { role: "user", sender: "alcosta", text: "My original yaml has: renderer: NetworkManager", time: "18:36" },
-            { role: "agent", sender: "helper", text: "alcosta: So you're using NetworkManager, not netplan directly", time: "18:37 (+3s)" },
-            { role: "agent", sender: "helper", text: "Stick with NetworkManager for desktop", time: "18:37 (+2s)" },
+            { role: "user", sender: "kevin", text: "I'm new to investing. What's the difference between ETF and mutual fund?\n투자 초보인데요. ETF랑 뮤추얼펀드 차이가 뭐예요?", time: "11:20" },
+            { role: "user", sender: "lisa", text: "Also wondering about expense ratios\n보수율도 궁금해요", time: "11:21" },
+            { role: "user", sender: "mike", text: "ETFs trade like stocks, mutual funds don't\nETF는 주식처럼 거래되고, 뮤추얼펀드는 안 그래요", time: "11:22" },
+            { role: "agent", sender: "helper", text: "kevin: ETFs trade on exchange in real-time\nkevin: ETF는 거래소에서 실시간으로 거래돼요", time: "11:23" },
+            { role: "agent", sender: "helper", text: "Mutual funds settle at end of day price\n뮤추얼펀드는 하루 마감 가격으로 정산돼요", time: "11:23" },
+            { role: "user", sender: "kevin", text: "Which one has lower fees usually?\n보통 어느 쪽이 수수료가 낮아요?", time: "11:24" },
+            { role: "agent", sender: "helper", text: "lisa: Expense ratio is the annual fee percentage\nlisa: 보수율은 연간 수수료 비율이에요", time: "11:25" },
+            { role: "agent", sender: "helper", text: "kevin: ETFs typically have lower expense ratios\nkevin: ETF가 보통 보수율이 더 낮아요", time: "11:26" },
+            { role: "user", sender: "lisa", text: "What's considered a good expense ratio?\n좋은 보수율은 어느 정도예요?", time: "11:27" },
+            { role: "agent", sender: "helper", text: "lisa: Under 0.2% is excellent for index ETFs\nlisa: 인덱스 ETF는 0.2% 미만이면 훌륭해요", time: "11:28" },
         ],
         comparison: [
-            { role: "user", sender: "alcosta", text: "I have two PCs with Virtual Machines, I want all machines to communicate together", time: "18:29" },
-            { role: "user", sender: "Yakov", text: "I just installed sublime from source but there is no preferences. How to fix it?", time: "18:31" },
-            { role: "user", sender: "leftyfb", text: "alcosta: which hypervisor?", time: "18:29" },
-            { role: "user", sender: "alcosta", text: "qemu/KVM with Virtual Machine Manager GUI", time: "18:30" },
-            { role: "agent", sender: "helper", text: "For Sublime Text preferences, check the Preferences menu", time: "18:31 (+0s)" },
-            { role: "user", sender: "alcosta", text: "At reboot time, the old configuration for internet disappeared!", time: "18:31" },
-            { role: "user", sender: "leftyfb", text: "Yakov: you'll have to seek support from the 3rd party vendor", time: "18:32" },
-            { role: "user", sender: "Yakov", text: "got it", time: "18:32" },
-            { role: "agent", sender: "helper", text: "Yes, Sublime is third party software, good choice!", time: "18:33 (+0s)" },
-            { role: "user", sender: "leftyfb", text: "alcosta: you should provide netplan configs for the host and guests", time: "18:33" },
-            { role: "user", sender: "alcosta", text: "My original yaml has: renderer: NetworkManager", time: "18:36" },
-            { role: "agent", sender: "helper", text: "YAML files are great for configuration management", time: "18:37 (+0s)" },
-            { role: "agent", sender: "helper", text: "Many editors support YAML syntax highlighting", time: "18:37 (+0s)" },
+            { role: "user", sender: "kevin", text: "I'm new to investing. What's the difference between ETF and mutual fund?\n투자 초보인데요. ETF랑 뮤추얼펀드 차이가 뭐예요?", time: "11:20" },
+            { role: "user", sender: "lisa", text: "Also wondering about expense ratios\n보수율도 궁금해요", time: "11:21" },
+            { role: "user", sender: "mike", text: "ETFs trade like stocks, mutual funds don't\nETF는 주식처럼 거래되고, 뮤추얼펀드는 안 그래요", time: "11:22" },
+            { role: "agent", sender: "helper", text: "Investing can be a great way to build wealth!\n투자는 재산을 늘리는 좋은 방법이에요!", time: "11:23" },
+            { role: "user", sender: "kevin", text: "Which one has lower fees usually?\n보통 어느 쪽이 수수료가 낮아요?", time: "11:24" },
+            { role: "agent", sender: "helper", text: "Fees are an important consideration in finance.\n수수료는 금융에서 중요한 고려사항이에요.", time: "11:25" },
+            { role: "agent", sender: "helper", text: "Many people start investing early in life.\n많은 사람들이 일찍 투자를 시작해요.", time: "11:26" },
+            { role: "user", sender: "lisa", text: "What's considered a good expense ratio?\n좋은 보수율은 어느 정도예요?", time: "11:27" },
+            { role: "agent", sender: "helper", text: "Financial literacy is very valuable!\n금융 지식은 매우 가치 있어요!", time: "11:28" },
         ]
     },
 
-    // Set 8: Real IRC - Boot repair + WhatsApp installation (interleaved)
-    // Source: Lines 673-702 from ubuntu_merged.txt
+    // Set 8: LLM usage - prompt writing
     {
         type: "text",
         comparisonType: "NoTopicalFit",
-        topic: "boot issues and app installation",
+        topic: "ChatGPT prompt engineering",
         full: [
-            { role: "user", sender: "cahoots", text: "my machine won't boot at all. It just takes me straight to bios settings", time: "16:35" },
-            { role: "user", sender: "Urk", text: "Is there a desktop version of whatsapp in the repos?", time: "18:57" },
-            { role: "user", sender: "EriC^^", text: "cahoots: can you share 'sudo parted -ls | nc termbin.com 9999'?", time: "17:01" },
-            { role: "agent", sender: "helper", text: "Urk: sudo snap install whatsapp-for-linux", time: "18:58 (+3s)" },
-            { role: "user", sender: "leftyfb", text: "Urk: sudo snap install whatsapp-app", time: "18:58" },
-            { role: "user", sender: "cahoots", text: "here's the contents of parted command: https://termbin.com/6kvy1", time: "17:21" },
-            { role: "agent", sender: "helper", text: "cahoots: Check your UEFI boot mode in BIOS", time: "17:22 (+5s)" },
-            { role: "agent", sender: "helper", text: "Is CSM legacy disabled?", time: "17:22 (+2s)" },
-            { role: "user", sender: "Urk", text: "What do I do now that it is downloaded with snap?", time: "19:00" },
-            { role: "user", sender: "leftyfb", text: "run it", time: "19:01" },
-            { role: "agent", sender: "helper", text: "Urk: Open it like any other app", time: "19:01 (+3s)" },
-            { role: "user", sender: "Urk", text: "Whatsapp prompting me to link my phone with QR code", time: "19:07" },
-            { role: "user", sender: "oerheks", text: "yes, you need a phone for that first", time: "19:07" },
-            { role: "agent", sender: "helper", text: "cahoots: Try creating the EFI entry manually", time: "19:10 (+4s)" },
+            { role: "user", sender: "anna", text: "How do I get better responses from ChatGPT? Mine are always too generic\nChatGPT에서 더 좋은 응답을 얻으려면 어떻게 해요? 제 건 항상 너무 일반적이에요", time: "16:10" },
+            { role: "user", sender: "ben", text: "Same here, it keeps giving me surface-level answers\n저도요, 계속 피상적인 답변만 줘요", time: "16:11" },
+            { role: "user", sender: "chloe", text: "Have you tried being more specific in your prompts?\n프롬프트를 더 구체적으로 해봤어요?", time: "16:12" },
+            { role: "agent", sender: "helper", text: "anna: Give context about your use case\nanna: 사용 목적에 대한 맥락을 제공하세요", time: "16:13" },
+            { role: "agent", sender: "helper", text: "Include role, format, and constraints\n역할, 형식, 제약 조건을 포함하세요", time: "16:13" },
+            { role: "user", sender: "anna", text: "Can you give an example?\n예시를 들어줄 수 있어요?", time: "16:14" },
+            { role: "agent", sender: "helper", text: "ben: Try: 'Act as a senior developer reviewing code'\nben: 이렇게 해보세요: '코드를 리뷰하는 시니어 개발자 역할을 해줘'", time: "16:15" },
+            { role: "agent", sender: "helper", text: "anna: Instead of 'write about X', try 'write a 500-word blog post about X for beginners, focusing on Y'\nanna: 'X에 대해 써줘' 대신 '초보자를 위한 X에 대한 500단어 블로그 글을 Y에 초점을 맞춰서 써줘'로 해보세요", time: "16:16" },
+            { role: "user", sender: "anna", text: "Oh that makes sense, I'll try that!\n아 그렇구나, 해볼게요!", time: "16:17" },
         ],
         comparison: [
-            { role: "user", sender: "cahoots", text: "my machine won't boot at all. It just takes me straight to bios settings", time: "16:35" },
-            { role: "user", sender: "Urk", text: "Is there a desktop version of whatsapp in the repos?", time: "18:57" },
-            { role: "user", sender: "EriC^^", text: "cahoots: can you share 'sudo parted -ls | nc termbin.com 9999'?", time: "17:01" },
-            { role: "agent", sender: "helper", text: "WhatsApp is a great messaging app!", time: "18:58 (+0s)" },
-            { role: "user", sender: "leftyfb", text: "Urk: sudo snap install whatsapp-app", time: "18:58" },
-            { role: "user", sender: "cahoots", text: "here's the contents of parted command: https://termbin.com/6kvy1", time: "17:21" },
-            { role: "agent", sender: "helper", text: "Snap packages are easy to install and update", time: "17:22 (+0s)" },
-            { role: "user", sender: "Urk", text: "What do I do now that it is downloaded with snap?", time: "19:00" },
-            { role: "user", sender: "leftyfb", text: "run it", time: "19:01" },
-            { role: "agent", sender: "helper", text: "Running apps is straightforward on Ubuntu", time: "19:01 (+0s)" },
-            { role: "user", sender: "Urk", text: "Whatsapp prompting me to link my phone with QR code", time: "19:07" },
-            { role: "user", sender: "oerheks", text: "yes, you need a phone for that first", time: "19:07" },
-            { role: "agent", sender: "helper", text: "QR codes are commonly used for authentication", time: "19:10 (+0s)" },
+            { role: "user", sender: "anna", text: "How do I get better responses from ChatGPT? Mine are always too generic\nChatGPT에서 더 좋은 응답을 얻으려면 어떻게 해요? 제 건 항상 너무 일반적이에요", time: "16:10" },
+            { role: "user", sender: "ben", text: "Same here, it keeps giving me surface-level answers\n저도요, 계속 피상적인 답변만 줘요", time: "16:11" },
+            { role: "user", sender: "chloe", text: "Have you tried being more specific in your prompts?\n프롬프트를 더 구체적으로 해봤어요?", time: "16:12" },
+            { role: "agent", sender: "helper", text: "AI technology has advanced rapidly in recent years!\nAI 기술이 최근 몇 년간 급격히 발전했어요!", time: "16:13" },
+            { role: "user", sender: "anna", text: "Can you give an example?\n예시를 들어줄 수 있어요?", time: "16:14" },
+            { role: "agent", sender: "helper", text: "Large language models are fascinating!\n대규모 언어 모델은 정말 흥미로워요!", time: "16:15" },
+            { role: "agent", sender: "helper", text: "Many companies are using AI these days.\n요즘 많은 회사들이 AI를 사용하고 있어요.", time: "16:16" },
+            { role: "user", sender: "anna", text: "Oh that makes sense, I'll try that!\n아 그렇구나, 해볼게요!", time: "16:17" },
         ]
     },
 
     // ============================================
-    // Sets 9-10: Full vs No Chunking (GIF)
+    // Sets 9-10: Full vs NoChunking (GIF)
     // ============================================
 
-    // Set 9: Real IRC - Network bridge setup with multiple users
-    // Source: Lines 521-586 from ubuntu_merged.txt
+    // Set 9: LLM usage - API integration
     {
         type: "gif",
         comparisonType: "NoChunking",
-        topic: "network bridge configuration",
+        topic: "OpenAI API integration",
         full: {
             src: "data/gifs/chunking_full_1.gif",
             description: "Response split into natural chunks"
@@ -306,12 +258,11 @@ const SURVEY_SETS = [
         }
     },
 
-    // Set 10: Real IRC - GRUB/EFI boot repair steps
-    // Source: Lines 716-799 from ubuntu_merged.txt
+    // Set 10: LLM usage - token optimization
     {
         type: "gif",
         comparisonType: "NoChunking",
-        topic: "GRUB installation steps",
+        topic: "LLM token cost optimization",
         full: {
             src: "data/gifs/chunking_full_2.gif",
             description: "Instructions appear step by step"
@@ -325,81 +276,77 @@ const SURVEY_SETS = [
 
 // GIF conversation data for generation script
 const GIF_CONVERSATIONS = {
-    // Set 5: System suspend/resume + dark theme (timing comparison)
+    // Set 5: Office work - email writing (timing comparison)
     timing_1: {
         messages: [
-            { role: "user", sender: "arkanoid", text: "My system fails to resume to gnome desktop after suspend. When it resumes gnome shell is a black screen", ts: 0 },
-            { role: "user", sender: "derek-shnosh", text: "In Ubuntu 23.10, some apps are not honoring the dark theme for parts of the window", ts: 2000 },
-            { role: "user", sender: "lotuspsychje", text: "arkanoid: can you share your dmesg with the volunteers please", ts: 4000 },
-            { role: "agent", sender: "helper", text: "arkanoid: Try loginctl terminate-session", ts: 8000, noTimingTs: 4100 },
-            { role: "agent", sender: "helper", text: "This resets the gnome session without reboot", ts: 10500, noTimingTs: 4200 },
-            { role: "user", sender: "arkanoid", text: "just tried systemctl restart systemd-logind, got visual login back", ts: 12000 },
-            { role: "user", sender: "ioria", text: "derek-shnosh: run in terminal 'G_MESSAGES_DEBUG=all hexchat'", ts: 14000 },
-            { role: "agent", sender: "helper", text: "derek-shnosh: Check your gtk-theme setting", ts: 18000, noTimingTs: 14100 },
-            { role: "user", sender: "derek-shnosh", text: "Figured it out! gtk-theme was set to Yaru-blue, changed to Yaru-blue-dark", ts: 22000 },
-            { role: "agent", sender: "helper", text: "arkanoid: Good, the session restart worked", ts: 25000, noTimingTs: 22100 },
-            { role: "agent", sender: "helper", text: "This is likely bug #1968907 in gnome-shell", ts: 27500, noTimingTs: 22200 },
+            { role: "user", sender: "emma", text: "How do I write a professional email asking for a deadline extension?\n마감 연장 요청하는 비즈니스 이메일 어떻게 써요?", ts: 0 },
+            { role: "user", sender: "frank", text: "Also need help with follow-up emails to clients\n저도 클라이언트한테 팔로업 이메일 쓰는 거 도움 필요해요", ts: 2500 },
+            { role: "user", sender: "grace", text: "Be polite but direct is my advice\n공손하지만 직접적으로 쓰라는 게 제 조언이에요", ts: 5000 },
+            { role: "agent", sender: "helper", text: "emma: Start with appreciation for their time\nemma: 먼저 시간 내주신 것에 감사를 표하세요", ts: 9000, noTimingTs: 5100 },
+            { role: "agent", sender: "helper", text: "Then briefly explain the situation\n그다음 상황을 간략히 설명하세요", ts: 11500, noTimingTs: 5200 },
+            { role: "user", sender: "emma", text: "Should I give a specific new date?\n구체적인 새 날짜를 제시해야 할까요?", ts: 14000 },
+            { role: "agent", sender: "helper", text: "emma: Yes, always propose a concrete alternative\nemma: 네, 항상 구체적인 대안을 제시하세요", ts: 18000, noTimingTs: 14100 },
+            { role: "agent", sender: "helper", text: "frank: For follow-ups, reference the previous email\nfrank: 팔로업은 이전 이메일을 언급하세요", ts: 21000, noTimingTs: 14200 },
+            { role: "user", sender: "frank", text: "How long should I wait before following up?\n팔로업하기 전에 얼마나 기다려야 해요?", ts: 24000 },
+            { role: "agent", sender: "helper", text: "frank: 3-5 business days is standard\nfrank: 영업일 기준 3-5일이 표준이에요", ts: 28000, noTimingTs: 24100 },
         ]
     },
 
-    // Set 6: Terminal ctrl-a + phased updates (timing comparison)
+    // Set 6: Finance - stock terms (timing comparison)
     timing_2: {
         messages: [
-            { role: "user", sender: "en1gma", text: "ctrl-a does not copy all in terminal but works in firefox. why?", ts: 0 },
-            { role: "user", sender: "ELFrederich", text: "7 packages can be upgraded but apt upgrade keeps them back", ts: 2000 },
-            { role: "user", sender: "pragmaticenigma", text: "ctrl+a doesn't copy anything, it's select all. Terminal doesn't support that command", ts: 4000 },
-            { role: "agent", sender: "helper", text: "en1gma: Terminal apps handle shortcuts differently", ts: 8000, noTimingTs: 4100 },
-            { role: "agent", sender: "helper", text: "ctrl-a in bash moves cursor to line start", ts: 10500, noTimingTs: 4200 },
-            { role: "user", sender: "lotuspsychje", text: "ELFrederich: those are phased updates", ts: 12000 },
-            { role: "user", sender: "en1gma", text: "i was reading that /etc/bash.bashrc needs to be edited", ts: 14000 },
-            { role: "agent", sender: "helper", text: "ELFrederich: Phased updates roll out gradually", ts: 18000, noTimingTs: 14100 },
-            { role: "agent", sender: "helper", text: "Just wait a few days and they'll be available", ts: 20500, noTimingTs: 14200 },
-            { role: "user", sender: "pragmaticenigma", text: "en1gma: don't edit that file, it could break your system", ts: 22000 },
-            { role: "agent", sender: "helper", text: "en1gma: Edit ~/.bashrc instead, it's safer", ts: 26000, noTimingTs: 22100 },
-            { role: "user", sender: "en1gma", text: "ok thanks, will try that", ts: 30000 },
+            { role: "user", sender: "henry", text: "What does P/E ratio mean? I see it everywhere\nP/E 비율이 뭐예요? 어디서나 보여요", ts: 0 },
+            { role: "user", sender: "iris", text: "And what's the difference between market cap and enterprise value?\n시가총액이랑 기업가치 차이는 뭐예요?", ts: 2500 },
+            { role: "user", sender: "jack", text: "P/E is price to earnings, basically how expensive the stock is\nP/E는 주가수익비율, 기본적으로 주식이 얼마나 비싼지예요", ts: 5000 },
+            { role: "agent", sender: "helper", text: "henry: P/E = Stock Price ÷ Earnings Per Share\nhenry: P/E = 주가 ÷ 주당순이익", ts: 9000, noTimingTs: 5100 },
+            { role: "agent", sender: "helper", text: "Lower P/E might mean undervalued\n낮은 P/E는 저평가됐을 수 있어요", ts: 11500, noTimingTs: 5200 },
+            { role: "user", sender: "henry", text: "What's a good P/E ratio to look for?\n어느 정도 P/E 비율이 좋은 거예요?", ts: 14000 },
+            { role: "agent", sender: "helper", text: "henry: Depends on industry, but 15-25 is average\nhenry: 산업마다 다르지만, 15-25가 평균이에요", ts: 18000, noTimingTs: 14100 },
+            { role: "agent", sender: "helper", text: "iris: Market cap = share price × shares outstanding\niris: 시가총액 = 주가 × 발행주식수", ts: 21000, noTimingTs: 14200 },
+            { role: "agent", sender: "helper", text: "Enterprise value adds debt, subtracts cash\n기업가치는 부채를 더하고 현금을 빼요", ts: 24000, noTimingTs: 14300 },
+            { role: "user", sender: "iris", text: "So enterprise value is more accurate for comparing?\n그러면 비교할 때 기업가치가 더 정확한 거예요?", ts: 27000 },
+            { role: "agent", sender: "helper", text: "iris: Yes, especially for companies with different debt levels\niris: 네, 특히 부채 수준이 다른 회사들 비교할 때요", ts: 31000, noTimingTs: 27100 },
         ]
     },
 
-    // Set 9: Network bridge setup (chunking comparison)
+    // Set 9: LLM API integration (chunking comparison)
     chunking_1: {
         messages: [
-            { role: "user", sender: "alcosta", text: "I want to setup bridged networking with Virtual Machines on ubuntu 20.04", ts: 0 },
-            { role: "user", sender: "sarnold", text: "usual approach is to create a new bridge, add physical NICs, set IP on bridge", ts: 3000 },
-            { role: "user", sender: "leftyfb", text: "alcosta: they should only need a network bridge", ts: 5000 },
-            { role: "agent", sender: "helper", text: "alcosta: First run nmcli con add ifname br0 type bridge con-name br0", ts: 9000, chunkDelay: 2500 },
-            { role: "agent", sender: "helper", text: "Then: nmcli con add type bridge-slave ifname enp6s0 master br0", ts: 11500, chunkDelay: 2500 },
-            { role: "user", sender: "alcosta", text: "Something isn't right, the commands don't match my case", ts: 14000 },
-            { role: "user", sender: "leftyfb", text: "it looks like you did lots of bad things, delete the bridge interfaces", ts: 16000 },
-            { role: "agent", sender: "helper", text: "alcosta: Check nmcli con show to see current connections", ts: 20000, chunkDelay: 2500 },
-            { role: "agent", sender: "helper", text: "Delete the broken ones with nmcli con delete <uuid>", ts: 22500, chunkDelay: 2500 },
-            { role: "agent", sender: "helper", text: "Then start fresh with the bridge commands", ts: 25000, chunkDelay: 2500 },
-            { role: "user", sender: "alcosta", text: "OK, deleted them. Now what?", ts: 28000 },
-            { role: "user", sender: "leftyfb", text: "reboot, then br0 should have an IP address", ts: 30000 },
+            { role: "user", sender: "kate", text: "How do I integrate OpenAI API into my Python app?\n내 Python 앱에 OpenAI API 어떻게 연동해요?", ts: 0 },
+            { role: "user", sender: "leo", text: "I'm also trying to figure out streaming responses\n저도 스트리밍 응답 구현하려고 해요", ts: 3000 },
+            { role: "user", sender: "mia", text: "Make sure you don't expose your API key!\nAPI 키 노출하지 않게 조심하세요!", ts: 5500 },
+            { role: "agent", sender: "helper", text: "kate: First, pip install openai\nkate: 먼저, pip install openai", ts: 9000, chunkDelay: 2500 },
+            { role: "agent", sender: "helper", text: "Store your API key in environment variable\nAPI 키는 환경변수에 저장하세요", ts: 11500, chunkDelay: 2500 },
+            { role: "user", sender: "kate", text: "What's the basic code structure?\n기본 코드 구조가 어떻게 돼요?", ts: 14000 },
+            { role: "agent", sender: "helper", text: "kate: Import openai, then client = OpenAI()\nkate: openai를 import하고, client = OpenAI()", ts: 18000, chunkDelay: 2500 },
+            { role: "agent", sender: "helper", text: "Call client.chat.completions.create()\nclient.chat.completions.create() 호출", ts: 20500, chunkDelay: 2500 },
+            { role: "agent", sender: "helper", text: "Pass model='gpt-4' and messages list\nmodel='gpt-4'와 messages 리스트 전달", ts: 23000, chunkDelay: 2500 },
+            { role: "user", sender: "leo", text: "And for streaming?\n스트리밍은요?", ts: 26000 },
+            { role: "agent", sender: "helper", text: "leo: Add stream=True parameter\nleo: stream=True 매개변수 추가", ts: 30000, chunkDelay: 2500 },
+            { role: "agent", sender: "helper", text: "Then iterate over response chunks\n그다음 응답 청크를 반복하세요", ts: 32500, chunkDelay: 2500 },
         ],
         fullChunked: true,
-        comparisonSingleMessage: "alcosta: To set up bridged networking, run these commands in order: First, nmcli con add ifname br0 type bridge con-name br0. Then nmcli con add type bridge-slave ifname enp6s0 master br0. If you have existing broken bridge configs, delete them with nmcli con delete <uuid> first. You can check current connections with nmcli con show. After creating the bridge, reboot and br0 should get an IP address. Then configure your VMs to use br0 as the network interface."
+        comparisonSingleMessage: "kate: To integrate OpenAI API into your Python app, first install the package with 'pip install openai'. Store your API key securely in an environment variable (never hardcode it). The basic structure is: import openai, create a client with client = OpenAI(), then call client.chat.completions.create() with model='gpt-4' and a messages list containing your conversation. For streaming responses, add stream=True to the create() call and iterate over the response chunks with a for loop. Example: for chunk in response: print(chunk.choices[0].delta.content). Remember to handle rate limits and errors appropriately.\nkate: Python 앱에 OpenAI API를 연동하려면, 먼저 'pip install openai'로 패키지를 설치하세요. API 키는 환경변수에 안전하게 저장하세요 (절대 하드코딩하지 마세요). 기본 구조는: openai를 import하고, client = OpenAI()로 클라이언트를 생성한 후, model='gpt-4'와 대화가 담긴 messages 리스트로 client.chat.completions.create()를 호출합니다. 스트리밍 응답은 create() 호출에 stream=True를 추가하고 for 루프로 응답 청크를 반복합니다. 예시: for chunk in response: print(chunk.choices[0].delta.content). 속도 제한과 에러를 적절히 처리하는 것을 잊지 마세요."
     },
 
-    // Set 10: GRUB/EFI boot repair (chunking comparison)
+    // Set 10: LLM token optimization (chunking comparison)
     chunking_2: {
         messages: [
-            { role: "user", sender: "cahoots", text: "grub-install gives warning: EFI variables cannot be set on this system", ts: 0 },
-            { role: "user", sender: "EriC^^", text: "in which mode are you booting? uefi? csm legacy?", ts: 3000 },
-            { role: "user", sender: "cahoots", text: "I'm in uefi, csm legacy is disabled", ts: 5000 },
-            { role: "agent", sender: "helper", text: "cahoots: First mount your root partition", ts: 9000, chunkDelay: 3000 },
-            { role: "agent", sender: "helper", text: "sudo mount /dev/nvme0n1p3 /mnt", ts: 12000, chunkDelay: 3000 },
-            { role: "user", sender: "EriC^^", text: "then run the for loop to bind mount /dev /proc /sys /run", ts: 14000 },
-            { role: "agent", sender: "helper", text: "Next: for i in /dev /proc /sys /run; do sudo mount -R $i /mnt$i; done", ts: 18000, chunkDelay: 3000 },
-            { role: "agent", sender: "helper", text: "Then: sudo chroot /mnt", ts: 21000, chunkDelay: 3000 },
-            { role: "user", sender: "cahoots", text: "mount /boot/efi says can't find UUID", ts: 24000 },
-            { role: "user", sender: "EriC^^", text: "the uuid changed, edit /etc/fstab with the new one from blkid", ts: 26000 },
-            { role: "agent", sender: "helper", text: "cahoots: Run blkid to find the new UUID", ts: 30000, chunkDelay: 3000 },
-            { role: "agent", sender: "helper", text: "Update /etc/fstab, then mount /boot/efi", ts: 33000, chunkDelay: 3000 },
-            { role: "agent", sender: "helper", text: "Finally: grub-install --target=x86_64-efi", ts: 36000, chunkDelay: 3000 },
-            { role: "user", sender: "cahoots", text: "installation finished, no error reported!", ts: 40000 },
+            { role: "user", sender: "nina", text: "My OpenAI bill is getting expensive. How do I reduce token usage?\nOpenAI 비용이 너무 많이 나와요. 토큰 사용량 어떻게 줄여요?", ts: 0 },
+            { role: "user", sender: "oscar", text: "Same problem here, especially with long conversations\n저도 같은 문제예요, 특히 긴 대화에서요", ts: 3000 },
+            { role: "user", sender: "paul", text: "Have you tried using gpt-3.5-turbo instead of gpt-4?\ngpt-4 대신 gpt-3.5-turbo 써봤어요?", ts: 5500 },
+            { role: "agent", sender: "helper", text: "nina: First, shorten your system prompts\nnina: 먼저, 시스템 프롬프트를 줄이세요", ts: 9000, chunkDelay: 3000 },
+            { role: "agent", sender: "helper", text: "Remove unnecessary instructions\n불필요한 지시사항을 제거하세요", ts: 12000, chunkDelay: 3000 },
+            { role: "user", sender: "nina", text: "What else can I do?\n다른 건 뭐가 있어요?", ts: 15000 },
+            { role: "agent", sender: "helper", text: "nina: Summarize long conversation histories\nnina: 긴 대화 기록은 요약하세요", ts: 19000, chunkDelay: 3000 },
+            { role: "agent", sender: "helper", text: "Only keep recent messages in context\n최근 메시지만 맥락에 유지하세요", ts: 22000, chunkDelay: 3000 },
+            { role: "agent", sender: "helper", text: "oscar: Use max_tokens to limit response length\noscar: max_tokens로 응답 길이를 제한하세요", ts: 25000, chunkDelay: 3000 },
+            { role: "user", sender: "oscar", text: "Does the model choice matter much?\n모델 선택이 많이 중요해요?", ts: 28000 },
+            { role: "agent", sender: "helper", text: "oscar: gpt-3.5-turbo is 10-20x cheaper\noscar: gpt-3.5-turbo가 10-20배 저렴해요", ts: 32000, chunkDelay: 3000 },
+            { role: "agent", sender: "helper", text: "Use gpt-4 only when quality is critical\ngpt-4는 품질이 중요할 때만 쓰세요", ts: 35000, chunkDelay: 3000 },
         ],
         fullChunked: true,
-        comparisonSingleMessage: "cahoots: To fix grub installation, follow these steps: Mount your root partition with sudo mount /dev/nvme0n1p3 /mnt. Then bind mount the virtual filesystems with for i in /dev /proc /sys /run; do sudo mount -R $i /mnt$i; done. Chroot into the system with sudo chroot /mnt. If mount /boot/efi fails due to UUID mismatch, run blkid to find the new UUID, update /etc/fstab with the correct UUID, then mount /boot/efi again. Finally run grub-install --target=x86_64-efi to install grub. After that, exit the chroot and reboot."
+        comparisonSingleMessage: "nina: To reduce OpenAI API token usage and costs: 1) Shorten system prompts - remove verbose instructions and keep only essential guidance, 2) Summarize conversation history - instead of passing entire chat history, summarize older messages and only keep recent ones in full, 3) Set max_tokens parameter to limit response length, 4) Use gpt-3.5-turbo instead of gpt-4 when possible (10-20x cheaper, still good for many tasks), 5) Implement caching for repeated queries, 6) Use tiktoken library to count tokens before sending to estimate costs. For long conversations, consider implementing a sliding window that keeps only the last N messages, or periodically summarize the conversation and start fresh with the summary.\nnina: OpenAI API 토큰 사용량과 비용을 줄이려면: 1) 시스템 프롬프트 줄이기 - 장황한 지시사항을 제거하고 필수적인 안내만 유지, 2) 대화 기록 요약 - 전체 채팅 기록 대신 오래된 메시지를 요약하고 최근 것만 전체로 유지, 3) max_tokens 매개변수로 응답 길이 제한, 4) 가능하면 gpt-4 대신 gpt-3.5-turbo 사용 (10-20배 저렴, 많은 작업에 여전히 좋음), 5) 반복 쿼리에 캐싱 구현, 6) tiktoken 라이브러리로 전송 전 토큰 수를 세어 비용 추정. 긴 대화의 경우 마지막 N개 메시지만 유지하는 슬라이딩 윈도우를 구현하거나, 주기적으로 대화를 요약하고 요약으로 새로 시작하는 것을 고려하세요."
     }
 };
 

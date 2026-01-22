@@ -208,10 +208,17 @@ class SurveyApp {
             let html = '';
             messages.forEach(msg => {
                 const isAgent = msg.role === 'agent';
+                // Split text into English and Korean parts (separated by \n)
+                const parts = msg.text.split('\n');
+                let textHtml = parts[0]; // English part
+                if (parts.length > 1) {
+                    // Add Korean part with special styling
+                    textHtml += `<span class="message-ko">${parts[1]}</span>`;
+                }
                 html += `
                     <div class="chat-message ${msg.role}">
                         <span class="message-sender">${msg.sender || (isAgent ? 'Agent' : 'User')}</span>
-                        <div class="message-bubble">${msg.text}</div>
+                        <div class="message-bubble">${textHtml}</div>
                         ${msg.time ? `<span class="message-time">${msg.time}</span>` : ''}
                     </div>
                 `;

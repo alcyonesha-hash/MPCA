@@ -367,6 +367,19 @@ h3 {
     margin-top: 4px;
 }
 
+/* Korean translation in chat bubbles */
+.message-ko {
+    display: block;
+    margin-top: 8px;
+    font-size: 0.85em;
+    color: #888;
+    line-height: 1.4;
+}
+
+.chat-message.agent .message-ko {
+    color: rgba(255, 255, 255, 0.7);
+}
+
 /* GIF Container */
 .gif-container {
     position: relative;
