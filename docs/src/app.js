@@ -17,9 +17,9 @@ class SurveyApp {
         this.startTime = null;
         this.setStartTime = null;
 
-        // Fixed A/B order for each set (no randomization)
+        // Randomize A/B order for each set
         // true = swap A/B positions, false = keep original order
-        this.abRandomization = SURVEY_SETS.map(() => false);
+        this.abRandomization = SURVEY_SETS.map(() => Math.random() < 0.5);
 
         // Fixed set order (no randomization)
         this.setOrder = this.generateSetOrder();
@@ -146,11 +146,25 @@ class SurveyApp {
         const set = SURVEY_SETS[setIndex];
         const swapAB = this.abRandomization[setIndex];
 
+        // Reset scroll position to top
+        document.getElementById('chat-a').scrollTop = 0;
+        document.getElementById('chat-b').scrollTop = 0;
+
         // Update progress
         const surveyProgress = this.setOrder.filter((s, i) => i <= this.currentSetIndex && s.type === 'survey').length;
         const totalSurveys = SURVEY_SETS.length;
         document.getElementById('progress-fill').style.width = `${(surveyProgress / totalSurveys) * 100}%`;
         document.getElementById('progress-text').textContent = `${surveyProgress} / ${totalSurveys}`;
+
+        // Update topic label
+        const topicText = document.getElementById('topic-text');
+        const topicKo = document.getElementById('topic-ko');
+        if (topicText && set.topic) {
+            topicText.textContent = set.topic;
+        }
+        if (topicKo && set.topicKo) {
+            topicKo.textContent = set.topicKo;
+        }
 
         // Load chat content
         const fullChat = set.full;
@@ -190,18 +204,15 @@ class SurveyApp {
         const container = document.getElementById(containerId);
 
         if (type === 'gif') {
-            // GIF display - show placeholder until Play button clicked
-            // Use a canvas to show first frame (static) instead of GIF
+            // GIF display - show ready message until Play button clicked
             container.innerHTML = `
                 <div class="gif-container">
-                    <div class="gif-placeholder" id="${containerId}-placeholder">
-                        <span class="play-icon">▶</span>
-                        <span class="play-text">Click Play to start</span>
+                    <div class="gif-ready-text" id="${containerId}-ready">
+                        Click "Play Both" below<span class="ko">아래 "재생" 버튼을 누르세요</span>
                     </div>
                     <img src="" alt="Chat animation" id="${containerId}-gif" class="chat-gif hidden" data-src="${messages.src}">
                 </div>
             `;
-            // Store the source for replay
             container.dataset.gifSrc = messages.src;
         } else {
             // Text chat display
@@ -238,14 +249,14 @@ class SurveyApp {
         replayBtn.className = 'btn primary gif-replay-btn';
         replayBtn.innerHTML = 'Play Both<span class="ko">재생</span>';
         replayBtn.onclick = () => {
-            // Hide placeholders and show GIFs
-            const placeholderA = document.getElementById('chat-a-placeholder');
-            const placeholderB = document.getElementById('chat-b-placeholder');
+            // Hide ready text and show GIFs
+            const readyA = document.getElementById('chat-a-ready');
+            const readyB = document.getElementById('chat-b-ready');
             const imgA = document.getElementById('chat-a-gif');
             const imgB = document.getElementById('chat-b-gif');
 
-            if (placeholderA) placeholderA.classList.add('hidden');
-            if (placeholderB) placeholderB.classList.add('hidden');
+            if (readyA) readyA.classList.add('hidden');
+            if (readyB) readyB.classList.add('hidden');
 
             // Load and play both GIFs simultaneously with cache-busting
             const timestamp = Date.now();

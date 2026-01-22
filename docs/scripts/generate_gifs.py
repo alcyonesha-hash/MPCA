@@ -167,8 +167,13 @@ def generate_timing_video(messages, output_path, with_timing=True):
         if with_timing:
             msg_ts = msg.get('ts', 0)
         else:
-            # For no-timing, use noTimingTs if available, otherwise instant
-            msg_ts = msg.get('noTimingTs', i * 100)  # 100ms between each message
+            # For no-timing mode:
+            # - User messages: keep same timing as full version (natural conversation flow)
+            # - Agent messages: appear quickly (noTimingTs)
+            if msg['role'] == 'agent':
+                msg_ts = msg.get('noTimingTs', msg.get('ts', 0))
+            else:
+                msg_ts = msg.get('ts', 0)  # User messages keep original timing
 
         # Calculate delay since last message
         if i > 0:

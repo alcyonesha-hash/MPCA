@@ -260,6 +260,22 @@ h3 {
     cursor: not-allowed;
 }
 
+/* Topic Label */
+.topic-label {
+    text-align: center;
+    font-size: 16px;
+    font-weight: 500;
+    color: #3f51b5;
+    margin-bottom: 20px;
+}
+
+.topic-label .ko {
+    display: inline;
+    margin-left: 8px;
+    font-size: 0.9em;
+    color: #666;
+}
+
 /* Progress Bar */
 .progress-bar {
     background: #e0e0e0;
@@ -396,7 +412,7 @@ h3 {
     display: none;
 }
 
-.gif-placeholder {
+.gif-ready-text {
     width: 100%;
     height: 300px;
     background: linear-gradient(135deg, #e8eaf6 0%, #c5cae9 100%);
@@ -406,19 +422,18 @@ h3 {
     align-items: center;
     justify-content: center;
     color: #5c6bc0;
+    font-size: 14px;
+    text-align: center;
 }
 
-.gif-placeholder.hidden {
+.gif-ready-text.hidden {
     display: none;
 }
 
-.gif-placeholder .play-icon {
-    font-size: 48px;
-    margin-bottom: 12px;
-}
-
-.gif-placeholder .play-text {
-    font-size: 14px;
+.gif-ready-text .ko {
+    display: block;
+    margin-top: 8px;
+    font-size: 0.9em;
     color: #7986cb;
 }
 

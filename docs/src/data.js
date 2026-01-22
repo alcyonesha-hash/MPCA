@@ -33,6 +33,7 @@ const SURVEY_SETS = [
         type: "text",
         comparisonType: "Baseline",
         topic: "Ubuntu package installation",
+        topicKo: "우분투 패키지 설치",
         full: [
             { role: "user", sender: "alex", text: "How do I install Chrome on Ubuntu? The software center only shows Chromium.\n우분투에서 크롬 설치하려면 어떻게 해요? 소프트웨어 센터에는 크로미움만 있네요.", time: "14:23" },
             { role: "user", sender: "maya", text: "Also having issues with my apt - it says some packages are held back\n저도 apt 문제가 있어요 - 일부 패키지가 보류됐다고 나와요", time: "14:24" },
@@ -61,6 +62,7 @@ const SURVEY_SETS = [
         type: "text",
         comparisonType: "Baseline",
         topic: "Python pip dependency conflict",
+        topicKo: "Python pip 의존성 충돌",
         full: [
             { role: "user", sender: "sam", text: "pip install keeps failing with dependency conflicts between numpy and pandas\npip install이 numpy랑 pandas 의존성 충돌로 계속 실패해요", time: "10:15" },
             { role: "user", sender: "taylor", text: "What versions are you trying to install?\n어떤 버전을 설치하려고 해요?", time: "10:16" },
@@ -90,6 +92,7 @@ const SURVEY_SETS = [
         type: "text",
         comparisonType: "Baseline",
         topic: "Python virtual environment setup",
+        topicKo: "Python 가상환경 설정",
         full: [
             { role: "user", sender: "jamie", text: "How do I set up a virtual environment? I keep messing up my global packages\n가상환경 어떻게 설정해요? 전역 패키지를 계속 망치고 있어요", time: "15:40" },
             { role: "user", sender: "casey", text: "Are you on Windows or Mac?\n윈도우예요 맥이에요?", time: "15:41" },
@@ -119,6 +122,7 @@ const SURVEY_SETS = [
         type: "text",
         comparisonType: "Baseline",
         topic: "Excel VLOOKUP formula",
+        topicKo: "엑셀 VLOOKUP 함수",
         full: [
             { role: "user", sender: "chris", text: "My VLOOKUP keeps returning #N/A even though the value exists\nVLOOKUP이 값이 있는데도 계속 #N/A를 반환해요", time: "09:30" },
             { role: "user", sender: "pat", text: "Are you using exact match or approximate?\n정확히 일치로 하고 있어요, 근사치로 하고 있어요?", time: "09:31" },
@@ -152,6 +156,7 @@ const SURVEY_SETS = [
         type: "gif",
         comparisonType: "NoTiming",
         topic: "professional email writing",
+        topicKo: "비즈니스 이메일 작성",
         full: {
             src: "data/gifs/timing_full_1.gif",
             description: "Messages appear with natural delays"
@@ -167,6 +172,7 @@ const SURVEY_SETS = [
         type: "gif",
         comparisonType: "NoTiming",
         topic: "stock market terminology",
+        topicKo: "주식 시장 용어",
         full: {
             src: "data/gifs/timing_full_2.gif",
             description: "Messages appear with natural delays"
@@ -186,6 +192,7 @@ const SURVEY_SETS = [
         type: "text",
         comparisonType: "NoTopicalFit",
         topic: "ETF investment advice",
+        topicKo: "ETF 투자 조언",
         full: [
             { role: "user", sender: "kevin", text: "I'm new to investing. What's the difference between ETF and mutual fund?\n투자 초보인데요. ETF랑 뮤추얼펀드 차이가 뭐예요?", time: "11:20" },
             { role: "user", sender: "lisa", text: "Also wondering about expense ratios\n보수율도 궁금해요", time: "11:21" },
@@ -216,6 +223,7 @@ const SURVEY_SETS = [
         type: "text",
         comparisonType: "NoTopicalFit",
         topic: "ChatGPT prompt engineering",
+        topicKo: "ChatGPT 프롬프트 작성",
         full: [
             { role: "user", sender: "anna", text: "How do I get better responses from ChatGPT? Mine are always too generic\nChatGPT에서 더 좋은 응답을 얻으려면 어떻게 해요? 제 건 항상 너무 일반적이에요", time: "16:10" },
             { role: "user", sender: "ben", text: "Same here, it keeps giving me surface-level answers\n저도요, 계속 피상적인 답변만 줘요", time: "16:11" },
@@ -248,6 +256,7 @@ const SURVEY_SETS = [
         type: "gif",
         comparisonType: "NoChunking",
         topic: "OpenAI API integration",
+        topicKo: "OpenAI API 연동",
         full: {
             src: "data/gifs/chunking_full_1.gif",
             description: "Response split into natural chunks"
@@ -263,6 +272,7 @@ const SURVEY_SETS = [
         type: "gif",
         comparisonType: "NoChunking",
         topic: "LLM token cost optimization",
+        topicKo: "LLM 토큰 비용 최적화",
         full: {
             src: "data/gifs/chunking_full_2.gif",
             description: "Instructions appear step by step"
