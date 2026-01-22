@@ -179,6 +179,9 @@ class SurveyApp {
         // Add single replay button for video sets
         if (set.type === 'video') {
             this.addVideoReplayButton(chatA.src, chatB.src);
+            this.addVideoNotice();
+        } else {
+            this.removeVideoNotice();
         }
 
         // Reset answers
@@ -200,6 +203,27 @@ class SurveyApp {
         this.setStartTime = Date.now();
     }
 
+    // Avatar colors for consistent user coloring
+    static AVATAR_COLORS = [
+        '#4CAF50', '#2196F3', '#FF9800', '#9C27B0', '#00BCD4',
+        '#FF5722', '#3F51B5', '#E91E63', '#8BC34A', '#795548'
+    ];
+
+    getAvatarColor(username, isAgent = false) {
+        if (isAgent) return '#667eea';
+        // Hash username to get consistent color
+        let hash = 0;
+        for (let i = 0; i < username.length; i++) {
+            hash = username.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        return SurveyApp.AVATAR_COLORS[Math.abs(hash) % SurveyApp.AVATAR_COLORS.length];
+    }
+
+    getInitials(username) {
+        if (username.length <= 2) return username.toUpperCase();
+        return username.substring(0, 2).toUpperCase();
+    }
+
     renderChat(containerId, messages, type) {
         const container = document.getElementById(containerId);
 
@@ -215,10 +239,14 @@ class SurveyApp {
             `;
             container.dataset.videoSrc = messages.src;
         } else {
-            // Text chat display
+            // Text chat display with avatars
             let html = '';
             messages.forEach(msg => {
                 const isAgent = msg.role === 'agent';
+                const sender = msg.sender || (isAgent ? 'Agent' : 'User');
+                const avatarColor = this.getAvatarColor(sender, isAgent);
+                const initials = this.getInitials(sender);
+
                 // Split text into English and Korean parts (separated by \n)
                 const parts = msg.text.split('\n');
                 let textHtml = parts[0]; // English part
@@ -228,9 +256,12 @@ class SurveyApp {
                 }
                 html += `
                     <div class="chat-message ${msg.role}">
-                        <span class="message-sender">${msg.sender || (isAgent ? 'Agent' : 'User')}</span>
-                        <div class="message-bubble">${textHtml}</div>
-                        ${msg.time ? `<span class="message-time">${msg.time}</span>` : ''}
+                        <div class="message-avatar" style="background-color: ${avatarColor}">${initials}</div>
+                        <div class="message-content">
+                            <span class="message-sender">${sender}</span>
+                            <div class="message-bubble">${textHtml}</div>
+                            ${msg.time ? `<span class="message-time">${msg.time}</span>` : ''}
+                        </div>
                     </div>
                 `;
             });
@@ -273,6 +304,27 @@ class SurveyApp {
             }
         };
         comparisonContainer.parentNode.insertBefore(replayBtn, comparisonContainer.nextSibling);
+    }
+
+    addVideoNotice() {
+        // Remove existing notice if any
+        this.removeVideoNotice();
+
+        // Add notice above the comparison container
+        const comparisonContainer = document.querySelector('.comparison-container');
+        const notice = document.createElement('div');
+        notice.className = 'video-notice';
+        notice.id = 'video-notice';
+        notice.innerHTML = `
+            ⏳ Watch the video until the end to see all agent responses
+            <span class="ko">⏳ 영상을 끝까지 시청하여 모든 에이전트 응답을 확인하세요</span>
+        `;
+        comparisonContainer.parentNode.insertBefore(notice, comparisonContainer);
+    }
+
+    removeVideoNotice() {
+        const existingNotice = document.getElementById('video-notice');
+        if (existingNotice) existingNotice.remove();
     }
 
     selectOption(question, value) {

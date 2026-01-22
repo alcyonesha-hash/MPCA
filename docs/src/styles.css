@@ -330,40 +330,65 @@ h3 {
 
 .chat-content {
     padding: 20px;
-    min-height: 350px;
-    max-height: 500px;
+    min-height: 400px;
+    max-height: 550px;
     overflow-y: auto;
 }
 
 /* Chat Messages */
 .chat-message {
-    margin-bottom: 14px;
+    margin-bottom: 16px;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 10px;
 }
 
 .chat-message.user {
-    align-items: flex-start;
+    flex-direction: row;
 }
 
 .chat-message.agent {
+    flex-direction: row-reverse;
+}
+
+/* Profile Avatar */
+.message-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+    color: white;
+    flex-shrink: 0;
+}
+
+.message-content {
+    display: flex;
+    flex-direction: column;
+    max-width: 85%;
+}
+
+.chat-message.agent .message-content {
     align-items: flex-end;
 }
 
 .message-sender {
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 600;
     margin-bottom: 4px;
     color: #555;
 }
 
 .message-bubble {
-    padding: 12px 16px;
+    padding: 14px 18px;
     border-radius: 12px;
-    max-width: 90%;
     word-wrap: break-word;
-    font-size: 15px;
-    line-height: 1.5;
+    font-size: 17px;
+    line-height: 1.6;
 }
 
 .chat-message.user .message-bubble {
@@ -386,14 +411,14 @@ h3 {
 /* Korean translation in chat bubbles */
 .message-ko {
     display: block;
-    margin-top: 8px;
-    font-size: 0.85em;
-    color: #888;
-    line-height: 1.4;
+    margin-top: 10px;
+    font-size: 0.9em;
+    color: #666;
+    line-height: 1.5;
 }
 
 .chat-message.agent .message-ko {
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba(255, 255, 255, 0.75);
 }
 
 /* GIF Container */
@@ -415,7 +440,7 @@ h3 {
 
 .gif-ready-text {
     width: 100%;
-    height: 300px;
+    height: 400px;
     background: linear-gradient(135deg, #e8eaf6 0%, #c5cae9 100%);
     border-radius: 8px;
     display: flex;
@@ -423,8 +448,28 @@ h3 {
     align-items: center;
     justify-content: center;
     color: #5c6bc0;
-    font-size: 14px;
+    font-size: 16px;
     text-align: center;
+    padding: 20px;
+}
+
+/* Video instruction notice */
+.video-notice {
+    background: #fff3e0;
+    border: 1px solid #ffcc80;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    text-align: center;
+    font-size: 15px;
+    color: #e65100;
+}
+
+.video-notice .ko {
+    display: block;
+    font-size: 13px;
+    color: #f57c00;
+    margin-top: 4px;
 }
 
 .gif-ready-text.hidden {
@@ -478,7 +523,7 @@ h3 {
 
 .question-text {
     margin-bottom: 12px;
-    font-size: 14px;
+    font-size: 16px;
 }
 
 .options {
