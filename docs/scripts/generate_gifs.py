@@ -34,7 +34,7 @@ AVATAR_SIZE = 44  # Larger avatars
 AVATAR_MARGIN = 14
 
 # Timing multiplier - higher = slower messages (more natural)
-TIMING_MULTIPLIER = 2.5  # 2.5x slower than before
+TIMING_MULTIPLIER = 1.5  # 1.5x (faster than before, was 2.5)
 
 # Colors
 BG_COLOR = (248, 249, 250)
