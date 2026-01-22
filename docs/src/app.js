@@ -176,9 +176,9 @@ class SurveyApp {
         this.renderChat('chat-a', chatA, set.type);
         this.renderChat('chat-b', chatB, set.type);
 
-        // Add single replay button for GIF sets
-        if (set.type === 'gif') {
-            this.addGifReplayButton(chatA.src, chatB.src);
+        // Add single replay button for video sets
+        if (set.type === 'video') {
+            this.addVideoReplayButton(chatA.src, chatB.src);
         }
 
         // Reset answers
@@ -203,17 +203,17 @@ class SurveyApp {
     renderChat(containerId, messages, type) {
         const container = document.getElementById(containerId);
 
-        if (type === 'gif') {
-            // GIF display - show ready message until Play button clicked
+        if (type === 'video') {
+            // Video display - show ready message until Play button clicked
             container.innerHTML = `
                 <div class="gif-container">
                     <div class="gif-ready-text" id="${containerId}-ready">
                         Click "Play Both" below<span class="ko">아래 "재생" 버튼을 누르세요</span>
                     </div>
-                    <img src="" alt="Chat animation" id="${containerId}-gif" class="chat-gif hidden" data-src="${messages.src}">
+                    <video id="${containerId}-video" class="chat-video hidden" data-src="${messages.src}" playsinline></video>
                 </div>
             `;
-            container.dataset.gifSrc = messages.src;
+            container.dataset.videoSrc = messages.src;
         } else {
             // Text chat display
             let html = '';
@@ -238,7 +238,7 @@ class SurveyApp {
         }
     }
 
-    addGifReplayButton(srcA, srcB) {
+    addVideoReplayButton(srcA, srcB) {
         // Remove existing replay button if any
         const existingBtn = document.querySelector('.gif-replay-btn');
         if (existingBtn) existingBtn.remove();
@@ -249,24 +249,27 @@ class SurveyApp {
         replayBtn.className = 'btn primary gif-replay-btn';
         replayBtn.innerHTML = 'Play Both<span class="ko">재생</span>';
         replayBtn.onclick = () => {
-            // Hide ready text and show GIFs
+            // Hide ready text and show videos
             const readyA = document.getElementById('chat-a-ready');
             const readyB = document.getElementById('chat-b-ready');
-            const imgA = document.getElementById('chat-a-gif');
-            const imgB = document.getElementById('chat-b-gif');
+            const videoA = document.getElementById('chat-a-video');
+            const videoB = document.getElementById('chat-b-video');
 
             if (readyA) readyA.classList.add('hidden');
             if (readyB) readyB.classList.add('hidden');
 
-            // Load and play both GIFs simultaneously with cache-busting
-            const timestamp = Date.now();
-            if (imgA) {
-                imgA.classList.remove('hidden');
-                imgA.src = srcA + '?t=' + timestamp;
+            // Load and play both videos simultaneously
+            if (videoA) {
+                videoA.classList.remove('hidden');
+                videoA.src = srcA;
+                videoA.currentTime = 0;
+                videoA.play();
             }
-            if (imgB) {
-                imgB.classList.remove('hidden');
-                imgB.src = srcB + '?t=' + timestamp;
+            if (videoB) {
+                videoB.classList.remove('hidden');
+                videoB.src = srcB;
+                videoB.currentTime = 0;
+                videoB.play();
             }
         };
         comparisonContainer.parentNode.insertBefore(replayBtn, comparisonContainer.nextSibling);

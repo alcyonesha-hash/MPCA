@@ -153,32 +153,32 @@ const SURVEY_SETS = [
 
     // Set 5: Office work - email writing
     {
-        type: "gif",
+        type: "video",
         comparisonType: "NoTiming",
-        topic: "professional email writing",
-        topicKo: "비즈니스 이메일 작성",
+        topic: "Ubuntu suspend/resume issue",
+        topicKo: "우분투 절전모드 문제",
         full: {
-            src: "data/gifs/timing_full_1.gif",
+            src: "data/gifs/timing_full_1.mp4",
             description: "Messages appear with natural delays"
         },
         comparison: {
-            src: "data/gifs/timing_notiming_1.gif",
+            src: "data/gifs/timing_notiming_1.mp4",
             description: "Messages appear instantly"
         }
     },
 
     // Set 6: Finance - stock terms
     {
-        type: "gif",
+        type: "video",
         comparisonType: "NoTiming",
-        topic: "stock market terminology",
-        topicKo: "주식 시장 용어",
+        topic: "Terminal shortcuts & phased updates",
+        topicKo: "터미널 단축키 & 단계적 업데이트",
         full: {
-            src: "data/gifs/timing_full_2.gif",
+            src: "data/gifs/timing_full_2.mp4",
             description: "Messages appear with natural delays"
         },
         comparison: {
-            src: "data/gifs/timing_notiming_2.gif",
+            src: "data/gifs/timing_notiming_2.mp4",
             description: "Messages appear instantly"
         }
     },
@@ -239,10 +239,10 @@ const SURVEY_SETS = [
             { role: "user", sender: "anna", text: "How do I get better responses from ChatGPT? Mine are always too generic\nChatGPT에서 더 좋은 응답을 얻으려면 어떻게 해요? 제 건 항상 너무 일반적이에요", time: "16:10" },
             { role: "user", sender: "ben", text: "Same here, it keeps giving me surface-level answers\n저도요, 계속 피상적인 답변만 줘요", time: "16:11" },
             { role: "user", sender: "chloe", text: "Have you tried being more specific in your prompts?\n프롬프트를 더 구체적으로 해봤어요?", time: "16:12" },
-            { role: "agent", sender: "helper", text: "AI technology has advanced rapidly in recent years!\nAI 기술이 최근 몇 년간 급격히 발전했어요!", time: "16:13" },
+            { role: "agent", sender: "helper", text: "anna: For expense ratios, under 0.2% is generally good\nanna: 보수율은 보통 0.2% 미만이면 좋아요", time: "16:13" },
             { role: "user", sender: "anna", text: "Can you give an example?\n예시를 들어줄 수 있어요?", time: "16:14" },
-            { role: "agent", sender: "helper", text: "Large language models are fascinating!\n대규모 언어 모델은 정말 흥미로워요!", time: "16:15" },
-            { role: "agent", sender: "helper", text: "Many companies are using AI these days.\n요즘 많은 회사들이 AI를 사용하고 있어요.", time: "16:16" },
+            { role: "agent", sender: "helper", text: "ben: ETFs trade on the exchange in real-time\nben: ETF는 거래소에서 실시간으로 거래돼요", time: "16:15" },
+            { role: "agent", sender: "helper", text: "Market cap equals share price times outstanding shares\n시가총액은 주가 곱하기 발행주식수예요", time: "16:16" },
             { role: "user", sender: "anna", text: "Oh that makes sense, I'll try that!\n아 그렇구나, 해볼게요!", time: "16:17" },
         ]
     },
@@ -253,32 +253,32 @@ const SURVEY_SETS = [
 
     // Set 9: LLM usage - API integration
     {
-        type: "gif",
+        type: "video",
         comparisonType: "NoChunking",
-        topic: "OpenAI API integration",
-        topicKo: "OpenAI API 연동",
+        topic: "VM bridged networking setup",
+        topicKo: "VM 브리지 네트워킹 설정",
         full: {
-            src: "data/gifs/chunking_full_1.gif",
+            src: "data/gifs/chunking_full_1.mp4",
             description: "Response split into natural chunks"
         },
         comparison: {
-            src: "data/gifs/chunking_nochunk_1.gif",
+            src: "data/gifs/chunking_nochunk_1.mp4",
             description: "Single long message"
         }
     },
 
     // Set 10: LLM usage - token optimization
     {
-        type: "gif",
+        type: "video",
         comparisonType: "NoChunking",
-        topic: "LLM token cost optimization",
-        topicKo: "LLM 토큰 비용 최적화",
+        topic: "GRUB/EFI boot repair",
+        topicKo: "GRUB/EFI 부팅 복구",
         full: {
-            src: "data/gifs/chunking_full_2.gif",
+            src: "data/gifs/chunking_full_2.mp4",
             description: "Instructions appear step by step"
         },
         comparison: {
-            src: "data/gifs/chunking_nochunk_2.gif",
+            src: "data/gifs/chunking_nochunk_2.mp4",
             description: "All instructions in one message"
         }
     }

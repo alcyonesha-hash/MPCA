@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
 """
-GIF Generator for Survey - Using Real IRC Conversations
+Video Generator for Survey - Using Real IRC Conversations
 
 Generates comparison videos showing:
 1. Timing difference (with natural delays vs instant)
 2. Chunking difference (split messages vs single long message)
 
 Uses real conversation data from Ubuntu IRC channel.
-Output: GIF images that show chat messages appearing over time
+Output: MP4 videos that show chat messages appearing over time (no loop issue)
 """
 
 import os
+import subprocess
 from PIL import Image, ImageDraw, ImageFont
 import imageio
 import numpy as np
@@ -18,8 +19,8 @@ import numpy as np
 # Configuration
 OUTPUT_DIR = os.path.join(os.path.dirname(__file__), '..', 'data', 'gifs')
 FPS = 10  # Frames per second
-WIDTH = 600
-HEIGHT = 500  # Increased for longer conversations
+WIDTH = 608  # Divisible by 16 for video codec compatibility
+HEIGHT = 512  # Divisible by 16 for video codec compatibility
 FONT_SIZE = 13
 BUBBLE_PADDING = 8
 MESSAGE_GAP = 12
@@ -67,21 +68,36 @@ def wrap_text(text, font, max_width, draw):
 
 
 def draw_message(draw, y_pos, message, font, is_agent=False):
-    """Draw a single chat message bubble"""
+    """Draw a single chat message bubble with bilingual support"""
     max_bubble_width = WIDTH - 80
 
-    # Wrap text
-    lines = wrap_text(message['text'], font, max_bubble_width - 2 * BUBBLE_PADDING, draw)
+    # Split text into English and Korean parts
+    text_parts = message['text'].split('\n')
+    en_text = text_parts[0]
+    ko_text = text_parts[1] if len(text_parts) > 1 else None
+
+    # Wrap English text
+    en_lines = wrap_text(en_text, font, max_bubble_width - 2 * BUBBLE_PADDING, draw)
+
+    # Wrap Korean text with smaller font
+    ko_font = get_font(11)  # Smaller font for Korean
+    ko_lines = wrap_text(ko_text, ko_font, max_bubble_width - 2 * BUBBLE_PADDING, draw) if ko_text else []
 
     # Calculate bubble size
     line_height = font.size + 3
-    text_height = len(lines) * line_height
-    bubble_height = text_height + 2 * BUBBLE_PADDING + 18  # Extra for sender name
+    ko_line_height = ko_font.size + 2
+    en_text_height = len(en_lines) * line_height
+    ko_text_height = len(ko_lines) * ko_line_height if ko_lines else 0
+    ko_spacing = 6 if ko_lines else 0  # Extra space between EN and KO
+    bubble_height = en_text_height + ko_text_height + ko_spacing + 2 * BUBBLE_PADDING + 18  # Extra for sender name
 
-    # Calculate text width
+    # Calculate text width (max of English and Korean lines)
     max_line_width = 0
-    for line in lines:
+    for line in en_lines:
         bbox = draw.textbbox((0, 0), line, font=font)
+        max_line_width = max(max_line_width, bbox[2] - bbox[0])
+    for line in ko_lines:
+        bbox = draw.textbbox((0, 0), line, font=ko_font)
         max_line_width = max(max_line_width, bbox[2] - bbox[0])
 
     bubble_width = max_line_width + 2 * BUBBLE_PADDING
@@ -91,10 +107,12 @@ def draw_message(draw, y_pos, message, font, is_agent=False):
         x = WIDTH - bubble_width - 15
         bubble_color = AGENT_BUBBLE
         text_color = AGENT_TEXT
+        ko_text_color = (200, 200, 255)  # Lighter color for Korean in agent bubble
     else:
         x = 15
         bubble_color = USER_BUBBLE
         text_color = TEXT_COLOR
+        ko_text_color = (120, 120, 120)  # Gray for Korean in user bubble
 
     # Draw bubble
     draw.rounded_rectangle(
@@ -108,11 +126,18 @@ def draw_message(draw, y_pos, message, font, is_agent=False):
     small_font = get_font(9)
     draw.text((x + BUBBLE_PADDING, y_pos + 4), sender, font=small_font, fill=SENDER_COLOR if not is_agent else (200, 200, 255))
 
-    # Draw text
+    # Draw English text
     text_y = y_pos + 16
-    for line in lines:
+    for line in en_lines:
         draw.text((x + BUBBLE_PADDING, text_y), line, font=font, fill=text_color)
         text_y += line_height
+
+    # Draw Korean text (smaller, different color)
+    if ko_lines:
+        text_y += ko_spacing
+        for line in ko_lines:
+            draw.text((x + BUBBLE_PADDING, text_y), line, font=ko_font, fill=ko_text_color)
+            text_y += ko_line_height
 
     return y_pos + bubble_height + MESSAGE_GAP
 
@@ -213,10 +238,14 @@ def generate_timing_video(messages, output_path, with_timing=True):
     for _ in range(final_hold):
         frames.append(frames[-1] if frames else create_frame([], font))
 
-    # Save as GIF (loop=1 means play once, loop=0 means infinite)
-    gif_path = output_path.replace('.mp4', '.gif')
-    imageio.mimsave(gif_path, frames, duration=1000/FPS, loop=1)
-    print(f"Generated: {gif_path}")
+    # Save as MP4 video (no loop issue)
+    mp4_path = output_path.replace('.gif', '.mp4')
+    if not mp4_path.endswith('.mp4'):
+        mp4_path = output_path
+
+    # Use imageio-ffmpeg to save as MP4
+    imageio.mimsave(mp4_path, frames, fps=FPS, codec='libx264', quality=8)
+    print(f"Generated: {mp4_path}")
 
 
 def generate_chunking_video(messages, single_response, output_path, with_chunking=True):
@@ -285,10 +314,14 @@ def generate_chunking_video(messages, single_response, output_path, with_chunkin
     for _ in range(int(2 * FPS)):
         frames.append(frames[-1])
 
-    # Save as GIF (loop=1 means play once, loop=0 means infinite)
-    gif_path = output_path.replace('.mp4', '.gif')
-    imageio.mimsave(gif_path, frames, duration=1000/FPS, loop=1)
-    print(f"Generated: {gif_path}")
+    # Save as MP4 video (no loop issue)
+    mp4_path = output_path.replace('.gif', '.mp4')
+    if not mp4_path.endswith('.mp4'):
+        mp4_path = output_path
+
+    # Use imageio-ffmpeg to save as MP4
+    imageio.mimsave(mp4_path, frames, fps=FPS, codec='libx264', quality=8)
+    print(f"Generated: {mp4_path}")
 
 
 def main():
@@ -302,17 +335,17 @@ def main():
     # Source: Lines 286-334 from ubuntu_merged.txt
     # ============================================
     timing_1_messages = [
-        {'role': 'user', 'sender': 'arkanoid', 'text': 'My system fails to resume to gnome desktop after suspend. When it resumes gnome shell is a black screen', 'ts': 0},
-        {'role': 'user', 'sender': 'derek-shnosh', 'text': 'In Ubuntu 23.10, some apps are not honoring the dark theme for parts of the window', 'ts': 2000},
-        {'role': 'user', 'sender': 'lotuspsychje', 'text': 'arkanoid: can you share your dmesg with the volunteers please', 'ts': 4000},
-        {'role': 'agent', 'sender': 'helper', 'text': 'arkanoid: Try loginctl terminate-session', 'ts': 8000, 'noTimingTs': 4100},
-        {'role': 'agent', 'sender': 'helper', 'text': 'This resets the gnome session without reboot', 'ts': 10500, 'noTimingTs': 4200},
-        {'role': 'user', 'sender': 'arkanoid', 'text': 'just tried systemctl restart systemd-logind, got visual login back', 'ts': 13000},
-        {'role': 'user', 'sender': 'ioria', 'text': "derek-shnosh: run in terminal 'G_MESSAGES_DEBUG=all hexchat'", 'ts': 15000},
-        {'role': 'agent', 'sender': 'helper', 'text': 'derek-shnosh: Check your gtk-theme setting', 'ts': 19000, 'noTimingTs': 15100},
-        {'role': 'user', 'sender': 'derek-shnosh', 'text': 'Figured it out! gtk-theme was set to Yaru-blue, changed to Yaru-blue-dark', 'ts': 23000},
-        {'role': 'agent', 'sender': 'helper', 'text': 'arkanoid: Good, the session restart worked', 'ts': 26000, 'noTimingTs': 23100},
-        {'role': 'agent', 'sender': 'helper', 'text': 'This is likely bug #1968907 in gnome-shell', 'ts': 28500, 'noTimingTs': 23200},
+        {'role': 'user', 'sender': 'arkanoid', 'text': 'My system fails to resume to gnome desktop after suspend. When it resumes gnome shell is a black screen\n절전 모드 후 그놈 데스크톱이 안 켜져요. 검은 화면만 나와요', 'ts': 0},
+        {'role': 'user', 'sender': 'derek-shnosh', 'text': 'In Ubuntu 23.10, some apps are not honoring the dark theme for parts of the window\n우분투 23.10에서 일부 앱이 다크 테마를 적용 안 해요', 'ts': 2000},
+        {'role': 'user', 'sender': 'lotuspsychje', 'text': 'arkanoid: can you share your dmesg with the volunteers please\narkanoid: dmesg 로그 공유해 주세요', 'ts': 4000},
+        {'role': 'agent', 'sender': 'helper', 'text': 'arkanoid: Try loginctl terminate-session\narkanoid: loginctl terminate-session 해보세요', 'ts': 8000, 'noTimingTs': 4100},
+        {'role': 'agent', 'sender': 'helper', 'text': 'This resets the gnome session without reboot\n재부팅 없이 그놈 세션을 재시작해요', 'ts': 10500, 'noTimingTs': 4200},
+        {'role': 'user', 'sender': 'arkanoid', 'text': 'just tried systemctl restart systemd-logind, got visual login back\nsystemctl restart systemd-logind 했더니 로그인 화면 돌아왔어요', 'ts': 13000},
+        {'role': 'user', 'sender': 'ioria', 'text': "derek-shnosh: run in terminal 'G_MESSAGES_DEBUG=all hexchat'\nderek-shnosh: 터미널에서 G_MESSAGES_DEBUG=all hexchat 실행해봐요", 'ts': 15000},
+        {'role': 'agent', 'sender': 'helper', 'text': 'derek-shnosh: Check your gtk-theme setting\nderek-shnosh: gtk-theme 설정 확인해보세요', 'ts': 19000, 'noTimingTs': 15100},
+        {'role': 'user', 'sender': 'derek-shnosh', 'text': 'Figured it out! gtk-theme was set to Yaru-blue, changed to Yaru-blue-dark\n해결! gtk-theme이 Yaru-blue였는데 Yaru-blue-dark로 바꿨어요', 'ts': 23000},
+        {'role': 'agent', 'sender': 'helper', 'text': 'arkanoid: Good, the session restart worked\narkanoid: 세션 재시작이 됐네요', 'ts': 26000, 'noTimingTs': 23100},
+        {'role': 'agent', 'sender': 'helper', 'text': 'This is likely bug #1968907 in gnome-shell\ngnome-shell 버그 #1968907일 가능성이 높아요', 'ts': 28500, 'noTimingTs': 23200},
     ]
 
     generate_timing_video(
@@ -331,18 +364,18 @@ def main():
     # Source: Lines 450-499, 623-645 from ubuntu_merged.txt
     # ============================================
     timing_2_messages = [
-        {'role': 'user', 'sender': 'en1gma', 'text': 'ctrl-a does not copy all in terminal but works in firefox. why?', 'ts': 0},
-        {'role': 'user', 'sender': 'ELFrederich', 'text': '7 packages can be upgraded but apt upgrade keeps them back', 'ts': 2500},
-        {'role': 'user', 'sender': 'pragmaticenigma', 'text': "ctrl+a doesn't copy anything, it's select all. Terminal doesn't support that command", 'ts': 5000},
-        {'role': 'agent', 'sender': 'helper', 'text': 'en1gma: Terminal apps handle shortcuts differently', 'ts': 9000, 'noTimingTs': 5100},
-        {'role': 'agent', 'sender': 'helper', 'text': 'ctrl-a in bash moves cursor to line start', 'ts': 11500, 'noTimingTs': 5200},
-        {'role': 'user', 'sender': 'lotuspsychje', 'text': 'ELFrederich: those are phased updates', 'ts': 14000},
-        {'role': 'user', 'sender': 'en1gma', 'text': 'i was reading that /etc/bash.bashrc needs to be edited', 'ts': 16500},
-        {'role': 'agent', 'sender': 'helper', 'text': 'ELFrederich: Phased updates roll out gradually', 'ts': 20500, 'noTimingTs': 16600},
-        {'role': 'agent', 'sender': 'helper', 'text': "Just wait a few days and they'll be available", 'ts': 23000, 'noTimingTs': 16700},
-        {'role': 'user', 'sender': 'pragmaticenigma', 'text': "en1gma: don't edit that file, it could break your system", 'ts': 26000},
-        {'role': 'agent', 'sender': 'helper', 'text': "en1gma: Edit ~/.bashrc instead, it's safer", 'ts': 30000, 'noTimingTs': 26100},
-        {'role': 'user', 'sender': 'en1gma', 'text': 'ok thanks, will try that', 'ts': 33000},
+        {'role': 'user', 'sender': 'en1gma', 'text': 'ctrl-a does not copy all in terminal but works in firefox. why?\n터미널에서 ctrl-a가 전체선택이 안 되는데 파이어폭스에선 돼요. 왜죠?', 'ts': 0},
+        {'role': 'user', 'sender': 'ELFrederich', 'text': '7 packages can be upgraded but apt upgrade keeps them back\n7개 패키지 업그레이드 가능한데 apt upgrade가 보류해요', 'ts': 2500},
+        {'role': 'user', 'sender': 'pragmaticenigma', 'text': "ctrl+a doesn't copy anything, it's select all. Terminal doesn't support that command\nctrl+a는 복사가 아니라 전체선택이에요. 터미널은 그 명령을 지원 안 해요", 'ts': 5000},
+        {'role': 'agent', 'sender': 'helper', 'text': 'en1gma: Terminal apps handle shortcuts differently\nen1gma: 터미널 앱은 단축키를 다르게 처리해요', 'ts': 9000, 'noTimingTs': 5100},
+        {'role': 'agent', 'sender': 'helper', 'text': 'ctrl-a in bash moves cursor to line start\nbash에서 ctrl-a는 커서를 줄 처음으로 이동해요', 'ts': 11500, 'noTimingTs': 5200},
+        {'role': 'user', 'sender': 'lotuspsychje', 'text': 'ELFrederich: those are phased updates\nELFrederich: 그건 단계적 업데이트예요', 'ts': 14000},
+        {'role': 'user', 'sender': 'en1gma', 'text': 'i was reading that /etc/bash.bashrc needs to be edited\n/etc/bash.bashrc를 수정해야 한다고 읽었어요', 'ts': 16500},
+        {'role': 'agent', 'sender': 'helper', 'text': 'ELFrederich: Phased updates roll out gradually\nELFrederich: 단계적 업데이트는 점진적으로 배포돼요', 'ts': 20500, 'noTimingTs': 16600},
+        {'role': 'agent', 'sender': 'helper', 'text': "Just wait a few days and they'll be available\n며칠 기다리면 사용 가능해져요", 'ts': 23000, 'noTimingTs': 16700},
+        {'role': 'user', 'sender': 'pragmaticenigma', 'text': "en1gma: don't edit that file, it could break your system\nen1gma: 그 파일 수정하지 마세요, 시스템 망가질 수 있어요", 'ts': 26000},
+        {'role': 'agent', 'sender': 'helper', 'text': "en1gma: Edit ~/.bashrc instead, it's safer\nen1gma: 대신 ~/.bashrc를 수정하세요, 더 안전해요", 'ts': 30000, 'noTimingTs': 26100},
+        {'role': 'user', 'sender': 'en1gma', 'text': 'ok thanks, will try that\n네 감사해요, 해볼게요', 'ts': 33000},
     ]
 
     generate_timing_video(
@@ -361,20 +394,20 @@ def main():
     # Source: Lines 521-586 from ubuntu_merged.txt
     # ============================================
     chunking_1_messages = [
-        {'role': 'user', 'sender': 'alcosta', 'text': 'I want to setup bridged networking with Virtual Machines on ubuntu 20.04', 'ts': 0},
-        {'role': 'user', 'sender': 'sarnold', 'text': 'usual approach is to create a new bridge, add physical NICs, set IP on bridge', 'ts': 3000},
-        {'role': 'user', 'sender': 'leftyfb', 'text': 'alcosta: they should only need a network bridge', 'ts': 5500},
-        {'role': 'agent', 'sender': 'helper', 'text': 'alcosta: First run nmcli con add ifname br0 type bridge con-name br0', 'ts': 9500},
-        {'role': 'agent', 'sender': 'helper', 'text': 'Then: nmcli con add type bridge-slave ifname enp6s0 master br0', 'ts': 12500},
-        {'role': 'user', 'sender': 'alcosta', 'text': "Something isn't right, the commands don't match my case", 'ts': 16000},
-        {'role': 'user', 'sender': 'leftyfb', 'text': 'it looks like you did lots of bad things, delete the bridge interfaces', 'ts': 18500},
-        {'role': 'agent', 'sender': 'helper', 'text': 'alcosta: Check nmcli con show to see current connections', 'ts': 22500},
-        {'role': 'agent', 'sender': 'helper', 'text': 'Delete the broken ones with nmcli con delete <uuid>', 'ts': 25500},
-        {'role': 'agent', 'sender': 'helper', 'text': 'Then start fresh with the bridge commands', 'ts': 28500},
-        {'role': 'user', 'sender': 'alcosta', 'text': 'OK, deleted them. Now what?', 'ts': 32000},
-        {'role': 'user', 'sender': 'leftyfb', 'text': 'reboot, then br0 should have an IP address', 'ts': 34500},
+        {'role': 'user', 'sender': 'alcosta', 'text': 'I want to setup bridged networking with Virtual Machines on ubuntu 20.04\n우분투 20.04에서 가상머신 브리지 네트워킹 설정하고 싶어요', 'ts': 0},
+        {'role': 'user', 'sender': 'sarnold', 'text': 'usual approach is to create a new bridge, add physical NICs, set IP on bridge\n보통 새 브리지 만들고, 물리 NIC 추가하고, 브리지에 IP 설정해요', 'ts': 3000},
+        {'role': 'user', 'sender': 'leftyfb', 'text': 'alcosta: they should only need a network bridge\nalcosta: 네트워크 브리지만 있으면 돼요', 'ts': 5500},
+        {'role': 'agent', 'sender': 'helper', 'text': 'alcosta: First run nmcli con add ifname br0 type bridge con-name br0\nalcosta: 먼저 nmcli con add ifname br0 type bridge con-name br0 실행', 'ts': 9500},
+        {'role': 'agent', 'sender': 'helper', 'text': 'Then: nmcli con add type bridge-slave ifname enp6s0 master br0\n그다음: nmcli con add type bridge-slave ifname enp6s0 master br0', 'ts': 12500},
+        {'role': 'user', 'sender': 'alcosta', 'text': "Something isn't right, the commands don't match my case\n뭔가 이상해요, 명령어가 제 경우에 안 맞아요", 'ts': 16000},
+        {'role': 'user', 'sender': 'leftyfb', 'text': 'it looks like you did lots of bad things, delete the bridge interfaces\n뭔가 많이 잘못된 것 같네요, 브리지 인터페이스 삭제하세요', 'ts': 18500},
+        {'role': 'agent', 'sender': 'helper', 'text': 'alcosta: Check nmcli con show to see current connections\nalcosta: nmcli con show로 현재 연결 확인하세요', 'ts': 22500},
+        {'role': 'agent', 'sender': 'helper', 'text': 'Delete the broken ones with nmcli con delete <uuid>\n망가진 건 nmcli con delete <uuid>로 삭제하세요', 'ts': 25500},
+        {'role': 'agent', 'sender': 'helper', 'text': 'Then start fresh with the bridge commands\n그다음 브리지 명령어로 새로 시작하세요', 'ts': 28500},
+        {'role': 'user', 'sender': 'alcosta', 'text': 'OK, deleted them. Now what?\n네, 삭제했어요. 이제 뭐해요?', 'ts': 32000},
+        {'role': 'user', 'sender': 'leftyfb', 'text': 'reboot, then br0 should have an IP address\n재부팅하면 br0에 IP 주소가 있을 거예요', 'ts': 34500},
     ]
-    chunking_1_single = "alcosta: To set up bridged networking, run these commands in order: First, nmcli con add ifname br0 type bridge con-name br0. Then nmcli con add type bridge-slave ifname enp6s0 master br0. If you have existing broken bridge configs, delete them with nmcli con delete <uuid> first. You can check current connections with nmcli con show. After creating the bridge, reboot and br0 should get an IP address. Then configure your VMs to use br0 as the network interface."
+    chunking_1_single = "alcosta: To set up bridged networking, run these commands in order: First, nmcli con add ifname br0 type bridge con-name br0. Then nmcli con add type bridge-slave ifname enp6s0 master br0. If you have existing broken bridge configs, delete them with nmcli con delete <uuid> first. You can check current connections with nmcli con show. After creating the bridge, reboot and br0 should get an IP address. Then configure your VMs to use br0 as the network interface.\nalcosta: 브리지 네트워킹 설정하려면 순서대로: 먼저 nmcli con add ifname br0 type bridge con-name br0. 그다음 nmcli con add type bridge-slave ifname enp6s0 master br0. 기존 브리지 설정이 망가졌으면 nmcli con delete <uuid>로 먼저 삭제. nmcli con show로 현재 연결 확인 가능. 브리지 만든 후 재부팅하면 br0에 IP 주소가 할당돼요. 그다음 VM을 br0 네트워크 인터페이스로 설정하세요."
 
     generate_chunking_video(
         chunking_1_messages,
@@ -394,22 +427,22 @@ def main():
     # Source: Lines 716-799 from ubuntu_merged.txt
     # ============================================
     chunking_2_messages = [
-        {'role': 'user', 'sender': 'cahoots', 'text': 'grub-install gives warning: EFI variables cannot be set on this system', 'ts': 0},
-        {'role': 'user', 'sender': 'EriC^^', 'text': 'in which mode are you booting? uefi? csm legacy?', 'ts': 3000},
-        {'role': 'user', 'sender': 'cahoots', 'text': "I'm in uefi, csm legacy is disabled", 'ts': 6000},
-        {'role': 'agent', 'sender': 'helper', 'text': 'cahoots: First mount your root partition', 'ts': 10000},
-        {'role': 'agent', 'sender': 'helper', 'text': 'sudo mount /dev/nvme0n1p3 /mnt', 'ts': 13500},
-        {'role': 'user', 'sender': 'EriC^^', 'text': 'then run the for loop to bind mount /dev /proc /sys /run', 'ts': 17000},
-        {'role': 'agent', 'sender': 'helper', 'text': 'Next: for i in /dev /proc /sys /run; do sudo mount -R $i /mnt$i; done', 'ts': 21000},
-        {'role': 'agent', 'sender': 'helper', 'text': 'Then: sudo chroot /mnt', 'ts': 24500},
-        {'role': 'user', 'sender': 'cahoots', 'text': "mount /boot/efi says can't find UUID", 'ts': 28000},
-        {'role': 'user', 'sender': 'EriC^^', 'text': 'the uuid changed, edit /etc/fstab with the new one from blkid', 'ts': 31000},
-        {'role': 'agent', 'sender': 'helper', 'text': 'cahoots: Run blkid to find the new UUID', 'ts': 35000},
-        {'role': 'agent', 'sender': 'helper', 'text': 'Update /etc/fstab, then mount /boot/efi', 'ts': 38500},
-        {'role': 'agent', 'sender': 'helper', 'text': 'Finally: grub-install --target=x86_64-efi', 'ts': 42000},
-        {'role': 'user', 'sender': 'cahoots', 'text': 'installation finished, no error reported!', 'ts': 46000},
+        {'role': 'user', 'sender': 'cahoots', 'text': 'grub-install gives warning: EFI variables cannot be set on this system\ngrub-install이 경고해요: 이 시스템에서 EFI 변수를 설정할 수 없다고', 'ts': 0},
+        {'role': 'user', 'sender': 'EriC^^', 'text': 'in which mode are you booting? uefi? csm legacy?\n어떤 모드로 부팅하고 있어요? uefi? csm legacy?', 'ts': 3000},
+        {'role': 'user', 'sender': 'cahoots', 'text': "I'm in uefi, csm legacy is disabled\nuefi예요, csm legacy는 비활성화됐어요", 'ts': 6000},
+        {'role': 'agent', 'sender': 'helper', 'text': 'cahoots: First mount your root partition\ncahoots: 먼저 루트 파티션을 마운트하세요', 'ts': 10000},
+        {'role': 'agent', 'sender': 'helper', 'text': 'sudo mount /dev/nvme0n1p3 /mnt\nsudo mount /dev/nvme0n1p3 /mnt', 'ts': 13500},
+        {'role': 'user', 'sender': 'EriC^^', 'text': 'then run the for loop to bind mount /dev /proc /sys /run\n그다음 for 루프로 /dev /proc /sys /run 바인드 마운트하세요', 'ts': 17000},
+        {'role': 'agent', 'sender': 'helper', 'text': 'Next: for i in /dev /proc /sys /run; do sudo mount -R $i /mnt$i; done\n다음: for i in /dev /proc /sys /run; do sudo mount -R $i /mnt$i; done', 'ts': 21000},
+        {'role': 'agent', 'sender': 'helper', 'text': 'Then: sudo chroot /mnt\n그다음: sudo chroot /mnt', 'ts': 24500},
+        {'role': 'user', 'sender': 'cahoots', 'text': "mount /boot/efi says can't find UUID\nmount /boot/efi가 UUID를 찾을 수 없다고 해요", 'ts': 28000},
+        {'role': 'user', 'sender': 'EriC^^', 'text': 'the uuid changed, edit /etc/fstab with the new one from blkid\nuuid가 바뀌었어요, blkid에서 새 uuid로 /etc/fstab 수정하세요', 'ts': 31000},
+        {'role': 'agent', 'sender': 'helper', 'text': 'cahoots: Run blkid to find the new UUID\ncahoots: blkid로 새 UUID 확인하세요', 'ts': 35000},
+        {'role': 'agent', 'sender': 'helper', 'text': 'Update /etc/fstab, then mount /boot/efi\n/etc/fstab 수정하고 mount /boot/efi 하세요', 'ts': 38500},
+        {'role': 'agent', 'sender': 'helper', 'text': 'Finally: grub-install --target=x86_64-efi\n마지막으로: grub-install --target=x86_64-efi', 'ts': 42000},
+        {'role': 'user', 'sender': 'cahoots', 'text': 'installation finished, no error reported!\n설치 완료, 에러 없어요!', 'ts': 46000},
     ]
-    chunking_2_single = "cahoots: To fix grub installation, follow these steps: Mount your root partition with sudo mount /dev/nvme0n1p3 /mnt. Then bind mount the virtual filesystems with for i in /dev /proc /sys /run; do sudo mount -R $i /mnt$i; done. Chroot into the system with sudo chroot /mnt. If mount /boot/efi fails due to UUID mismatch, run blkid to find the new UUID, update /etc/fstab with the correct UUID, then mount /boot/efi again. Finally run grub-install --target=x86_64-efi to install grub. After that, exit the chroot and reboot."
+    chunking_2_single = "cahoots: To fix grub installation, follow these steps: Mount your root partition with sudo mount /dev/nvme0n1p3 /mnt. Then bind mount the virtual filesystems with for i in /dev /proc /sys /run; do sudo mount -R $i /mnt$i; done. Chroot into the system with sudo chroot /mnt. If mount /boot/efi fails due to UUID mismatch, run blkid to find the new UUID, update /etc/fstab with the correct UUID, then mount /boot/efi again. Finally run grub-install --target=x86_64-efi to install grub. After that, exit the chroot and reboot.\ncahoots: grub 설치를 수정하려면: sudo mount /dev/nvme0n1p3 /mnt로 루트 파티션 마운트. 그다음 for i in /dev /proc /sys /run; do sudo mount -R $i /mnt$i; done으로 가상 파일시스템 바인드 마운트. sudo chroot /mnt로 시스템에 진입. UUID 불일치로 mount /boot/efi가 실패하면 blkid로 새 UUID 확인, /etc/fstab 수정 후 다시 마운트. 마지막으로 grub-install --target=x86_64-efi로 grub 설치. 그 후 chroot 나와서 재부팅."
 
     generate_chunking_video(
         chunking_2_messages,

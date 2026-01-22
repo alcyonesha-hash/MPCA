@@ -408,7 +408,8 @@ h3 {
     border-radius: 8px;
 }
 
-.gif-container img.hidden {
+.gif-container img.hidden,
+.gif-container video.hidden {
     display: none;
 }
 
