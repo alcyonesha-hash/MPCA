@@ -80,11 +80,13 @@ class SurveyApp {
         });
 
         infoBtn.addEventListener('click', () => {
+            const phoneInput = document.getElementById('participant-phone');
             this.participant = {
                 gender: genderSelect.value,
                 ageGroup: ageSelect.value,
                 techExperience: techSelect.value,
                 aiExperience: aiSelect.value,
+                phone: phoneInput ? phoneInput.value.trim() : '',
                 startTime: new Date().toISOString()
             };
             this.startTime = Date.now();
