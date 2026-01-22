@@ -213,9 +213,9 @@ def generate_timing_video(messages, output_path, with_timing=True):
     for _ in range(final_hold):
         frames.append(frames[-1] if frames else create_frame([], font))
 
-    # Save as GIF
+    # Save as GIF (loop=1 means play once, loop=0 means infinite)
     gif_path = output_path.replace('.mp4', '.gif')
-    imageio.mimsave(gif_path, frames, duration=1000/FPS, loop=0)
+    imageio.mimsave(gif_path, frames, duration=1000/FPS, loop=1)
     print(f"Generated: {gif_path}")
 
 
@@ -285,9 +285,9 @@ def generate_chunking_video(messages, single_response, output_path, with_chunkin
     for _ in range(int(2 * FPS)):
         frames.append(frames[-1])
 
-    # Save as GIF
+    # Save as GIF (loop=1 means play once, loop=0 means infinite)
     gif_path = output_path.replace('.mp4', '.gif')
-    imageio.mimsave(gif_path, frames, duration=1000/FPS, loop=0)
+    imageio.mimsave(gif_path, frames, duration=1000/FPS, loop=1)
     print(f"Generated: {gif_path}")
 
 
