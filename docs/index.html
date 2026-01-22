@@ -34,12 +34,13 @@
             <div class="container">
                 <h1>Participant Information<span class="ko">참가자 정보</span></h1>
                 <div class="form-group">
-                    <label for="participant-name">Name<span class="ko">이름</span></label>
-                    <input type="text" id="participant-name" placeholder="Enter your name">
-                </div>
-                <div class="form-group">
-                    <label for="participant-email">Email<span class="ko">이메일</span></label>
-                    <input type="email" id="participant-email" placeholder="Enter your email">
+                    <label for="participant-gender">Gender<span class="ko">성별</span></label>
+                    <select id="participant-gender">
+                        <option value="">Select</option>
+                        <option value="male">Male<span class="ko">남성</span></option>
+                        <option value="female">Female<span class="ko">여성</span></option>
+                        <option value="other">Other / Prefer not to say<span class="ko">기타 / 밝히고 싶지 않음</span></option>
+                    </select>
                 </div>
                 <div class="form-group">
                     <label for="participant-age">Age Group<span class="ko">연령대</span></label>
@@ -56,18 +57,41 @@
                     <label for="participant-tech">IT/Development Experience<span class="ko">IT/개발 경험</span></label>
                     <select id="participant-tech">
                         <option value="">Select</option>
-                        <option value="none">No experience</option>
-                        <option value="beginner">Beginner</option>
-                        <option value="intermediate">Intermediate</option>
-                        <option value="advanced">Advanced</option>
+                        <option value="none">No experience<span class="ko">없음</span></option>
+                        <option value="beginner">Beginner<span class="ko">초급</span></option>
+                        <option value="intermediate">Intermediate<span class="ko">중급</span></option>
+                        <option value="advanced">Advanced<span class="ko">고급</span></option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="participant-phone">Phone (Optional)<span class="ko">전화번호 (선택사항)</span></label>
-                    <input type="tel" id="participant-phone" placeholder="For gift delivery only">
-                    <p class="field-note">Optional - for gift delivery only, will be discarded after<span class="ko">선택사항 - 답례품 지급 후 폐기됩니다.</span></p>
+                    <label for="participant-ai">AI Chatbot Experience<span class="ko">AI 챗봇 사용 경험</span></label>
+                    <select id="participant-ai">
+                        <option value="">Select</option>
+                        <option value="never">Never used<span class="ko">사용해 본 적 없음</span></option>
+                        <option value="rarely">Tried a few times<span class="ko">몇 번 사용해 봄</span></option>
+                        <option value="sometimes">Use occasionally<span class="ko">가끔 사용</span></option>
+                        <option value="often">Use regularly<span class="ko">자주 사용</span></option>
+                    </select>
                 </div>
                 <button id="info-btn" class="btn primary" disabled>Next<span class="ko">다음</span></button>
+            </div>
+        </div>
+
+        <!-- Experiment Description Screen -->
+        <div id="description-screen" class="screen">
+            <div class="container">
+                <h1>About This Experiment<span class="ko">실험 소개</span></h1>
+                <div class="description-box">
+                    <h3>What is an AI Agent in Group Chat?<span class="ko">그룹 채팅의 AI 에이전트란?</span></h3>
+                    <p>Imagine an <strong>AI assistant that participates in your group chat</strong>. When someone asks a question, this agent reads the conversation context and responds on your behalf — helping answer questions you might know the answer to.<span class="ko">여러분의 그룹 채팅에 참여하는 <strong>AI 어시스턴트</strong>를 상상해 보세요. 누군가 질문을 하면, 이 에이전트가 대화 맥락을 파악하고 여러분을 대신하여 답변합니다.</span></p>
+
+                    <h3>What Will You See?<span class="ko">무엇을 보게 되나요?</span></h3>
+                    <p>You will see <strong>real conversation outputs</strong> from such an agent participating in multi-party chat discussions. The conversations are from an actual online community (Ubuntu IRC support channel).<span class="ko">다자간 채팅에 참여하는 에이전트의 <strong>실제 대화 출력</strong>을 보게 됩니다. 대화는 실제 온라인 커뮤니티(Ubuntu IRC 지원 채널)에서 가져온 것입니다.</span></p>
+
+                    <h3>Your Task<span class="ko">여러분의 역할</span></h3>
+                    <p>Compare two versions of the agent's behavior and choose which feels more <strong>natural and human-like</strong>.<span class="ko">두 가지 버전의 에이전트 행동을 비교하고, 어느 쪽이 더 <strong>자연스럽고 사람답게</strong> 느껴지는지 선택해 주세요.</span></p>
+                </div>
+                <button id="description-btn" class="btn primary">Next<span class="ko">다음</span></button>
             </div>
         </div>
 
@@ -76,10 +100,11 @@
             <div class="container">
                 <h1>Instructions<span class="ko">안내</span></h1>
                 <div class="instructions-box">
-                    <p>In this survey, you will see <strong>two chat conversations (A and B)</strong> and choose which one feels more natural.<span class="ko">두 개의 채팅 대화(A와 B)를 보고 어느 쪽이 더 자연스러운지 선택합니다.</span></p>
+                    <p>You will see <strong>two chat conversations (A and B)</strong> where an AI agent is responding on behalf of users in a group chat.<span class="ko">그룹 채팅에서 AI 에이전트가 사용자를 대신해 응답하는 <strong>두 개의 대화(A와 B)</strong>를 보게 됩니다.</span></p>
+                    <p><strong>Your task:</strong> Choose which agent feels more like a <strong>real human</strong>, not an AI.<span class="ko"><strong>여러분의 역할:</strong> 두 에이전트 중 어느 쪽이 AI가 아닌 <strong>실제 사람</strong>처럼 느껴지는지 선택해 주세요.</span></p>
                     <ul>
                         <li>There are <strong>no right or wrong answers</strong>. Please judge based on your intuitive impression.<span class="ko">정답이 없으니 직관적인 느낌으로 판단해 주세요.</span></li>
-                        <li>Some examples are shown as <strong>short videos (GIF)</strong>.<span class="ko">일부 예시는 짧은 동영상(GIF)으로 보여집니다.</span></li>
+                        <li>Some examples are shown as <strong>short videos (GIF)</strong> to show timing.<span class="ko">일부 예시는 타이밍을 보여주기 위해 짧은 동영상(GIF)으로 제공됩니다.</span></li>
                         <li>Videos can be replayed multiple times.<span class="ko">동영상은 여러 번 다시 볼 수 있습니다.</span></li>
                         <li>There are <strong>10 comparison sets</strong> in total.<span class="ko">총 10개의 비교 세트가 있습니다.</span></li>
                     </ul>

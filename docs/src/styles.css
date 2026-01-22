@@ -184,6 +184,29 @@ h3 {
     font-style: italic;
 }
 
+/* Experiment Description */
+.description-box {
+    background: #f0f7ff;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+}
+
+.description-box h3 {
+    color: #3f51b5;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.description-box h3:first-child {
+    margin-top: 0;
+}
+
+.description-box p {
+    margin-bottom: 12px;
+    color: #444;
+}
+
 /* Instructions */
 .instructions-box {
     background: #f0f4ff;

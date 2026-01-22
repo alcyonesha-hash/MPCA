@@ -17,10 +17,11 @@ class SurveyApp {
         this.startTime = null;
         this.setStartTime = null;
 
-        // Randomize A/B order for each set
-        this.abRandomization = SURVEY_SETS.map(() => Math.random() > 0.5);
+        // Fixed A/B order for each set (no randomization)
+        // true = swap A/B positions, false = keep original order
+        this.abRandomization = SURVEY_SETS.map(() => false);
 
-        // Randomize set order (keeping attention check position)
+        // Fixed set order (no randomization)
         this.setOrder = this.generateSetOrder();
 
         // Track answers for current set
@@ -35,27 +36,15 @@ class SurveyApp {
     }
 
     generateSetOrder() {
-        // Shuffle main sets (0-9), insert attention check after set 5
-        const mainSets = [...Array(SURVEY_SETS.length).keys()];
-        this.shuffleArray(mainSets);
-
-        // Insert attention check marker at position 5
+        // Fixed order: sets 0-9 in sequence, attention check after set 5
         const order = [];
-        for (let i = 0; i < mainSets.length; i++) {
-            order.push({ type: 'survey', index: mainSets[i] });
+        for (let i = 0; i < SURVEY_SETS.length; i++) {
+            order.push({ type: 'survey', index: i });
             if (i === 4) {
                 order.push({ type: 'attention' });
             }
         }
         return order;
-    }
-
-    shuffleArray(array) {
-        for (let i = array.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
-        }
-        return array;
     }
 
     bindEvents() {
@@ -73,35 +62,37 @@ class SurveyApp {
 
         // Participant Info
         const infoBtn = document.getElementById('info-btn');
-        const nameInput = document.getElementById('participant-name');
-        const emailInput = document.getElementById('participant-email');
+        const genderSelect = document.getElementById('participant-gender');
         const ageSelect = document.getElementById('participant-age');
         const techSelect = document.getElementById('participant-tech');
+        const aiSelect = document.getElementById('participant-ai');
 
         const validateInfo = () => {
-            const valid = nameInput.value.trim() &&
-                         emailInput.value.trim() &&
+            const valid = genderSelect.value &&
                          ageSelect.value &&
-                         techSelect.value;
+                         techSelect.value &&
+                         aiSelect.value;
             infoBtn.disabled = !valid;
         };
 
-        [nameInput, emailInput, ageSelect, techSelect].forEach(el => {
-            el.addEventListener('input', validateInfo);
+        [genderSelect, ageSelect, techSelect, aiSelect].forEach(el => {
             el.addEventListener('change', validateInfo);
         });
 
         infoBtn.addEventListener('click', () => {
-            const phoneInput = document.getElementById('participant-phone');
             this.participant = {
-                name: nameInput.value.trim(),
-                email: emailInput.value.trim(),
-                phone: phoneInput ? phoneInput.value.trim() : '',
+                gender: genderSelect.value,
                 ageGroup: ageSelect.value,
                 techExperience: techSelect.value,
+                aiExperience: aiSelect.value,
                 startTime: new Date().toISOString()
             };
             this.startTime = Date.now();
+            this.showScreen('description');
+        });
+
+        // Experiment Description
+        document.getElementById('description-btn').addEventListener('click', () => {
             this.showScreen('instructions');
         });
 

@@ -1,17 +1,16 @@
 #!/usr/bin/env python3
 """
-GIF/Video Generator for Survey
+GIF Generator for Survey - Using Real IRC Conversations
 
 Generates comparison videos showing:
-1. Timing difference (with delays vs instant)
+1. Timing difference (with natural delays vs instant)
 2. Chunking difference (split messages vs single long message)
 
-Output: MP4 videos that show chat messages appearing over time
+Uses real conversation data from Ubuntu IRC channel.
+Output: GIF images that show chat messages appearing over time
 """
 
 import os
-import json
-from datetime import datetime
 from PIL import Image, ImageDraw, ImageFont
 import imageio
 import numpy as np
@@ -20,10 +19,10 @@ import numpy as np
 OUTPUT_DIR = os.path.join(os.path.dirname(__file__), '..', 'data', 'gifs')
 FPS = 10  # Frames per second
 WIDTH = 600
-HEIGHT = 400
-FONT_SIZE = 14
-BUBBLE_PADDING = 10
-MESSAGE_GAP = 15
+HEIGHT = 500  # Increased for longer conversations
+FONT_SIZE = 13
+BUBBLE_PADDING = 8
+MESSAGE_GAP = 12
 
 # Colors
 BG_COLOR = (248, 249, 250)
@@ -31,7 +30,7 @@ USER_BUBBLE = (227, 242, 253)
 AGENT_BUBBLE = (102, 126, 234)
 TEXT_COLOR = (51, 51, 51)
 AGENT_TEXT = (255, 255, 255)
-SENDER_COLOR = (102, 102, 102)
+SENDER_COLOR = (85, 85, 85)
 
 
 def get_font(size=FONT_SIZE):
@@ -69,15 +68,15 @@ def wrap_text(text, font, max_width, draw):
 
 def draw_message(draw, y_pos, message, font, is_agent=False):
     """Draw a single chat message bubble"""
-    max_bubble_width = WIDTH - 100
+    max_bubble_width = WIDTH - 80
 
     # Wrap text
     lines = wrap_text(message['text'], font, max_bubble_width - 2 * BUBBLE_PADDING, draw)
 
     # Calculate bubble size
-    line_height = font.size + 4
+    line_height = font.size + 3
     text_height = len(lines) * line_height
-    bubble_height = text_height + 2 * BUBBLE_PADDING + 20  # Extra for sender name
+    bubble_height = text_height + 2 * BUBBLE_PADDING + 18  # Extra for sender name
 
     # Calculate text width
     max_line_width = 0
@@ -89,28 +88,28 @@ def draw_message(draw, y_pos, message, font, is_agent=False):
 
     # Position
     if is_agent:
-        x = WIDTH - bubble_width - 20
+        x = WIDTH - bubble_width - 15
         bubble_color = AGENT_BUBBLE
         text_color = AGENT_TEXT
     else:
-        x = 20
+        x = 15
         bubble_color = USER_BUBBLE
         text_color = TEXT_COLOR
 
     # Draw bubble
     draw.rounded_rectangle(
         [x, y_pos, x + bubble_width, y_pos + bubble_height],
-        radius=10,
+        radius=8,
         fill=bubble_color
     )
 
     # Draw sender name
     sender = message.get('sender', 'Agent' if is_agent else 'User')
-    small_font = get_font(10)
-    draw.text((x + BUBBLE_PADDING, y_pos + 5), sender, font=small_font, fill=SENDER_COLOR if not is_agent else (200, 200, 255))
+    small_font = get_font(9)
+    draw.text((x + BUBBLE_PADDING, y_pos + 4), sender, font=small_font, fill=SENDER_COLOR if not is_agent else (200, 200, 255))
 
     # Draw text
-    text_y = y_pos + 20
+    text_y = y_pos + 16
     for line in lines:
         draw.text((x + BUBBLE_PADDING, text_y), line, font=font, fill=text_color)
         text_y += line_height
@@ -123,44 +122,37 @@ def create_frame(messages_to_show, font):
     img = Image.new('RGB', (WIDTH, HEIGHT), BG_COLOR)
     draw = ImageDraw.Draw(img)
 
-    y_pos = 20
+    y_pos = 15
     for msg in messages_to_show:
         is_agent = msg['role'] == 'agent'
         y_pos = draw_message(draw, y_pos, msg, font, is_agent)
 
-        if y_pos > HEIGHT - 50:
+        if y_pos > HEIGHT - 40:
             break
 
     return np.array(img)
 
 
 def calculate_reading_time(text):
-    """Calculate realistic reading time based on text length (words per minute)"""
+    """Calculate realistic reading time based on text length"""
     words = len(text.split())
-    # Average reading speed: ~200 WPM, but for chat context slower (~150 WPM)
-    # Minimum 1.5 seconds, maximum 5 seconds
-    reading_time = max(1.5, min(5.0, words / 2.5))
+    # Faster reading for chat context
+    reading_time = max(1.0, min(4.0, words / 3.0))
     return reading_time
 
 
 def calculate_typing_time(text):
     """Calculate realistic typing time based on text length"""
     chars = len(text)
-    # Average typing speed: ~40 WPM = ~200 CPM = ~3.3 CPS
-    # For chat, faster: ~5 CPS, with minimum 1 second
-    typing_time = max(1.0, min(4.0, chars / 5.0))
+    # Average typing speed: ~5 chars per second
+    typing_time = max(0.8, min(3.0, chars / 6.0))
     return typing_time
 
 
-def generate_timing_video(messages, delays, output_path, with_timing=True):
+def generate_timing_video(messages, output_path, with_timing=True):
     """
     Generate video showing messages appearing with or without timing delays
-
-    Args:
-        messages: List of message dicts
-        delays: List of delays in seconds for each message (used as base for agent)
-        output_path: Output file path
-        with_timing: If True, use natural delays for ALL speakers; if False, instant appearance
+    Uses 'ts' field from messages for timing control
     """
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
@@ -168,40 +160,46 @@ def generate_timing_video(messages, delays, output_path, with_timing=True):
     frames = []
 
     messages_shown = []
+    last_ts = 0
 
     for i, msg in enumerate(messages):
-        # Calculate natural delay based on speaker and context
-        if with_timing and i > 0:
-            prev_msg = messages[i - 1]
+        # Get timing from message
+        if with_timing:
+            msg_ts = msg.get('ts', 0)
+        else:
+            # For no-timing, use noTimingTs if available, otherwise instant
+            msg_ts = msg.get('noTimingTs', i * 100)  # 100ms between each message
 
-            if msg['role'] == 'user':
-                # User needs time to read previous message, then type
-                read_time = calculate_reading_time(prev_msg['text'])
-                type_time = calculate_typing_time(msg['text'])
-                natural_delay = read_time + type_time
-            else:
-                # Agent "thinks" then responds - use provided delay or calculate
-                if i < len(delays) and delays[i] > 0:
-                    natural_delay = delays[i]
-                else:
-                    # Calculate based on response complexity
-                    natural_delay = calculate_typing_time(msg['text']) + 1.0
+        # Calculate delay since last message
+        if i > 0:
+            delay_ms = msg_ts - last_ts
+            delay_seconds = delay_ms / 1000.0
+
+            # Cap delay for reasonable GIF length
+            delay_seconds = min(delay_seconds, 4.0)
 
             # Show current state for delay duration
-            delay_frames = int(natural_delay * FPS)
-            frame = create_frame(messages_shown, font)
-            for _ in range(delay_frames):
-                frames.append(frame)
+            if delay_seconds > 0.1:
+                delay_frames = int(delay_seconds * FPS)
+                frame = create_frame(messages_shown, font)
+                for _ in range(delay_frames):
+                    frames.append(frame)
+
+        last_ts = msg_ts
 
         # Add message
         messages_shown.append(msg)
 
-        # Show new message appearing
+        # Show new message
         frame = create_frame(messages_shown, font)
 
-        # Hold for a moment to let viewer read
-        hold_time = calculate_reading_time(msg['text']) * 0.5 if with_timing else 0.1
-        hold_frames = int(hold_time * FPS)
+        # Hold for reading time
+        if with_timing:
+            hold_time = calculate_reading_time(msg['text']) * 0.4
+        else:
+            hold_time = 0.15
+
+        hold_frames = max(1, int(hold_time * FPS))
         for _ in range(hold_frames):
             frames.append(frame)
 
@@ -216,101 +214,10 @@ def generate_timing_video(messages, delays, output_path, with_timing=True):
     print(f"Generated: {gif_path}")
 
 
-def generate_chunking_video(user_msg, agent_response, output_path, with_chunking=True):
+def generate_chunking_video(messages, single_response, output_path, with_chunking=True):
     """
     Generate video showing chunked vs single response
-
-    Args:
-        user_msg: User message dict
-        agent_response: Full agent response text
-        output_path: Output file path
-        with_chunking: If True, split into chunks; if False, single message
-    """
-    os.makedirs(os.path.dirname(output_path), exist_ok=True)
-
-    font = get_font()
-    frames = []
-
-    # Show user message first with natural reading time
-    messages_shown = [user_msg]
-    frame = create_frame(messages_shown, font)
-    read_time = calculate_reading_time(user_msg['text'])
-    for _ in range(int(read_time * FPS)):
-        frames.append(frame)
-
-    if with_chunking:
-        # Split response into chunks (at sentence boundaries, max ~12 words)
-        words = agent_response.split()
-        chunks = []
-        current_chunk = []
-
-        for word in words:
-            current_chunk.append(word)
-            if len(current_chunk) >= 12 or word.endswith(('.', '!', '?')):
-                chunks.append(' '.join(current_chunk))
-                current_chunk = []
-
-        if current_chunk:
-            chunks.append(' '.join(current_chunk))
-
-        # Show chunks with natural typing delays
-        for i, chunk in enumerate(chunks):
-            # Add thinking/typing delay before chunk appears
-            if i == 0:
-                # First chunk: agent processing time
-                thinking_delay = 2.0
-            else:
-                # Subsequent chunks: typing delay based on length
-                thinking_delay = calculate_typing_time(chunk)
-
-            # Show delay (thinking indicator could be added here)
-            delay_frame = create_frame(messages_shown, font)
-            for _ in range(int(thinking_delay * FPS)):
-                frames.append(delay_frame)
-
-            chunk_msg = {'role': 'agent', 'sender': 'helper', 'text': chunk}
-            messages_shown.append(chunk_msg)
-
-            frame = create_frame(messages_shown, font)
-
-            # Hold for reading time
-            hold_time = calculate_reading_time(chunk) * 0.6
-            for _ in range(int(hold_time * FPS)):
-                frames.append(frame)
-    else:
-        # Single message - appears after brief processing delay
-        processing_delay = 0.3  # Instant appearance for comparison
-        for _ in range(int(processing_delay * FPS)):
-            frames.append(create_frame(messages_shown, font))
-
-        agent_msg = {'role': 'agent', 'sender': 'helper', 'text': agent_response}
-        messages_shown.append(agent_msg)
-
-        frame = create_frame(messages_shown, font)
-        # Hold for reading time
-        hold_time = calculate_reading_time(agent_response) * 0.5
-        for _ in range(int(hold_time * FPS)):
-            frames.append(frame)
-
-    # Hold final state
-    for _ in range(int(2 * FPS)):
-        frames.append(frames[-1])
-
-    # Save as GIF
-    gif_path = output_path.replace('.mp4', '.gif')
-    imageio.mimsave(gif_path, frames, duration=1000/FPS, loop=0)
-    print(f"Generated: {gif_path}")
-
-
-def generate_chunking_video_multi(user_messages, agent_response, output_path, with_chunking=True):
-    """
-    Generate video showing chunked vs single response with multiple users
-
-    Args:
-        user_messages: List of user message dicts
-        agent_response: Full agent response text
-        output_path: Output file path
-        with_chunking: If True, split into chunks; if False, single message
+    Uses 'chunkDelay' field for chunked timing
     """
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
@@ -318,59 +225,54 @@ def generate_chunking_video_multi(user_messages, agent_response, output_path, wi
     frames = []
 
     messages_shown = []
-
-    # Show user messages appearing
-    for msg in user_messages:
-        messages_shown.append(msg)
-        frame = create_frame(messages_shown, font)
-        read_time = calculate_reading_time(msg['text']) * 0.8
-        for _ in range(int(read_time * FPS)):
-            frames.append(frame)
+    last_ts = 0
 
     if with_chunking:
-        # Split response into chunks (at sentence boundaries)
-        words = agent_response.split()
-        chunks = []
-        current_chunk = []
+        # Show messages with chunked agent responses
+        for i, msg in enumerate(messages):
+            msg_ts = msg.get('ts', i * 2000)
 
-        for word in words:
-            current_chunk.append(word)
-            if len(current_chunk) >= 10 or word.endswith(('.', '!', '?')):
-                chunks.append(' '.join(current_chunk))
-                current_chunk = []
+            # Calculate delay
+            if i > 0:
+                delay_ms = msg_ts - last_ts
+                delay_seconds = min(delay_ms / 1000.0, 4.0)
 
-        if current_chunk:
-            chunks.append(' '.join(current_chunk))
+                if delay_seconds > 0.1:
+                    delay_frames = int(delay_seconds * FPS)
+                    frame = create_frame(messages_shown, font)
+                    for _ in range(delay_frames):
+                        frames.append(frame)
 
-        # Show chunks with natural typing delays
-        for i, chunk in enumerate(chunks):
-            if i == 0:
-                thinking_delay = 2.5
-            else:
-                thinking_delay = calculate_typing_time(chunk)
+            last_ts = msg_ts
 
-            delay_frame = create_frame(messages_shown, font)
-            for _ in range(int(thinking_delay * FPS)):
-                frames.append(delay_frame)
-
-            chunk_msg = {'role': 'agent', 'sender': 'helper', 'text': chunk}
-            messages_shown.append(chunk_msg)
-
+            messages_shown.append(msg)
             frame = create_frame(messages_shown, font)
-            hold_time = calculate_reading_time(chunk) * 0.5
-            for _ in range(int(hold_time * FPS)):
+
+            # Hold time
+            hold_time = calculate_reading_time(msg['text']) * 0.4
+            hold_frames = max(1, int(hold_time * FPS))
+            for _ in range(hold_frames):
                 frames.append(frame)
     else:
-        # Single message - appears instantly
-        processing_delay = 0.3
-        for _ in range(int(processing_delay * FPS)):
+        # Show user messages first
+        user_messages = [m for m in messages if m['role'] == 'user']
+        for i, msg in enumerate(user_messages):
+            messages_shown.append(msg)
+            frame = create_frame(messages_shown, font)
+            hold_time = calculate_reading_time(msg['text']) * 0.5
+            for _ in range(int(hold_time * FPS)):
+                frames.append(frame)
+
+        # Brief delay then single long response
+        for _ in range(int(0.5 * FPS)):
             frames.append(create_frame(messages_shown, font))
 
-        agent_msg = {'role': 'agent', 'sender': 'helper', 'text': agent_response}
-        messages_shown.append(agent_msg)
+        # Add single long response
+        single_msg = {'role': 'agent', 'sender': 'helper', 'text': single_response}
+        messages_shown.append(single_msg)
 
         frame = create_frame(messages_shown, font)
-        hold_time = calculate_reading_time(agent_response) * 0.4
+        hold_time = calculate_reading_time(single_response) * 0.3
         for _ in range(int(hold_time * FPS)):
             frames.append(frame)
 
@@ -385,128 +287,140 @@ def generate_chunking_video_multi(user_messages, agent_response, output_path, wi
 
 
 def main():
-    """Generate all survey videos"""
+    """Generate all survey GIFs using real IRC conversation data"""
 
-    print("Generating survey GIF/videos...")
+    print("Generating survey GIFs with real IRC conversations...")
     print(f"Output directory: {OUTPUT_DIR}")
 
     # ============================================
-    # Timing comparison videos (Sets 5-6)
-    # Multi-party conversations
+    # Set 5: System suspend/resume + dark theme (timing comparison)
+    # Source: Lines 286-334 from ubuntu_merged.txt
     # ============================================
-
-    # Set 5: Multi-user help - nginx + git issues (2 threads, 12 messages)
-    timing_messages_1 = [
-        {'role': 'user', 'sender': 'webdev_kim', 'text': 'nginx keeps showing 502 bad gateway'},
-        {'role': 'user', 'sender': 'junior_dev', 'text': 'how do I undo my last git commit?'},
-        {'role': 'user', 'sender': 'webdev_kim', 'text': 'backend is definitely running'},
-        {'role': 'agent', 'sender': 'helper', 'text': 'webdev_kim: check nginx error logs'},
-        {'role': 'agent', 'sender': 'helper', 'text': 'cat /var/log/nginx/error.log'},
-        {'role': 'user', 'sender': 'junior_dev', 'text': 'I already pushed it too'},
-        {'role': 'agent', 'sender': 'helper', 'text': 'junior_dev: git reset HEAD~1'},
-        {'role': 'agent', 'sender': 'helper', 'text': 'then git push --force'},
-        {'role': 'user', 'sender': 'webdev_kim', 'text': 'found it, upstream timeout'},
-        {'role': 'user', 'sender': 'junior_dev', 'text': 'is force push safe?'},
-        {'role': 'agent', 'sender': 'helper', 'text': 'webdev_kim: increase proxy_read_timeout'},
-        {'role': 'agent', 'sender': 'helper', 'text': 'junior_dev: only if no one else pulled'},
+    timing_1_messages = [
+        {'role': 'user', 'sender': 'arkanoid', 'text': 'My system fails to resume to gnome desktop after suspend. When it resumes gnome shell is a black screen', 'ts': 0},
+        {'role': 'user', 'sender': 'derek-shnosh', 'text': 'In Ubuntu 23.10, some apps are not honoring the dark theme for parts of the window', 'ts': 2000},
+        {'role': 'user', 'sender': 'lotuspsychje', 'text': 'arkanoid: can you share your dmesg with the volunteers please', 'ts': 4000},
+        {'role': 'agent', 'sender': 'helper', 'text': 'arkanoid: Try loginctl terminate-session', 'ts': 8000, 'noTimingTs': 4100},
+        {'role': 'agent', 'sender': 'helper', 'text': 'This resets the gnome session without reboot', 'ts': 10500, 'noTimingTs': 4200},
+        {'role': 'user', 'sender': 'arkanoid', 'text': 'just tried systemctl restart systemd-logind, got visual login back', 'ts': 13000},
+        {'role': 'user', 'sender': 'ioria', 'text': "derek-shnosh: run in terminal 'G_MESSAGES_DEBUG=all hexchat'", 'ts': 15000},
+        {'role': 'agent', 'sender': 'helper', 'text': 'derek-shnosh: Check your gtk-theme setting', 'ts': 19000, 'noTimingTs': 15100},
+        {'role': 'user', 'sender': 'derek-shnosh', 'text': 'Figured it out! gtk-theme was set to Yaru-blue, changed to Yaru-blue-dark', 'ts': 23000},
+        {'role': 'agent', 'sender': 'helper', 'text': 'arkanoid: Good, the session restart worked', 'ts': 26000, 'noTimingTs': 23100},
+        {'role': 'agent', 'sender': 'helper', 'text': 'This is likely bug #1968907 in gnome-shell', 'ts': 28500, 'noTimingTs': 23200},
     ]
-    timing_delays_1 = [0, 0, 0, 4, 2, 0, 4, 2, 0, 0, 3, 2]
 
     generate_timing_video(
-        timing_messages_1,
-        timing_delays_1,
+        timing_1_messages,
         os.path.join(OUTPUT_DIR, 'timing_full_1.mp4'),
         with_timing=True
     )
     generate_timing_video(
-        timing_messages_1,
-        [0]*12,
+        timing_1_messages,
         os.path.join(OUTPUT_DIR, 'timing_notiming_1.mp4'),
         with_timing=False
     )
 
-    # Set 6: Docker + database issues (2 threads, 11 messages)
-    timing_messages_2 = [
-        {'role': 'user', 'sender': 'docker_newbie', 'text': 'my container exits immediately'},
-        {'role': 'user', 'sender': 'db_admin', 'text': 'postgres wont start after update'},
-        {'role': 'agent', 'sender': 'helper', 'text': 'docker_newbie: check logs first'},
-        {'role': 'agent', 'sender': 'helper', 'text': 'docker logs <container_id>'},
-        {'role': 'user', 'sender': 'docker_newbie', 'text': 'says exec format error'},
-        {'role': 'user', 'sender': 'db_admin', 'text': 'log says data directory issue'},
-        {'role': 'agent', 'sender': 'helper', 'text': 'docker_newbie: wrong platform image'},
-        {'role': 'agent', 'sender': 'helper', 'text': 'use --platform linux/amd64'},
-        {'role': 'agent', 'sender': 'helper', 'text': 'db_admin: check pg_upgrade logs'},
-        {'role': 'user', 'sender': 'docker_newbie', 'text': 'that fixed it thanks!'},
-        {'role': 'user', 'sender': 'db_admin', 'text': 'found version mismatch'},
+    # ============================================
+    # Set 6: Terminal ctrl-a + phased updates (timing comparison)
+    # Source: Lines 450-499, 623-645 from ubuntu_merged.txt
+    # ============================================
+    timing_2_messages = [
+        {'role': 'user', 'sender': 'en1gma', 'text': 'ctrl-a does not copy all in terminal but works in firefox. why?', 'ts': 0},
+        {'role': 'user', 'sender': 'ELFrederich', 'text': '7 packages can be upgraded but apt upgrade keeps them back', 'ts': 2500},
+        {'role': 'user', 'sender': 'pragmaticenigma', 'text': "ctrl+a doesn't copy anything, it's select all. Terminal doesn't support that command", 'ts': 5000},
+        {'role': 'agent', 'sender': 'helper', 'text': 'en1gma: Terminal apps handle shortcuts differently', 'ts': 9000, 'noTimingTs': 5100},
+        {'role': 'agent', 'sender': 'helper', 'text': 'ctrl-a in bash moves cursor to line start', 'ts': 11500, 'noTimingTs': 5200},
+        {'role': 'user', 'sender': 'lotuspsychje', 'text': 'ELFrederich: those are phased updates', 'ts': 14000},
+        {'role': 'user', 'sender': 'en1gma', 'text': 'i was reading that /etc/bash.bashrc needs to be edited', 'ts': 16500},
+        {'role': 'agent', 'sender': 'helper', 'text': 'ELFrederich: Phased updates roll out gradually', 'ts': 20500, 'noTimingTs': 16600},
+        {'role': 'agent', 'sender': 'helper', 'text': "Just wait a few days and they'll be available", 'ts': 23000, 'noTimingTs': 16700},
+        {'role': 'user', 'sender': 'pragmaticenigma', 'text': "en1gma: don't edit that file, it could break your system", 'ts': 26000},
+        {'role': 'agent', 'sender': 'helper', 'text': "en1gma: Edit ~/.bashrc instead, it's safer", 'ts': 30000, 'noTimingTs': 26100},
+        {'role': 'user', 'sender': 'en1gma', 'text': 'ok thanks, will try that', 'ts': 33000},
     ]
-    timing_delays_2 = [0, 0, 4, 2, 0, 0, 4, 2, 3, 0, 0]
 
     generate_timing_video(
-        timing_messages_2,
-        timing_delays_2,
+        timing_2_messages,
         os.path.join(OUTPUT_DIR, 'timing_full_2.mp4'),
         with_timing=True
     )
     generate_timing_video(
-        timing_messages_2,
-        [0]*11,
+        timing_2_messages,
         os.path.join(OUTPUT_DIR, 'timing_notiming_2.mp4'),
         with_timing=False
     )
 
     # ============================================
-    # Chunking comparison videos (Sets 9-10)
-    # Multi-party with chunked agent responses
+    # Set 9: Network bridge setup (chunking comparison)
+    # Source: Lines 521-586 from ubuntu_merged.txt
     # ============================================
-
-    # Set 9: SSL + Redis setup (2 threads, 10+ messages with chunked response)
-    chunking_messages_1 = [
-        {'role': 'user', 'sender': 'ops_mike', 'text': 'how do I set up SSL with certbot?'},
-        {'role': 'user', 'sender': 'backend_dev', 'text': 'redis memory keeps growing'},
-        {'role': 'user', 'sender': 'ops_mike', 'text': 'using nginx btw'},
-        {'role': 'user', 'sender': 'curious_intern', 'text': 'following this'},
-        {'role': 'user', 'sender': 'backend_dev', 'text': 'already set maxmemory'},
+    chunking_1_messages = [
+        {'role': 'user', 'sender': 'alcosta', 'text': 'I want to setup bridged networking with Virtual Machines on ubuntu 20.04', 'ts': 0},
+        {'role': 'user', 'sender': 'sarnold', 'text': 'usual approach is to create a new bridge, add physical NICs, set IP on bridge', 'ts': 3000},
+        {'role': 'user', 'sender': 'leftyfb', 'text': 'alcosta: they should only need a network bridge', 'ts': 5500},
+        {'role': 'agent', 'sender': 'helper', 'text': 'alcosta: First run nmcli con add ifname br0 type bridge con-name br0', 'ts': 9500},
+        {'role': 'agent', 'sender': 'helper', 'text': 'Then: nmcli con add type bridge-slave ifname enp6s0 master br0', 'ts': 12500},
+        {'role': 'user', 'sender': 'alcosta', 'text': "Something isn't right, the commands don't match my case", 'ts': 16000},
+        {'role': 'user', 'sender': 'leftyfb', 'text': 'it looks like you did lots of bad things, delete the bridge interfaces', 'ts': 18500},
+        {'role': 'agent', 'sender': 'helper', 'text': 'alcosta: Check nmcli con show to see current connections', 'ts': 22500},
+        {'role': 'agent', 'sender': 'helper', 'text': 'Delete the broken ones with nmcli con delete <uuid>', 'ts': 25500},
+        {'role': 'agent', 'sender': 'helper', 'text': 'Then start fresh with the bridge commands', 'ts': 28500},
+        {'role': 'user', 'sender': 'alcosta', 'text': 'OK, deleted them. Now what?', 'ts': 32000},
+        {'role': 'user', 'sender': 'leftyfb', 'text': 'reboot, then br0 should have an IP address', 'ts': 34500},
     ]
-    agent_response_1 = "ops_mike: First install certbot with apt. Then run certbot --nginx for automatic setup. It will handle certificate and nginx config. For renewal set up a cron job. backend_dev: Check your maxmemory-policy setting. Use allkeys-lru for cache scenarios. Also monitor with redis-cli info memory."
+    chunking_1_single = "alcosta: To set up bridged networking, run these commands in order: First, nmcli con add ifname br0 type bridge con-name br0. Then nmcli con add type bridge-slave ifname enp6s0 master br0. If you have existing broken bridge configs, delete them with nmcli con delete <uuid> first. You can check current connections with nmcli con show. After creating the bridge, reboot and br0 should get an IP address. Then configure your VMs to use br0 as the network interface."
 
-    generate_chunking_video_multi(
-        chunking_messages_1,
-        agent_response_1,
+    generate_chunking_video(
+        chunking_1_messages,
+        chunking_1_single,
         os.path.join(OUTPUT_DIR, 'chunking_full_1.mp4'),
         with_chunking=True
     )
-    generate_chunking_video_multi(
-        chunking_messages_1,
-        agent_response_1,
+    generate_chunking_video(
+        chunking_1_messages,
+        chunking_1_single,
         os.path.join(OUTPUT_DIR, 'chunking_nochunk_1.mp4'),
         with_chunking=False
     )
 
-    # Set 10: CI/CD + monitoring setup (2 threads, detailed explanation)
-    chunking_messages_2 = [
-        {'role': 'user', 'sender': 'team_lead', 'text': 'how should we set up CI/CD pipeline?'},
-        {'role': 'user', 'sender': 'devops_newbie', 'text': 'also need help with monitoring'},
-        {'role': 'user', 'sender': 'team_lead', 'text': 'using github actions'},
-        {'role': 'user', 'sender': 'senior_dev', 'text': 'prometheus works well for us'},
-        {'role': 'user', 'sender': 'devops_newbie', 'text': 'is grafana needed too?'},
+    # ============================================
+    # Set 10: GRUB/EFI boot repair (chunking comparison)
+    # Source: Lines 716-799 from ubuntu_merged.txt
+    # ============================================
+    chunking_2_messages = [
+        {'role': 'user', 'sender': 'cahoots', 'text': 'grub-install gives warning: EFI variables cannot be set on this system', 'ts': 0},
+        {'role': 'user', 'sender': 'EriC^^', 'text': 'in which mode are you booting? uefi? csm legacy?', 'ts': 3000},
+        {'role': 'user', 'sender': 'cahoots', 'text': "I'm in uefi, csm legacy is disabled", 'ts': 6000},
+        {'role': 'agent', 'sender': 'helper', 'text': 'cahoots: First mount your root partition', 'ts': 10000},
+        {'role': 'agent', 'sender': 'helper', 'text': 'sudo mount /dev/nvme0n1p3 /mnt', 'ts': 13500},
+        {'role': 'user', 'sender': 'EriC^^', 'text': 'then run the for loop to bind mount /dev /proc /sys /run', 'ts': 17000},
+        {'role': 'agent', 'sender': 'helper', 'text': 'Next: for i in /dev /proc /sys /run; do sudo mount -R $i /mnt$i; done', 'ts': 21000},
+        {'role': 'agent', 'sender': 'helper', 'text': 'Then: sudo chroot /mnt', 'ts': 24500},
+        {'role': 'user', 'sender': 'cahoots', 'text': "mount /boot/efi says can't find UUID", 'ts': 28000},
+        {'role': 'user', 'sender': 'EriC^^', 'text': 'the uuid changed, edit /etc/fstab with the new one from blkid', 'ts': 31000},
+        {'role': 'agent', 'sender': 'helper', 'text': 'cahoots: Run blkid to find the new UUID', 'ts': 35000},
+        {'role': 'agent', 'sender': 'helper', 'text': 'Update /etc/fstab, then mount /boot/efi', 'ts': 38500},
+        {'role': 'agent', 'sender': 'helper', 'text': 'Finally: grub-install --target=x86_64-efi', 'ts': 42000},
+        {'role': 'user', 'sender': 'cahoots', 'text': 'installation finished, no error reported!', 'ts': 46000},
     ]
-    agent_response_2 = "team_lead: Start with a simple workflow file in .github/workflows. Add build and test steps first. Then add deployment to staging on PR merge. Production deploys should require approval. devops_newbie: Yes use Grafana with Prometheus. Prometheus collects metrics and Grafana visualizes them. Start with node_exporter for system metrics."
+    chunking_2_single = "cahoots: To fix grub installation, follow these steps: Mount your root partition with sudo mount /dev/nvme0n1p3 /mnt. Then bind mount the virtual filesystems with for i in /dev /proc /sys /run; do sudo mount -R $i /mnt$i; done. Chroot into the system with sudo chroot /mnt. If mount /boot/efi fails due to UUID mismatch, run blkid to find the new UUID, update /etc/fstab with the correct UUID, then mount /boot/efi again. Finally run grub-install --target=x86_64-efi to install grub. After that, exit the chroot and reboot."
 
-    generate_chunking_video_multi(
-        chunking_messages_2,
-        agent_response_2,
+    generate_chunking_video(
+        chunking_2_messages,
+        chunking_2_single,
         os.path.join(OUTPUT_DIR, 'chunking_full_2.mp4'),
         with_chunking=True
     )
-    generate_chunking_video_multi(
-        chunking_messages_2,
-        agent_response_2,
+    generate_chunking_video(
+        chunking_2_messages,
+        chunking_2_single,
         os.path.join(OUTPUT_DIR, 'chunking_nochunk_2.mp4'),
         with_chunking=False
     )
 
-    print("\nAll videos generated successfully!")
-    print(f"Total: 8 videos in {OUTPUT_DIR}")
+    print("\nAll GIFs generated successfully!")
+    print(f"Total: 8 GIFs in {OUTPUT_DIR}")
 
 
 if __name__ == "__main__":
