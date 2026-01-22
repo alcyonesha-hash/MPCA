@@ -6,6 +6,11 @@ Generates comparison videos showing:
 1. Timing difference (with natural delays vs instant)
 2. Chunking difference (split messages vs single long message)
 
+Features:
+- Profile avatars for each speaker (colored circles with initials)
+- Auto-scroll as conversation progresses
+- Natural, slower message timing
+
 Uses real conversation data from Ubuntu IRC channel.
 Output: MP4 videos that show chat messages appearing over time (no loop issue)
 """
@@ -15,6 +20,7 @@ import subprocess
 from PIL import Image, ImageDraw, ImageFont
 import imageio
 import numpy as np
+import hashlib
 
 # Configuration
 OUTPUT_DIR = os.path.join(os.path.dirname(__file__), '..', 'data', 'gifs')
@@ -23,7 +29,12 @@ WIDTH = 608  # Divisible by 16 for video codec compatibility
 HEIGHT = 512  # Divisible by 16 for video codec compatibility
 FONT_SIZE = 13
 BUBBLE_PADDING = 8
-MESSAGE_GAP = 12
+MESSAGE_GAP = 14
+AVATAR_SIZE = 28
+AVATAR_MARGIN = 8
+
+# Timing multiplier - higher = slower messages (more natural)
+TIMING_MULTIPLIER = 2.5  # 2.5x slower than before
 
 # Colors
 BG_COLOR = (248, 249, 250)
@@ -32,6 +43,32 @@ AGENT_BUBBLE = (102, 126, 234)
 TEXT_COLOR = (51, 51, 51)
 AGENT_TEXT = (255, 255, 255)
 SENDER_COLOR = (85, 85, 85)
+
+# Avatar colors for different users (consistent per username)
+AVATAR_COLORS = [
+    (76, 175, 80),    # Green
+    (33, 150, 243),   # Blue
+    (255, 152, 0),    # Orange
+    (156, 39, 176),   # Purple
+    (0, 188, 212),    # Cyan
+    (255, 87, 34),    # Deep Orange
+    (63, 81, 181),    # Indigo
+    (233, 30, 99),    # Pink
+    (139, 195, 74),   # Light Green
+    (121, 85, 72),    # Brown
+]
+
+# Agent avatar color (distinct)
+AGENT_AVATAR_COLOR = (102, 126, 234)  # Purple-blue (same as bubble)
+
+
+def get_avatar_color(username, is_agent=False):
+    """Get consistent color for a username"""
+    if is_agent:
+        return AGENT_AVATAR_COLOR
+    # Hash username to get consistent color index
+    hash_val = int(hashlib.md5(username.encode()).hexdigest(), 16)
+    return AVATAR_COLORS[hash_val % len(AVATAR_COLORS)]
 
 
 def get_font(size=FONT_SIZE):
@@ -82,9 +119,57 @@ def wrap_text(text, font, max_width, draw):
     return lines
 
 
+def draw_avatar(draw, x, y, username, is_agent=False):
+    """Draw a circular avatar with initials"""
+    color = get_avatar_color(username, is_agent)
+
+    # Draw circle
+    draw.ellipse(
+        [x, y, x + AVATAR_SIZE, y + AVATAR_SIZE],
+        fill=color
+    )
+
+    # Draw initials (first 1-2 characters)
+    initials = username[0].upper()
+    if len(username) > 1 and username[1].isalpha():
+        initials = username[:2].upper()
+
+    font = get_font(11)
+    bbox = draw.textbbox((0, 0), initials, font=font)
+    text_width = bbox[2] - bbox[0]
+    text_height = bbox[3] - bbox[1]
+
+    text_x = x + (AVATAR_SIZE - text_width) // 2
+    text_y = y + (AVATAR_SIZE - text_height) // 2 - 2
+
+    draw.text((text_x, text_y), initials, font=font, fill=(255, 255, 255))
+
+
+def calculate_message_height(message, font, draw, max_bubble_width):
+    """Calculate the height of a message bubble"""
+    text_parts = message['text'].split('\n')
+    en_text = text_parts[0]
+    ko_text = text_parts[1] if len(text_parts) > 1 else None
+
+    en_lines = wrap_text(en_text, font, max_bubble_width - 2 * BUBBLE_PADDING, draw)
+    ko_font = get_font(11)
+    ko_lines = wrap_text(ko_text, ko_font, max_bubble_width - 2 * BUBBLE_PADDING, draw) if ko_text else []
+
+    line_height = font.size + 3
+    ko_line_height = ko_font.size + 2
+    en_text_height = len(en_lines) * line_height
+    ko_text_height = len(ko_lines) * ko_line_height if ko_lines else 0
+    ko_spacing = 6 if ko_lines else 0
+
+    bubble_height = en_text_height + ko_text_height + ko_spacing + 2 * BUBBLE_PADDING + 18
+    return bubble_height + MESSAGE_GAP
+
+
 def draw_message(draw, y_pos, message, font, is_agent=False):
-    """Draw a single chat message bubble with bilingual support"""
-    max_bubble_width = WIDTH - 80
+    """Draw a single chat message bubble with avatar and bilingual support"""
+    max_bubble_width = WIDTH - 80 - AVATAR_SIZE - AVATAR_MARGIN
+
+    sender = message.get('sender', 'Agent' if is_agent else 'User')
 
     # Split text into English and Korean parts
     text_parts = message['text'].split('\n')
@@ -117,76 +202,97 @@ def draw_message(draw, y_pos, message, font, is_agent=False):
 
     bubble_width = max_line_width + 2 * BUBBLE_PADDING
 
-    # Position
+    # Position based on agent/user
     if is_agent:
-        x = WIDTH - bubble_width - 15
+        avatar_x = WIDTH - AVATAR_SIZE - 10
+        bubble_x = avatar_x - bubble_width - AVATAR_MARGIN
         bubble_color = AGENT_BUBBLE
         text_color = AGENT_TEXT
         ko_text_color = (200, 200, 255)  # Lighter color for Korean in agent bubble
     else:
-        x = 15
+        avatar_x = 10
+        bubble_x = avatar_x + AVATAR_SIZE + AVATAR_MARGIN
         bubble_color = USER_BUBBLE
         text_color = TEXT_COLOR
         ko_text_color = (120, 120, 120)  # Gray for Korean in user bubble
 
+    # Draw avatar
+    draw_avatar(draw, avatar_x, y_pos, sender, is_agent)
+
     # Draw bubble
     draw.rounded_rectangle(
-        [x, y_pos, x + bubble_width, y_pos + bubble_height],
+        [bubble_x, y_pos, bubble_x + bubble_width, y_pos + bubble_height],
         radius=8,
         fill=bubble_color
     )
 
     # Draw sender name
-    sender = message.get('sender', 'Agent' if is_agent else 'User')
     small_font = get_font(9)
-    draw.text((x + BUBBLE_PADDING, y_pos + 4), sender, font=small_font, fill=SENDER_COLOR if not is_agent else (200, 200, 255))
+    draw.text((bubble_x + BUBBLE_PADDING, y_pos + 4), sender, font=small_font, fill=SENDER_COLOR if not is_agent else (200, 200, 255))
 
     # Draw English text
     text_y = y_pos + 16
     for line in en_lines:
-        draw.text((x + BUBBLE_PADDING, text_y), line, font=font, fill=text_color)
+        draw.text((bubble_x + BUBBLE_PADDING, text_y), line, font=font, fill=text_color)
         text_y += line_height
 
     # Draw Korean text (smaller, different color)
     if ko_lines:
         text_y += ko_spacing
         for line in ko_lines:
-            draw.text((x + BUBBLE_PADDING, text_y), line, font=ko_font, fill=ko_text_color)
+            draw.text((bubble_x + BUBBLE_PADDING, text_y), line, font=ko_font, fill=ko_text_color)
             text_y += ko_line_height
 
     return y_pos + bubble_height + MESSAGE_GAP
 
 
-def create_frame(messages_to_show, font):
-    """Create a single frame with visible messages"""
-    img = Image.new('RGB', (WIDTH, HEIGHT), BG_COLOR)
-    draw = ImageDraw.Draw(img)
+def calculate_total_height(messages, font, draw):
+    """Calculate total height of all messages"""
+    max_bubble_width = WIDTH - 80 - AVATAR_SIZE - AVATAR_MARGIN
+    total = 15  # Initial padding
+    for msg in messages:
+        total += calculate_message_height(msg, font, draw, max_bubble_width)
+    return total
+
+
+def create_frame(messages_to_show, font, scroll_offset=0):
+    """Create a single frame with visible messages and scroll offset"""
+    # Create a larger canvas for all messages
+    temp_img = Image.new('RGB', (WIDTH, 2000), BG_COLOR)
+    temp_draw = ImageDraw.Draw(temp_img)
 
     y_pos = 15
     for msg in messages_to_show:
         is_agent = msg['role'] == 'agent'
-        y_pos = draw_message(draw, y_pos, msg, font, is_agent)
+        y_pos = draw_message(temp_draw, y_pos, msg, font, is_agent)
 
-        if y_pos > HEIGHT - 40:
-            break
+    # Calculate scroll offset to show latest messages
+    total_height = y_pos
+    if total_height > HEIGHT - 20:
+        scroll_offset = max(0, total_height - HEIGHT + 40)
+    else:
+        scroll_offset = 0
 
-    return np.array(img)
+    # Crop the visible area
+    visible_area = temp_img.crop((0, scroll_offset, WIDTH, scroll_offset + HEIGHT))
+
+    return np.array(visible_area)
 
 
 def calculate_reading_time(text):
     """Calculate realistic reading time based on text length"""
     words = len(text.split())
-    # Faster reading for chat context
-    reading_time = max(1.0, min(4.0, words / 3.0))
-    return reading_time
+    # Slower reading for more natural feel
+    reading_time = max(1.5, min(5.0, words / 2.5))
+    return reading_time * TIMING_MULTIPLIER
 
 
 def calculate_typing_time(text):
     """Calculate realistic typing time based on text length"""
     chars = len(text)
-    # Average typing speed: ~5 chars per second
-    typing_time = max(0.8, min(3.0, chars / 6.0))
-    return typing_time
+    # Average typing speed: ~4 chars per second (slower, more natural)
+    typing_time = max(1.0, min(4.0, chars / 4.0))
+    return typing_time * TIMING_MULTIPLIER
 
 
 def generate_timing_video(messages, output_path, with_timing=True):
@@ -203,25 +309,25 @@ def generate_timing_video(messages, output_path, with_timing=True):
     last_ts = 0
 
     for i, msg in enumerate(messages):
-        # Get timing from message
+        # Get timing from message (scaled by timing multiplier)
         if with_timing:
-            msg_ts = msg.get('ts', 0)
+            msg_ts = msg.get('ts', 0) * TIMING_MULTIPLIER
         else:
             # For no-timing mode:
             # - User messages: keep same timing as full version (natural conversation flow)
             # - Agent messages: appear quickly (noTimingTs)
             if msg['role'] == 'agent':
-                msg_ts = msg.get('noTimingTs', msg.get('ts', 0))
+                msg_ts = msg.get('noTimingTs', msg.get('ts', 0)) * TIMING_MULTIPLIER
             else:
-                msg_ts = msg.get('ts', 0)  # User messages keep original timing
+                msg_ts = msg.get('ts', 0) * TIMING_MULTIPLIER
 
         # Calculate delay since last message
         if i > 0:
             delay_ms = msg_ts - last_ts
             delay_seconds = delay_ms / 1000.0
 
-            # Cap delay for reasonable GIF length
-            delay_seconds = min(delay_seconds, 4.0)
+            # Cap delay for reasonable video length
+            delay_seconds = min(delay_seconds, 6.0)
 
             # Show current state for delay duration
             if delay_seconds > 0.1:
@@ -240,16 +346,16 @@ def generate_timing_video(messages, output_path, with_timing=True):
 
         # Hold for reading time
         if with_timing:
-            hold_time = calculate_reading_time(msg['text']) * 0.4
+            hold_time = calculate_reading_time(msg['text']) * 0.5
         else:
-            hold_time = 0.15
+            hold_time = 0.3 * TIMING_MULTIPLIER
 
         hold_frames = max(1, int(hold_time * FPS))
         for _ in range(hold_frames):
             frames.append(frame)
 
     # Hold final state
-    final_hold = int(2 * FPS)
+    final_hold = int(3 * FPS)
     for _ in range(final_hold):
         frames.append(frames[-1] if frames else create_frame([], font))
 
@@ -279,12 +385,12 @@ def generate_chunking_video(messages, single_response, output_path, with_chunkin
     if with_chunking:
         # Show messages with chunked agent responses
         for i, msg in enumerate(messages):
-            msg_ts = msg.get('ts', i * 2000)
+            msg_ts = msg.get('ts', i * 2000) * TIMING_MULTIPLIER
 
             # Calculate delay
             if i > 0:
                 delay_ms = msg_ts - last_ts
-                delay_seconds = min(delay_ms / 1000.0, 4.0)
+                delay_seconds = min(delay_ms / 1000.0, 6.0)
 
                 if delay_seconds > 0.1:
                     delay_frames = int(delay_seconds * FPS)
@@ -298,7 +404,7 @@ def generate_chunking_video(messages, single_response, output_path, with_chunkin
             frame = create_frame(messages_shown, font)
 
             # Hold time
-            hold_time = calculate_reading_time(msg['text']) * 0.4
+            hold_time = calculate_reading_time(msg['text']) * 0.5
             hold_frames = max(1, int(hold_time * FPS))
             for _ in range(hold_frames):
                 frames.append(frame)
@@ -308,12 +414,12 @@ def generate_chunking_video(messages, single_response, output_path, with_chunkin
         for i, msg in enumerate(user_messages):
             messages_shown.append(msg)
             frame = create_frame(messages_shown, font)
-            hold_time = calculate_reading_time(msg['text']) * 0.5
+            hold_time = calculate_reading_time(msg['text']) * 0.6
             for _ in range(int(hold_time * FPS)):
                 frames.append(frame)
 
         # Brief delay then single long response
-        for _ in range(int(0.5 * FPS)):
+        for _ in range(int(1.0 * FPS)):
             frames.append(create_frame(messages_shown, font))
 
         # Add single long response
@@ -321,12 +427,12 @@ def generate_chunking_video(messages, single_response, output_path, with_chunkin
         messages_shown.append(single_msg)
 
         frame = create_frame(messages_shown, font)
-        hold_time = calculate_reading_time(single_response) * 0.3
+        hold_time = calculate_reading_time(single_response) * 0.4
         for _ in range(int(hold_time * FPS)):
             frames.append(frame)
 
     # Hold final state
-    for _ in range(int(2 * FPS)):
+    for _ in range(int(3 * FPS)):
         frames.append(frames[-1])
 
     # Save as MP4 video (no loop issue)
