@@ -36,13 +36,10 @@ class SurveyApp {
     }
 
     generateSetOrder() {
-        // Fixed order: sets 0-7 in sequence, attention check after set 4
+        // Fixed order: sets 0-7 in sequence
         const order = [];
         for (let i = 0; i < SURVEY_SETS.length; i++) {
             order.push({ type: 'survey', index: i });
-            if (i === 3) {
-                order.push({ type: 'attention' });
-            }
         }
         return order;
     }
@@ -113,13 +110,6 @@ class SurveyApp {
             });
         });
 
-        // Attention check buttons
-        document.querySelectorAll('.attention-option').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const value = e.target.dataset.value;
-                this.handleAttentionCheck(value);
-            });
-        });
 
         // Next button
         document.getElementById('next-btn').addEventListener('click', () => {
@@ -136,12 +126,6 @@ class SurveyApp {
 
     loadCurrentSet() {
         const setInfo = this.setOrder[this.currentSetIndex];
-
-        if (setInfo.type === 'attention') {
-            this.showScreen('attention');
-            return;
-        }
-
         const setIndex = setInfo.index;
         const set = SURVEY_SETS[setIndex];
         const swapAB = this.abRandomization[setIndex];
@@ -342,28 +326,6 @@ class SurveyApp {
         document.getElementById('next-btn').disabled = !allAnswered;
     }
 
-    handleAttentionCheck(value) {
-        document.querySelectorAll('.attention-option').forEach(btn => {
-            btn.classList.remove('selected');
-        });
-        document.querySelector(`.attention-option[data-value="${value}"]`).classList.add('selected');
-
-        // Record attention check result
-        this.participant.attentionCheck = value;
-        this.participant.attentionCheckPassed = (value === 'A');
-
-        // Move to next set after brief delay
-        setTimeout(() => {
-            this.currentSetIndex++;
-            if (this.currentSetIndex < this.setOrder.length) {
-                this.showScreen('survey');
-                this.loadCurrentSet();
-            } else {
-                this.completeSurvey();
-            }
-        }, 500);
-    }
-
     saveCurrentResponse() {
         const meta = this.currentSetMeta;
         const timeSpent = Date.now() - this.setStartTime;
@@ -412,12 +374,7 @@ class SurveyApp {
         this.currentSetIndex++;
 
         if (this.currentSetIndex < this.setOrder.length) {
-            const setInfo = this.setOrder[this.currentSetIndex];
-            if (setInfo.type === 'attention') {
-                this.showScreen('attention');
-            } else {
-                this.loadCurrentSet();
-            }
+            this.loadCurrentSet();
         } else {
             this.completeSurvey();
         }

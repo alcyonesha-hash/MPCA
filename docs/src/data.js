@@ -122,10 +122,10 @@ const SURVEY_SETS = [
             { role: "user", sender: "lotus", text: "Can you share your dmesg output?\ndmesg 출력 공유해줄 수 있어요?", time: "14:59" },
             { role: "user", sender: "arkanoid", text: "dmesg shows nothing suspicious. journalctl shows gnome-session GLib-GIO-CRITICAL error\ndmesg는 이상 없어요. journalctl에 gnome-session GLib-GIO-CRITICAL 에러가 있어요", time: "15:06" },
             { role: "agent", sender: "helper", text: "arkanoid: This looks like a known GDM/Gnome issue with suspend\narkanoid: 절전모드 관련 GDM/Gnome 알려진 이슈 같아요", time: "15:07" },
-            { role: "agent", sender: "helper", text: "Try: sudo systemctl restart gdm3\n시도해보세요: sudo systemctl restart gdm3", time: "15:07" },
+            { role: "agent", sender: "helper", text: "Try: sudo systemctl restart gdm3\nsudo systemctl restart gdm3를 실행해보세요", time: "15:07" },
             { role: "user", sender: "arkanoid", text: "That brings login back but after login it goes black again\n로그인 화면은 나오는데 로그인하면 다시 검은 화면이에요", time: "15:10" },
-            { role: "agent", sender: "helper", text: "arkanoid: Check if nvidia drivers are involved: lspci | grep -i nvidia\narkanoid: nvidia 드라이버 관련인지 확인: lspci | grep -i nvidia", time: "15:11" },
-            { role: "agent", sender: "helper", text: "If nvidia, try: sudo prime-select intel, then reboot\nnvidia면 시도: sudo prime-select intel 후 재부팅", time: "15:11" },
+            { role: "agent", sender: "helper", text: "arkanoid: Check if nvidia drivers are involved: lspci | grep -i nvidia\narkanoid: nvidia 드라이버 관련인지 확인하세요: lspci | grep -i nvidia", time: "15:11" },
+            { role: "agent", sender: "helper", text: "If nvidia, try: sudo prime-select intel, then reboot\nnvidia면 sudo prime-select intel 후 재부팅해보세요", time: "15:11" },
             { role: "agent", sender: "helper", text: "The fix was backported in 22.10, consider upgrading if this persists\n수정 사항이 22.10에 적용됐으니 계속되면 업그레이드 고려하세요", time: "15:12" },
         ],
         comparison: [
@@ -238,7 +238,7 @@ const GIF_CONVERSATIONS = {
             { role: "agent", sender: "helper", text: "Approximate match also requires sorted data\n근사 일치는 데이터 정렬도 필요해요", ts: 11500, noTimingTs: 5200 },
             { role: "user", sender: "amy", text: "Changed to FALSE but still not working\nFALSE로 바꿨는데 여전히 안 돼요", ts: 14000 },
             { role: "agent", sender: "helper", text: "amy: There might be hidden spaces in your cells\namy: 셀에 숨겨진 공백이 있을 수 있어요", ts: 18000, noTimingTs: 14100 },
-            { role: "agent", sender: "helper", text: "Try: =VLOOKUP(TRIM(A1),B:C,2,FALSE)\n시도: =VLOOKUP(TRIM(A1),B:C,2,FALSE)", ts: 21000, noTimingTs: 14200 },
+            { role: "agent", sender: "helper", text: "Try: =VLOOKUP(TRIM(A1),B:C,2,FALSE)\n=VLOOKUP(TRIM(A1),B:C,2,FALSE)를 사용해보세요", ts: 21000, noTimingTs: 14200 },
             { role: "user", sender: "amy", text: "That was it! Hidden spaces were the problem\n그거였어요! 숨겨진 공백이 문제였네요", ts: 24000 },
         ]
     },

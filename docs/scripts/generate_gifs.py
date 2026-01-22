@@ -467,7 +467,7 @@ def main():
         {'role': 'agent', 'sender': 'helper', 'text': 'Approximate match also requires sorted data\n근사 일치는 데이터 정렬도 필요해요', 'ts': 11500, 'noTimingTs': 5200},
         {'role': 'user', 'sender': 'amy', 'text': 'Changed to FALSE but still not working\nFALSE로 바꿨는데 여전히 안 돼요', 'ts': 14000},
         {'role': 'agent', 'sender': 'helper', 'text': 'amy: There might be hidden spaces in your cells\namy: 셀에 숨겨진 공백이 있을 수 있어요', 'ts': 18000, 'noTimingTs': 14100},
-        {'role': 'agent', 'sender': 'helper', 'text': 'Try: =VLOOKUP(TRIM(A1),B:C,2,FALSE)\n시도: =VLOOKUP(TRIM(A1),B:C,2,FALSE)', 'ts': 21000, 'noTimingTs': 14200},
+        {'role': 'agent', 'sender': 'helper', 'text': 'Try: =VLOOKUP(TRIM(A1),B:C,2,FALSE)\n=VLOOKUP(TRIM(A1),B:C,2,FALSE)를 사용해보세요', 'ts': 21000, 'noTimingTs': 14200},
         {'role': 'user', 'sender': 'amy', 'text': 'That was it! Hidden spaces were the problem\n그거였어요! 숨겨진 공백이 문제였네요', 'ts': 24000},
     ]
 
