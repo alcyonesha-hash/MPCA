@@ -378,74 +378,158 @@ def generate_timing_video(messages, output_path, with_timing=True):
 
 
 
-def main():
-    """Generate survey videos for timing comparison (Sets 5 and 6)"""
+def generate_baseline_video(user_messages, agent_messages, output_path):
+    """
+    Generate video for baseline comparison
+    Shows user messages then agent responses
+    """
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
-    print("Generating survey videos for timing comparison...")
+    font = get_font()
+    frames = []
+
+    messages_shown = []
+    last_ts = 0
+
+    # Combine user messages and agent messages
+    all_messages = user_messages + agent_messages
+
+    for i, msg in enumerate(all_messages):
+        msg_ts = msg.get('ts', 0) * TIMING_MULTIPLIER
+
+        # Calculate delay since last message
+        if i > 0:
+            delay_ms = msg_ts - last_ts
+            delay_seconds = delay_ms / 1000.0
+            delay_seconds = min(delay_seconds, 6.0)
+
+            if delay_seconds > 0.1:
+                delay_frames = int(delay_seconds * FPS)
+                frame = create_frame(messages_shown, font)
+                for _ in range(delay_frames):
+                    frames.append(frame)
+
+        last_ts = msg_ts
+        messages_shown.append(msg)
+        frame = create_frame(messages_shown, font)
+
+        # Hold for reading time
+        hold_time = calculate_reading_time(msg['text']) * 0.5
+        hold_frames = max(1, int(hold_time * FPS))
+        for _ in range(hold_frames):
+            frames.append(frame)
+
+    # Hold final state
+    final_hold = int(3 * FPS)
+    for _ in range(final_hold):
+        frames.append(frames[-1] if frames else create_frame([], font))
+
+    mp4_path = output_path.replace('.gif', '.mp4')
+    if not mp4_path.endswith('.mp4'):
+        mp4_path = output_path
+
+    imageio.mimsave(mp4_path, frames, fps=FPS, codec='libx264', quality=9, pixelformat='yuv420p')
+    print(f"Generated: {mp4_path}")
+
+
+def main():
+    """Generate survey videos for timing and baseline comparisons"""
+
+    print("Generating survey videos...")
     print(f"Output directory: {OUTPUT_DIR}")
 
     # ============================================
-    # Set 5: Python version library conflicts (timing comparison)
-    # Topic: Python 버전별 라이브러리 충돌
+    # Set 5: Python TensorFlow version conflict (timing comparison)
     # ============================================
     timing_1_messages = [
-        {'role': 'user', 'sender': 'david', 'text': 'Code that worked on Python 3.8 throws errors on 3.11\nPython 3.8에서 되던 코드가 3.11에서 에러 나요', 'ts': 0},
-        {'role': 'user', 'sender': 'emma', 'text': 'I also got the same issue after upgrading\n저도 업그레이드 후에 같은 문제 생겼어요', 'ts': 2500},
-        {'role': 'user', 'sender': 'frank', 'text': 'david: Which packages are you using? Numpy? Pandas?\ndavid: 어떤 패키지 쓰세요? Numpy? Pandas?', 'ts': 5000},
-        {'role': 'agent', 'sender': 'helper', 'text': 'david: This is likely due to deprecated syntax removal\ndavid: 아마 deprecated 문법이 삭제된 것 같아요', 'ts': 9000, 'noTimingTs': 5100},
-        {'role': 'agent', 'sender': 'helper', 'text': 'Check if you\'re using "collections.Callable" - it moved to collections.abc\ncollections.Callable 쓰는지 확인해보세요 - collections.abc로 이동됐어요', 'ts': 12000, 'noTimingTs': 5200},
-        {'role': 'user', 'sender': 'david', 'text': 'Yes! I\'m using some older ML libraries that depend on that\n맞아요! 그걸 사용하는 오래된 ML 라이브러리를 쓰고 있어요', 'ts': 15000},
-        {'role': 'user', 'sender': 'emma', 'text': 'frank: I\'m using scikit-learn and tensorflow\nfrank: scikit-learn이랑 tensorflow 쓰고 있어요', 'ts': 17500},
-        {'role': 'agent', 'sender': 'helper', 'text': 'emma: Check tensorflow version compatibility\nemma: tensorflow 버전 호환성 확인해보세요', 'ts': 21500, 'noTimingTs': 17600},
-        {'role': 'agent', 'sender': 'helper', 'text': 'TF 2.10+ is needed for Python 3.11\nPython 3.11에는 TF 2.10 이상이 필요해요', 'ts': 24500, 'noTimingTs': 17700},
-        {'role': 'user', 'sender': 'frank', 'text': 'You can also try pyenv to manage multiple Python versions\npyenv로 여러 Python 버전을 관리할 수도 있어요', 'ts': 27500},
-        {'role': 'agent', 'sender': 'helper', 'text': 'david: Consider using a virtual environment with Python 3.8\ndavid: Python 3.8로 가상환경 쓰는 것도 고려해보세요', 'ts': 31500, 'noTimingTs': 27600},
-        {'role': 'user', 'sender': 'david', 'text': 'Thanks, I\'ll try creating a separate venv for this project\n감사해요, 이 프로젝트용으로 별도 venv 만들어볼게요', 'ts': 34500},
+        {'role': 'user', 'sender': 'david', 'text': 'My TensorFlow code that worked on Python 3.8 throws AttributeError on 3.11\nPython 3.8에서 되던 TensorFlow 코드가 3.11에서 AttributeError 나요', 'ts': 0},
+        {'role': 'user', 'sender': 'emma', 'text': 'What error exactly?\n정확히 무슨 에러?', 'ts': 2500},
+        {'role': 'user', 'sender': 'david', 'text': "AttributeError: module 'tensorflow' has no attribute 'Session'\nAttributeError: module 'tensorflow' has no attribute 'Session'이요", 'ts': 5000},
+        {'role': 'agent', 'sender': 'helper', 'text': 'david: tf.Session was removed in TF2. Use tf.compat.v1.Session instead\ndavid: tf.Session은 TF2에서 삭제됐어요. tf.compat.v1.Session 쓰세요', 'ts': 9000, 'noTimingTs': 5100},
+        {'role': 'agent', 'sender': 'helper', 'text': 'Or migrate to TF2 eager execution\n아니면 TF2 즉시 실행으로 마이그레이션하세요', 'ts': 11500, 'noTimingTs': 5200},
+        {'role': 'user', 'sender': 'david', 'text': "I'm using TensorFlow 2.10. Is that the issue?\nTensorFlow 2.10 쓰는데 그게 문제인가요?", 'ts': 14000},
+        {'role': 'agent', 'sender': 'helper', 'text': 'david: TF 2.10 only supports up to Python 3.10\ndavid: TF 2.10은 Python 3.10까지만 지원해요', 'ts': 18000, 'noTimingTs': 14100},
+        {'role': 'agent', 'sender': 'helper', 'text': 'Upgrade to TF 2.15: pip install tensorflow==2.15.0\nTF 2.15로 업그레이드: pip install tensorflow==2.15.0', 'ts': 21000, 'noTimingTs': 14200},
+        {'role': 'user', 'sender': 'david', 'text': 'Works now with 2.15, thanks!\n2.15로 하니까 돼요, 감사합니다!', 'ts': 24000},
     ]
 
-    generate_timing_video(
-        timing_1_messages,
-        os.path.join(OUTPUT_DIR, 'timing_full_1.mp4'),
-        with_timing=True
-    )
-    generate_timing_video(
-        timing_1_messages,
-        os.path.join(OUTPUT_DIR, 'timing_notiming_1.mp4'),
-        with_timing=False
-    )
+    generate_timing_video(timing_1_messages, os.path.join(OUTPUT_DIR, 'timing_full_1.mp4'), with_timing=True)
+    generate_timing_video(timing_1_messages, os.path.join(OUTPUT_DIR, 'timing_notiming_1.mp4'), with_timing=False)
 
     # ============================================
-    # Set 6: Excel VLOOKUP formula (timing comparison)
-    # Topic: 엑셀 VLOOKUP 수식
+    # Set 6: Excel VLOOKUP error (timing comparison)
     # ============================================
     timing_2_messages = [
-        {'role': 'user', 'sender': 'grace', 'text': 'My VLOOKUP returns #N/A even though the value exists in the table\nVLOOKUP이 #N/A를 반환하는데 값이 테이블에 분명히 있어요', 'ts': 0},
-        {'role': 'user', 'sender': 'henry', 'text': 'grace: Are you using exact match or approximate match?\ngrace: 정확히 일치로 찾고 있어요? 아니면 유사 일치?', 'ts': 2500},
-        {'role': 'user', 'sender': 'iris', 'text': 'I had the same issue last week, turned out to be extra spaces\n저도 지난주에 같은 문제 있었는데, 공백이 원인이었어요', 'ts': 5000},
-        {'role': 'agent', 'sender': 'helper', 'text': 'grace: Most common cause is trailing spaces in cells\ngrace: 가장 흔한 원인은 셀에 있는 뒤쪽 공백이에요', 'ts': 9000, 'noTimingTs': 5100},
-        {'role': 'agent', 'sender': 'helper', 'text': 'Try wrapping your lookup value with TRIM()\nlookup 값을 TRIM()으로 감싸보세요', 'ts': 12000, 'noTimingTs': 5200},
-        {'role': 'user', 'sender': 'grace', 'text': 'henry: I\'m using FALSE for exact match\nhenry: 정확히 일치하려고 FALSE 쓰고 있어요', 'ts': 15000},
-        {'role': 'user', 'sender': 'henry', 'text': 'Also check if the data types match - text vs number\n데이터 타입도 확인해보세요 - 텍스트 vs 숫자', 'ts': 17500},
-        {'role': 'agent', 'sender': 'helper', 'text': 'grace: You can use =VLOOKUP(TRIM(A1),B:C,2,FALSE)\ngrace: =VLOOKUP(TRIM(A1),B:C,2,FALSE)로 써보세요', 'ts': 21500, 'noTimingTs': 17600},
-        {'role': 'agent', 'sender': 'helper', 'text': 'Or use XLOOKUP if you have Excel 365\n엑셀 365 있으면 XLOOKUP도 좋아요', 'ts': 24500, 'noTimingTs': 17700},
-        {'role': 'user', 'sender': 'iris', 'text': 'XLOOKUP is so much better, no more column index counting\nXLOOKUP 진짜 좋아요, 열 번호 안 세도 돼요', 'ts': 27500},
-        {'role': 'agent', 'sender': 'helper', 'text': 'grace: If it\'s a number stored as text, use VALUE() function\ngrace: 텍스트로 저장된 숫자면 VALUE() 함수 쓰세요', 'ts': 31500, 'noTimingTs': 27600},
-        {'role': 'user', 'sender': 'grace', 'text': 'TRIM() worked! There were invisible spaces. Thank you all!\nTRIM()으로 됐어요! 보이지 않는 공백이 있었네요. 모두 감사해요!', 'ts': 34500},
+        {'role': 'user', 'sender': 'amy', 'text': 'My VLOOKUP keeps returning #N/A even though the value exists\nVLOOKUP이 값이 있는데도 #N/A가 나와요', 'ts': 0},
+        {'role': 'user', 'sender': 'brian', 'text': 'Are you using exact or approximate match?\n정확히 일치? 근사 일치?', 'ts': 2500},
+        {'role': 'user', 'sender': 'amy', 'text': "I put TRUE at the end, isn't that exact match?\n끝에 TRUE 넣었는데 그게 정확히 일치 아니에요?", 'ts': 5000},
+        {'role': 'agent', 'sender': 'helper', 'text': 'amy: TRUE means approximate match, use FALSE for exact\namy: TRUE는 근사 일치예요, 정확히 일치는 FALSE 쓰세요', 'ts': 9000, 'noTimingTs': 5100},
+        {'role': 'agent', 'sender': 'helper', 'text': 'Approximate match also requires sorted data\n근사 일치는 데이터 정렬도 필요해요', 'ts': 11500, 'noTimingTs': 5200},
+        {'role': 'user', 'sender': 'amy', 'text': 'Changed to FALSE but still not working\nFALSE로 바꿨는데 여전히 안 돼요', 'ts': 14000},
+        {'role': 'agent', 'sender': 'helper', 'text': 'amy: There might be hidden spaces in your cells\namy: 셀에 숨겨진 공백이 있을 수 있어요', 'ts': 18000, 'noTimingTs': 14100},
+        {'role': 'agent', 'sender': 'helper', 'text': 'Try: =VLOOKUP(TRIM(A1),B:C,2,FALSE)\n시도: =VLOOKUP(TRIM(A1),B:C,2,FALSE)', 'ts': 21000, 'noTimingTs': 14200},
+        {'role': 'user', 'sender': 'amy', 'text': 'That was it! Hidden spaces were the problem\n그거였어요! 숨겨진 공백이 문제였네요', 'ts': 24000},
     ]
 
-    generate_timing_video(
-        timing_2_messages,
-        os.path.join(OUTPUT_DIR, 'timing_full_2.mp4'),
-        with_timing=True
-    )
-    generate_timing_video(
-        timing_2_messages,
-        os.path.join(OUTPUT_DIR, 'timing_notiming_2.mp4'),
-        with_timing=False
-    )
+    generate_timing_video(timing_2_messages, os.path.join(OUTPUT_DIR, 'timing_full_2.mp4'), with_timing=True)
+    generate_timing_video(timing_2_messages, os.path.join(OUTPUT_DIR, 'timing_notiming_2.mp4'), with_timing=False)
+
+    # ============================================
+    # Set 7: Book translation - Friends "We were on a break!" (baseline comparison)
+    # ============================================
+    baseline_1_user = [
+        {'role': 'user', 'sender': 'editor', 'text': "How should we translate 'We were on a break!' from Friends? It's a running joke\n프렌즈의 'We were on a break!' 어떻게 번역할까요? 반복되는 유머예요", 'ts': 0},
+        {'role': 'user', 'sender': 'translatorA', 'text': "Literally '우리 그때 잠깐 헤어졌었잖아!' - but it doesn't hit the same\n직역하면 '우리 그때 잠깐 헤어졌었잖아!' - 근데 임팩트가 달라요", 'ts': 2500},
+        {'role': 'user', 'sender': 'translatorB', 'text': "'잠시 쉬는 거였다고!' sounds more defensive like Ross\n'잠시 쉬는 거였다고!'가 Ross처럼 방어적으로 들려요", 'ts': 5000},
+    ]
+
+    baseline_1_full = [
+        {'role': 'agent', 'sender': 'helper', 'text': 'editor: The humor relies on Ross repeating this defensively for years\neditor: 유머는 Ross가 수년간 방어적으로 반복하는 데서 와요', 'ts': 9000},
+        {'role': 'agent', 'sender': 'helper', 'text': "Korean viewers need to feel his desperation, not just understand the words\n한국 시청자들이 단어가 아닌 그의 절박함을 느껴야 해요", 'ts': 11500},
+        {'role': 'user', 'sender': 'editor', 'text': 'So which captures that desperation better?\n그럼 그 절박함을 더 잘 살리는 건 뭐예요?', 'ts': 14000},
+        {'role': 'agent', 'sender': 'helper', 'text': "editor: '잠깐 쉬는 거였다고!' with the emphasis marker keeps the exasperation\neditor: '잠깐 쉬는 거였다고!'에 강조 어미를 쓰면 짜증이 살아요", 'ts': 18000},
+        {'role': 'agent', 'sender': 'helper', 'text': "The '다고' ending in Korean conveys 'I keep telling you this!'\n한국어의 '다고' 어미가 '계속 말하잖아!'를 전달해요", 'ts': 21000},
+        {'role': 'agent', 'sender': 'helper', 'text': 'Consistency matters too - use the same phrase every time Ross says it\n일관성도 중요해요 - Ross가 말할 때마다 같은 표현을 쓰세요', 'ts': 24000},
+    ]
+
+    baseline_1_baseline = [
+        {'role': 'agent', 'sender': 'helper', 'text': "This phrase can be translated as '우리 그때 헤어진 거였어!' or '잠시 쉬는 거였다고!'. When translating idiomatic expressions, consider the target audience and cultural context. Literal translation preserves the original structure but may lose nuance. Liberal translation captures meaning but changes form. The best approach depends on whether the text prioritizes accuracy or readability.\n이 문구는 '우리 그때 헤어진 거였어!' 또는 '잠시 쉬는 거였다고!'로 번역할 수 있습니다. 관용 표현을 번역할 때는 대상 독자와 문화적 맥락을 고려하세요.", 'ts': 9000},
+        {'role': 'user', 'sender': 'editor', 'text': 'So which captures that desperation better?\n그럼 그 절박함을 더 잘 살리는 건 뭐예요?', 'ts': 14000},
+        {'role': 'agent', 'sender': 'helper', 'text': 'Translation choice depends on your translation philosophy and target readers.\n번역 선택은 번역 철학과 대상 독자에 달려 있습니다.', 'ts': 18000},
+    ]
+
+    generate_baseline_video(baseline_1_user, baseline_1_full, os.path.join(OUTPUT_DIR, 'baseline_full_1.mp4'))
+    generate_baseline_video(baseline_1_user, baseline_1_baseline, os.path.join(OUTPUT_DIR, 'baseline_baseline_1.mp4'))
+
+    # ============================================
+    # Set 8: Database model selection (baseline comparison)
+    # ============================================
+    baseline_2_user = [
+        {'role': 'user', 'sender': 'pm', 'text': 'The vendor used MongoDB but we need complex joins for reporting. Should we migrate to PostgreSQL?\n외주가 MongoDB 썼는데 리포팅에 복잡한 조인 필요해요. PostgreSQL로 마이그레이션해야 하나요?', 'ts': 0},
+        {'role': 'user', 'sender': 'dev', 'text': 'Our e-commerce data has clear product-order-customer relationships\n우리 이커머스 데이터는 상품-주문-고객 관계가 명확해요', 'ts': 2500},
+        {'role': 'user', 'sender': 'analyst', 'text': 'I need to run monthly sales reports with multiple table joins\n저는 여러 테이블 조인으로 월간 매출 리포트 돌려야 해요', 'ts': 5000},
+    ]
+
+    baseline_2_full = [
+        {'role': 'agent', 'sender': 'helper', 'text': 'pm: MongoDB lookups work but are 3-5x slower than SQL joins for your use case\npm: MongoDB lookup도 되지만 이 경우 SQL join보다 3-5배 느려요', 'ts': 9000},
+        {'role': 'agent', 'sender': 'helper', 'text': 'For e-commerce with clear relationships, PostgreSQL is the better fit\n명확한 관계가 있는 이커머스엔 PostgreSQL이 더 맞아요', 'ts': 11500},
+        {'role': 'user', 'sender': 'pm', 'text': 'How complex would the migration be?\n마이그레이션 복잡도는 어때요?', 'ts': 14000},
+        {'role': 'agent', 'sender': 'helper', 'text': 'pm: Check nesting depth first - flat documents migrate easily\npm: 중첩 깊이부터 확인하세요 - 평면 문서는 쉽게 이전돼요', 'ts': 18000},
+        {'role': 'agent', 'sender': 'helper', 'text': 'Deeply nested arrays need careful denormalization planning\n깊게 중첩된 배열은 비정규화 계획이 필요해요', 'ts': 21000},
+        {'role': 'agent', 'sender': 'helper', 'text': "analyst: For your monthly reports, PostgreSQL materialized views would be ideal\nanalyst: 월간 리포트엔 PostgreSQL materialized view가 이상적이에요", 'ts': 24000},
+    ]
+
+    baseline_2_baseline = [
+        {'role': 'agent', 'sender': 'helper', 'text': "MongoDB and PostgreSQL serve different use cases. MongoDB is a NoSQL document database that stores data in JSON-like documents, offering flexible schemas. PostgreSQL is a relational database that uses tables with predefined schemas and supports complex queries with SQL. MongoDB is better for unstructured data and rapid development, while PostgreSQL excels at complex transactions and data integrity. The choice depends on your data structure, query patterns, and scalability requirements.\nMongoDB와 PostgreSQL은 다른 용도로 사용됩니다. MongoDB는 JSON 형태 문서를 저장하는 NoSQL 문서 데이터베이스로 유연한 스키마를 제공합니다. PostgreSQL은 관계형 데이터베이스입니다.", 'ts': 9000},
+        {'role': 'user', 'sender': 'pm', 'text': 'How complex would the migration be?\n마이그레이션 복잡도는 어때요?', 'ts': 14000},
+        {'role': 'agent', 'sender': 'helper', 'text': 'Migration complexity varies depending on your specific data and requirements.\n마이그레이션 복잡도는 특정 데이터와 요구사항에 따라 다릅니다.', 'ts': 18000},
+    ]
+
+    generate_baseline_video(baseline_2_user, baseline_2_full, os.path.join(OUTPUT_DIR, 'baseline_full_2.mp4'))
+    generate_baseline_video(baseline_2_user, baseline_2_baseline, os.path.join(OUTPUT_DIR, 'baseline_baseline_2.mp4'))
 
     print("\nAll videos generated successfully!")
-    print(f"Total: 4 videos in {OUTPUT_DIR}")
+    print(f"Total: 8 videos in {OUTPUT_DIR}")
 
 
 if __name__ == "__main__":

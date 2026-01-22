@@ -8,54 +8,57 @@
 /* Korean text styling - displayed below English with clear line break */
 .ko {
     display: block;
-    color: #888;
-    font-size: 0.8em;
+    color: #999;
+    font-size: 0.65em;
     font-weight: 400;
-    margin-top: 12px;
-    line-height: 1.5;
+    margin-top: 8px;
+    line-height: 1.4;
 }
 
 /* For inline elements like buttons */
 .btn .ko {
-    font-size: 0.7em;
-    margin-top: 8px;
-    color: rgba(255,255,255,0.8);
+    font-size: 0.6em;
+    margin-top: 6px;
+    color: rgba(255,255,255,0.7);
 }
 
 /* For headings */
 h1 .ko {
-    font-size: 0.55em;
-    margin-top: 16px;
-    color: #777;
+    font-size: 0.45em;
+    margin-top: 12px;
+    color: #888;
 }
 
 h2 .ko, h3 .ko {
-    font-size: 0.7em;
-    margin-top: 8px;
+    font-size: 0.6em;
+    margin-top: 6px;
 }
 
 /* For list items - more spacing */
 li .ko {
-    margin-top: 8px;
-    margin-bottom: 16px;
+    margin-top: 6px;
+    margin-bottom: 12px;
     padding-left: 0;
+    font-size: 0.7em;
 }
 
 /* For labels */
 label .ko {
-    font-size: 0.8em;
-    margin-top: 6px;
-    color: #999;
+    font-size: 0.7em;
+    margin-top: 4px;
+    color: #aaa;
 }
 
 /* For field notes */
 .field-note .ko {
-    margin-top: 6px;
+    margin-top: 4px;
+    font-size: 0.8em;
 }
 
 /* For paragraphs */
 p .ko {
-    margin-top: 10px;
+    margin-top: 8px;
+    font-size: 0.7em;
 }
 
 body {
@@ -411,14 +414,14 @@ h3 {
 /* Korean translation in chat bubbles */
 .message-ko {
     display: block;
-    margin-top: 10px;
-    font-size: 0.9em;
-    color: #666;
-    line-height: 1.5;
+    margin-top: 8px;
+    font-size: 0.75em;
+    color: #888;
+    line-height: 1.4;
 }
 
 .chat-message.agent .message-ko {
-    color: rgba(255, 255, 255, 0.75);
+    color: rgba(255, 255, 255, 0.65);
 }
 
 /* GIF Container */

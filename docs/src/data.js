@@ -7,17 +7,17 @@
  * - Sets 1-2: Full vs NoTopicalFit (text)
  * - Sets 3-4: Full vs NoChunking (text)
  * - Sets 5-6: Full vs NoTiming (video)
- * - Sets 7-8: Full vs Baseline (text)
+ * - Sets 7-8: Full vs Baseline (video)
  *
  * Topics:
- * 1. Accounting system task assignment (NoTopicalFit)
- * 2. ChatGPT prompt engineering (NoTopicalFit)
+ * 1. Procurement team invoice/shipment task (NoTopicalFit)
+ * 2. GPT hallucination + API error (NoTopicalFit)
  * 3. Filesystem check - IRC Ubuntu (Chunking)
  * 4. Gnome suspend issue - IRC Ubuntu (Chunking)
- * 5. Python version conflict (Timing - video)
+ * 5. Python TensorFlow version conflict (Timing - video)
  * 6. Excel VLOOKUP error (Timing - video)
- * 7. Book translation - literal vs liberal (Baseline)
- * 8. Database model selection (Baseline)
+ * 7. Book translation - Friends quote (Baseline - video)
+ * 8. Database model selection (Baseline - video)
  */
 
 const SURVEY_SETS = [
@@ -25,57 +25,58 @@ const SURVEY_SETS = [
     // Sets 1-2: Full vs NoTopicalFit
     // ============================================
 
-    // Set 1: Accounting system task assignment
+    // Set 1: Procurement team invoice/shipment task assignment
     {
         type: "text",
         comparisonType: "NoTopicalFit",
-        topic: "Accounting system task assignment",
-        topicKo: "회계 시스템 업무 배분",
+        topic: "Procurement invoice and shipment tasks",
+        topicKo: "구매팀 송장/출장 업무 배분",
         full: [
-            { role: "user", sender: "jane", text: "How should we divide the new transaction system? Separate for payables and receivables?\n새 거래 시스템 담당 어떻게 나눌까요? 매입/매출 따로?", time: "09:15" },
-            { role: "user", sender: "mike", text: "I've done payables before, I can take that\n저 매입 해봤으니까 맡을게요", time: "09:16" },
-            { role: "user", sender: "sarah", text: "Then I'll handle receivables. By the way, I checked my payslip and overtime pay seems missing\n그럼 저는 매출 맡을게요. 근데 급여 명세서 봤는데 야근수당 누락된 것 같아요", time: "09:17" },
-            { role: "agent", sender: "helper", text: "jane: Payables to Mike, receivables to Sarah works well\njane: 매입은 Mike, 매출은 Sarah로 배분하면 좋겠습니다", time: "09:18" },
-            { role: "agent", sender: "helper", text: "You'll also need access permissions from IT\nIT팀에 권한 설정도 요청하세요", time: "09:18" },
-            { role: "user", sender: "jane", text: "When do we need to finish the permission setup?\n권한 설정은 언제까지 해야 해요?", time: "09:19" },
-            { role: "agent", sender: "helper", text: "jane: By Friday for Monday go-live\njane: 금요일까지 완료하면 월요일부터 운영 가능합니다", time: "09:20" },
-            { role: "agent", sender: "helper", text: "sarah: For the missing overtime, contact HR with your timesheet records\nsarah: 야근수당 누락은 인사팀에 근무 기록과 함께 문의하세요", time: "09:21" },
+            { role: "user", sender: "jane", text: "We need to assign the new vendor invoice verification and shipment inspection trip. Any volunteers?\n새 거래처 송장 확인이랑 선적지 출장 업무 배분해야 해요. 누가 할래요?", time: "09:15" },
+            { role: "user", sender: "mike", text: "I can take the invoice verification, I handled similar cases before\n송장 확인은 제가 할게요, 비슷한 거 해봤어요", time: "09:16" },
+            { role: "user", sender: "sarah", text: "I'll handle the shipment inspection then\n그럼 선적지 출장은 제가 갈게요", time: "09:17" },
+            { role: "user", sender: "kevin", text: "Hey everyone, I just checked my payslip and last month's overtime seems to be missing\n다들 안녕, 방금 급여 명세서 봤는데 저번 달 야근수당이 누락된 것 같아요", time: "09:18" },
+            { role: "agent", sender: "helper", text: "jane: Mike on invoices, Sarah on shipment inspection works well\njane: 송장은 Mike, 선적 출장은 Sarah로 배분하면 좋겠습니다", time: "09:19" },
+            { role: "agent", sender: "helper", text: "Sarah will need travel approval from admin by Thursday\nSarah는 목요일까지 관리팀에 출장 승인 받아야 해요", time: "09:19" },
+            { role: "user", sender: "jane", text: "What documents does Mike need from the vendor?\nMike가 거래처에서 받아야 할 서류가 뭐예요?", time: "09:20" },
+            { role: "agent", sender: "helper", text: "jane: Commercial invoice, packing list, and certificate of origin\njane: 상업송장, 패킹리스트, 원산지증명서가 필요해요", time: "09:21" },
         ],
         comparison: [
-            { role: "user", sender: "jane", text: "How should we divide the new transaction system? Separate for payables and receivables?\n새 거래 시스템 담당 어떻게 나눌까요? 매입/매출 따로?", time: "09:15" },
-            { role: "user", sender: "mike", text: "I've done payables before, I can take that\n저 매입 해봤으니까 맡을게요", time: "09:16" },
-            { role: "user", sender: "sarah", text: "Then I'll handle receivables. By the way, I checked my payslip and overtime pay seems missing\n그럼 저는 매출 맡을게요. 근데 급여 명세서 봤는데 야근수당 누락된 것 같아요", time: "09:17" },
-            { role: "agent", sender: "helper", text: "For missing overtime pay, submit your timesheet to HR\n야근수당 누락은 인사팀에 근무 기록을 제출하세요", time: "09:18" },
-            { role: "agent", sender: "helper", text: "Payroll corrections are usually reflected next month\n급여 정정은 보통 다음 달에 반영됩니다", time: "09:18" },
-            { role: "user", sender: "jane", text: "When do we need to finish the permission setup?\n권한 설정은 언제까지 해야 해요?", time: "09:19" },
-            { role: "agent", sender: "helper", text: "For payroll inquiries, contact HR directly\n급여 문의는 인사팀에 직접 연락하세요", time: "09:20" },
+            { role: "user", sender: "jane", text: "We need to assign the new vendor invoice verification and shipment inspection trip. Any volunteers?\n새 거래처 송장 확인이랑 선적지 출장 업무 배분해야 해요. 누가 할래요?", time: "09:15" },
+            { role: "user", sender: "mike", text: "I can take the invoice verification, I handled similar cases before\n송장 확인은 제가 할게요, 비슷한 거 해봤어요", time: "09:16" },
+            { role: "user", sender: "sarah", text: "I'll handle the shipment inspection then\n그럼 선적지 출장은 제가 갈게요", time: "09:17" },
+            { role: "user", sender: "kevin", text: "Hey everyone, I just checked my payslip and last month's overtime seems to be missing\n다들 안녕, 방금 급여 명세서 봤는데 저번 달 야근수당이 누락된 것 같아요", time: "09:18" },
+            { role: "agent", sender: "helper", text: "kevin: For missing overtime, submit your timesheet to HR\nkevin: 야근수당 누락은 인사팀에 근무 기록을 제출하세요", time: "09:19" },
+            { role: "agent", sender: "helper", text: "Payroll corrections are usually reflected next month\n급여 정정은 보통 다음 달에 반영됩니다", time: "09:19" },
+            { role: "user", sender: "jane", text: "What documents does Mike need from the vendor?\nMike가 거래처에서 받아야 할 서류가 뭐예요?", time: "09:20" },
+            { role: "agent", sender: "helper", text: "kevin: Contact HR directly for payroll inquiries\nkevin: 급여 문의는 인사팀에 직접 연락하세요", time: "09:21" },
         ]
     },
 
-    // Set 2: ChatGPT prompt engineering
+    // Set 2: GPT hallucination + API error
     {
         type: "text",
         comparisonType: "NoTopicalFit",
-        topic: "ChatGPT prompt engineering",
-        topicKo: "ChatGPT 프롬프트 작성",
+        topic: "GPT reference hallucination and API",
+        topicKo: "GPT 레퍼런스 할루시네이션 + API",
         full: [
-            { role: "user", sender: "tom", text: "How do I get better summaries from ChatGPT? Mine always come out too long\nChatGPT로 요약 잘 나오게 하려면 어떻게 해요? 맨날 너무 길어요", time: "14:30" },
-            { role: "user", sender: "lisa", text: "Same here, I keep having to ask it to shorten\n저도요, 계속 줄여달라고 해야 해요", time: "14:31" },
-            { role: "user", sender: "kevin", text: "I'm trying to integrate the API, what's the request format?\n저는 API 연동하려는데 요청 형식이 어떻게 돼요?", time: "14:32" },
-            { role: "agent", sender: "helper", text: "tom: Specify length in your prompt like '3 sentences' or '100 words'\ntom: 프롬프트에 '3문장으로' 또는 '100단어로' 같이 길이를 명시하세요", time: "14:33" },
-            { role: "agent", sender: "helper", text: "Role assignment helps too: 'You are a concise editor...'\n역할 부여도 효과적이에요: 'You are a concise editor...'", time: "14:33" },
-            { role: "user", sender: "tom", text: "Can I also specify the output format?\n출력 형식도 지정할 수 있어요?", time: "14:34" },
-            { role: "agent", sender: "helper", text: "tom: Yes, try 'respond in bullet points' or 'use markdown headers'\ntom: 네, 'bullet point로 작성해줘' 또는 'markdown 헤더 사용' 같이요", time: "14:35" },
-            { role: "agent", sender: "helper", text: "kevin: POST to /v1/chat/completions with messages array in the body\nkevin: /v1/chat/completions에 messages 배열을 body로 POST 요청하세요", time: "14:36" },
+            { role: "user", sender: "tom", text: "I asked GPT for academic references and it gave me papers that don't exist. How do I prevent this?\nGPT한테 학술 레퍼런스 달라고 했더니 없는 논문을 줬어요. 이거 어떻게 방지해요?", time: "14:30" },
+            { role: "user", sender: "lisa", text: "Same happened to me, it even made up author names\n저도요, 저자 이름도 지어냈어요", time: "14:31" },
+            { role: "user", sender: "kevin", text: "I'm getting 429 errors when calling the API, what's the rate limit?\n저는 API 호출할 때 429 에러가 나는데 rate limit이 어떻게 되나요?", time: "14:32" },
+            { role: "agent", sender: "helper", text: "tom: GPT doesn't have real-time database access, it generates plausible-sounding references\ntom: GPT는 실시간 DB 접근이 없어서 그럴듯한 레퍼런스를 생성해요", time: "14:33" },
+            { role: "agent", sender: "helper", text: "Always verify citations with Google Scholar or the actual journal\n항상 Google Scholar나 실제 저널에서 인용 확인하세요", time: "14:33" },
+            { role: "user", sender: "tom", text: "Is there any way to make it more reliable for citations?\n인용을 더 신뢰할 수 있게 하는 방법 없어요?", time: "14:34" },
+            { role: "agent", sender: "helper", text: "tom: Use RAG (Retrieval-Augmented Generation) or provide real papers in the prompt\ntom: RAG 사용하거나 실제 논문을 프롬프트에 제공하세요", time: "14:35" },
+            { role: "agent", sender: "helper", text: "kevin: Rate limit is 3 RPM for free tier, 60 RPM for pay-as-you-go\nkevin: Rate limit은 무료는 분당 3회, 유료는 분당 60회예요", time: "14:36" },
         ],
         comparison: [
-            { role: "user", sender: "tom", text: "How do I get better summaries from ChatGPT? Mine always come out too long\nChatGPT로 요약 잘 나오게 하려면 어떻게 해요? 맨날 너무 길어요", time: "14:30" },
-            { role: "user", sender: "lisa", text: "Same here, I keep having to ask it to shorten\n저도요, 계속 줄여달라고 해야 해요", time: "14:31" },
-            { role: "user", sender: "kevin", text: "I'm trying to integrate the API, what's the request format?\n저는 API 연동하려는데 요청 형식이 어떻게 돼요?", time: "14:32" },
-            { role: "agent", sender: "helper", text: "API calls use POST to /v1/chat/completions endpoint\nAPI 호출은 /v1/chat/completions 엔드포인트에 POST 요청합니다", time: "14:33" },
-            { role: "agent", sender: "helper", text: "Include Authorization header with Bearer token\nAuthorization 헤더에 Bearer 토큰을 포함하세요", time: "14:33" },
-            { role: "user", sender: "tom", text: "Can I also specify the output format?\n출력 형식도 지정할 수 있어요?", time: "14:34" },
-            { role: "agent", sender: "helper", text: "Extract result from response.choices[0].message.content\n응답에서 choices[0].message.content로 결과를 추출합니다", time: "14:35" },
+            { role: "user", sender: "tom", text: "I asked GPT for academic references and it gave me papers that don't exist. How do I prevent this?\nGPT한테 학술 레퍼런스 달라고 했더니 없는 논문을 줬어요. 이거 어떻게 방지해요?", time: "14:30" },
+            { role: "user", sender: "lisa", text: "Same happened to me, it even made up author names\n저도요, 저자 이름도 지어냈어요", time: "14:31" },
+            { role: "user", sender: "kevin", text: "I'm getting 429 errors when calling the API, what's the rate limit?\n저는 API 호출할 때 429 에러가 나는데 rate limit이 어떻게 되나요?", time: "14:32" },
+            { role: "agent", sender: "helper", text: "kevin: 429 error means you've hit the rate limit\nkevin: 429 에러는 rate limit에 도달했다는 뜻이에요", time: "14:33" },
+            { role: "agent", sender: "helper", text: "Add exponential backoff to your API calls\nAPI 호출에 exponential backoff를 추가하세요", time: "14:33" },
+            { role: "user", sender: "tom", text: "Is there any way to make it more reliable for citations?\n인용을 더 신뢰할 수 있게 하는 방법 없어요?", time: "14:34" },
+            { role: "agent", sender: "helper", text: "kevin: Check your usage dashboard to monitor API quota\nkevin: 사용량 대시보드에서 API 할당량 확인하세요", time: "14:35" },
         ]
     },
 
@@ -141,12 +142,12 @@ const SURVEY_SETS = [
     // Sets 5-6: Full vs NoTiming (Video)
     // ============================================
 
-    // Set 5: Python version conflict
+    // Set 5: Python TensorFlow version conflict
     {
         type: "video",
         comparisonType: "NoTiming",
-        topic: "Python version library conflict",
-        topicKo: "Python 버전별 라이브러리 충돌",
+        topic: "Python TensorFlow version conflict",
+        topicKo: "Python TensorFlow 버전 충돌",
         full: {
             src: "data/gifs/timing_full_1.mp4",
             description: "Messages appear with natural delays"
@@ -174,76 +175,56 @@ const SURVEY_SETS = [
     },
 
     // ============================================
-    // Sets 7-8: Full vs Baseline
+    // Sets 7-8: Full vs Baseline (Video)
     // ============================================
 
-    // Set 7: Book translation - literal vs liberal
+    // Set 7: Book translation - Friends quote
     {
-        type: "text",
+        type: "video",
         comparisonType: "Baseline",
         topic: "Book translation discussion",
-        topicKo: "출판물 번역 의역/직역",
-        full: [
-            { role: "user", sender: "editor", text: "How should we translate 'I'm not crazy, my mother had me tested'? Direct translation sounds weird in Korean\n'I'm not crazy, my mother had me tested'를 어떻게 번역할까요? 직역하면 한국어로 이상해요", time: "11:20" },
-            { role: "user", sender: "translatorA", text: "Literally it's '나 미친 거 아니야, 엄마가 검사받게 했어' - loses the humor\n직역하면 '나 미친 거 아니야, 엄마가 검사받게 했어' - 유머가 사라져요", time: "11:21" },
-            { role: "user", sender: "translatorB", text: "Maybe '난 정상이야, 의사가 증명했어' captures the defensiveness better?\n'난 정상이야, 의사가 증명했어'가 방어적인 뉘앙스를 더 잘 살릴까요?", time: "11:22" },
-            { role: "agent", sender: "helper", text: "editor: The humor comes from the absurd logic of using a test to prove sanity\neditor: 유머는 정신건강을 검사로 증명하려는 황당한 논리에서 와요", time: "11:23" },
-            { role: "agent", sender: "helper", text: "Korean readers might not connect 'mother had me tested' with psychiatric evaluation\n한국 독자들은 '엄마가 검사받게 했어'를 정신과 검사와 연결 못 할 수 있어요", time: "11:23" },
-            { role: "user", sender: "editor", text: "So should we add context or keep it vague?\n그럼 맥락을 추가할까요, 모호하게 둘까요?", time: "11:24" },
-            { role: "agent", sender: "helper", text: "editor: Consider '난 미친 거 아냐, 병원에서 정상 판정 받았다고' - makes the joke clearer\neditor: '난 미친 거 아냐, 병원에서 정상 판정 받았다고' 고려해보세요 - 농담이 명확해져요", time: "11:25" },
-            { role: "agent", sender: "helper", text: "The defensive 'my mother made me' becomes institutional '병원에서', which Korean readers understand as authority\n방어적인 'my mother made me'가 '병원에서'로 바뀌면 한국 독자들이 권위로 이해해요", time: "11:25" },
-            { role: "agent", sender: "helper", text: "This preserves the character's need to prove themselves while being culturally accessible\n이렇게 하면 캐릭터의 증명 욕구를 살리면서 문화적으로 접근 가능해요", time: "11:26" },
-        ],
-        comparison: [
-            { role: "user", sender: "editor", text: "How should we translate 'I'm not crazy, my mother had me tested'? Direct translation sounds weird in Korean\n'I'm not crazy, my mother had me tested'를 어떻게 번역할까요? 직역하면 한국어로 이상해요", time: "11:20" },
-            { role: "user", sender: "translatorA", text: "Literally it's '나 미친 거 아니야, 엄마가 검사받게 했어' - loses the humor\n직역하면 '나 미친 거 아니야, 엄마가 검사받게 했어' - 유머가 사라져요", time: "11:21" },
-            { role: "user", sender: "translatorB", text: "Maybe '난 정상이야, 의사가 증명했어' captures the defensiveness better?\n'난 정상이야, 의사가 증명했어'가 방어적인 뉘앙스를 더 잘 살릴까요?", time: "11:22" },
-            { role: "agent", sender: "helper", text: "This phrase can be translated as '나는 미친 게 아니야, 엄마가 검사받게 했어' or adapted to '난 정상이야, 의사가 증명했어'. When translating idiomatic expressions, consider the target audience and cultural context. Literal translation preserves the original structure but may lose nuance. Liberal translation captures meaning but changes form. The best approach depends on whether the text prioritizes accuracy or readability. Consider the character's personality and the scene's tone when making this decision.\n이 문구는 '나는 미친 게 아니야, 엄마가 검사받게 했어' 또는 '난 정상이야, 의사가 증명했어'로 번역할 수 있습니다. 관용 표현을 번역할 때는 대상 독자와 문화적 맥락을 고려하세요. 직역은 원문 구조를 보존하지만 뉘앙스를 잃을 수 있습니다. 의역은 의미를 살리지만 형태가 바뀝니다. 최선의 접근법은 텍스트가 정확성과 가독성 중 무엇을 우선시하는지에 달려 있습니다.", time: "11:23" },
-            { role: "user", sender: "editor", text: "So should we add context or keep it vague?\n그럼 맥락을 추가할까요, 모호하게 둘까요?", time: "11:24" },
-            { role: "agent", sender: "helper", text: "Adding context depends on your translation philosophy and target readers.\n맥락 추가는 번역 철학과 대상 독자에 달려 있습니다.", time: "11:25" },
-        ]
+        topicKo: "출판물 번역 논의",
+        full: {
+            src: "data/gifs/baseline_full_1.mp4",
+            description: "Agent with contextual responses"
+        },
+        comparison: {
+            src: "data/gifs/baseline_baseline_1.mp4",
+            description: "Agent with generic responses"
+        }
     },
 
     // Set 8: Database model selection
     {
-        type: "text",
+        type: "video",
         comparisonType: "Baseline",
         topic: "Database model selection",
-        topicKo: "외주 프로젝트 DB 모델 선택",
-        full: [
-            { role: "user", sender: "pm", text: "Reviewing the vendor's deliverable - why did they use MongoDB instead of PostgreSQL?\n외주 결과물 검토 중인데 왜 PostgreSQL 대신 MongoDB를 썼을까요?", time: "15:40" },
-            { role: "user", sender: "dev", text: "Our data has clear relationships, wouldn't relational DB be better?\n우리 데이터는 관계가 명확한데 관계형 DB가 낫지 않나요?", time: "15:41" },
-            { role: "agent", sender: "helper", text: "pm: MongoDB excels at flexible schemas and rapid prototyping\npm: MongoDB는 유연한 스키마와 빠른 프로토타이핑에 강해요", time: "15:42" },
-            { role: "agent", sender: "helper", text: "If requirements were unclear early on, NoSQL makes iteration easier\n초기에 요구사항이 불명확했다면 NoSQL이 변경에 유리해요", time: "15:42" },
-            { role: "user", sender: "pm", text: "But now we need complex joins for reporting. Is migration difficult?\n근데 이제 리포팅에 복잡한 조인이 필요해요. 마이그레이션 어려워요?", time: "15:43" },
-            { role: "agent", sender: "helper", text: "pm: MongoDB can do lookups but they're slower than SQL joins\npm: MongoDB도 lookup 가능하지만 SQL join보다 느려요", time: "15:44" },
-            { role: "agent", sender: "helper", text: "Migration complexity depends on how deeply nested your documents are\n마이그레이션 복잡도는 문서가 얼마나 중첩되어 있는지에 달려요", time: "15:44" },
-            { role: "agent", sender: "helper", text: "Consider hybrid: keep MongoDB for raw data, use PostgreSQL for analytics\n하이브리드 고려: 원시 데이터는 MongoDB, 분석은 PostgreSQL로", time: "15:45" },
-        ],
-        comparison: [
-            { role: "user", sender: "pm", text: "Reviewing the vendor's deliverable - why did they use MongoDB instead of PostgreSQL?\n외주 결과물 검토 중인데 왜 PostgreSQL 대신 MongoDB를 썼을까요?", time: "15:40" },
-            { role: "user", sender: "dev", text: "Our data has clear relationships, wouldn't relational DB be better?\n우리 데이터는 관계가 명확한데 관계형 DB가 낫지 않나요?", time: "15:41" },
-            { role: "agent", sender: "helper", text: "MongoDB and PostgreSQL serve different use cases. MongoDB is a NoSQL document database that stores data in JSON-like documents, offering flexible schemas. PostgreSQL is a relational database that uses tables with predefined schemas and supports complex queries with SQL. MongoDB is better for unstructured data and rapid development, while PostgreSQL excels at complex transactions and data integrity. The choice depends on your data structure, query patterns, and scalability requirements. Both databases have their strengths and are widely used in production environments.\nMongoDB와 PostgreSQL은 다른 용도로 사용됩니다. MongoDB는 JSON 형태 문서를 저장하는 NoSQL 문서 데이터베이스로 유연한 스키마를 제공합니다. PostgreSQL은 미리 정의된 스키마의 테이블을 사용하고 SQL로 복잡한 쿼리를 지원하는 관계형 데이터베이스입니다. MongoDB는 비정형 데이터와 빠른 개발에, PostgreSQL은 복잡한 트랜잭션과 데이터 무결성에 적합합니다.", time: "15:42" },
-            { role: "user", sender: "pm", text: "But now we need complex joins for reporting. Is migration difficult?\n근데 이제 리포팅에 복잡한 조인이 필요해요. 마이그레이션 어려워요?", time: "15:43" },
-            { role: "agent", sender: "helper", text: "Migration complexity varies depending on your specific data and requirements.\n마이그레이션 복잡도는 특정 데이터와 요구사항에 따라 다릅니다.", time: "15:44" },
-        ]
+        topicKo: "DB 모델 선택",
+        full: {
+            src: "data/gifs/baseline_full_2.mp4",
+            description: "Agent with contextual responses"
+        },
+        comparison: {
+            src: "data/gifs/baseline_baseline_2.mp4",
+            description: "Agent with generic responses"
+        }
     }
 ];
 
 // GIF conversation data for generation script
 const GIF_CONVERSATIONS = {
-    // Set 5: Python version conflict (timing comparison)
+    // Set 5: Python TensorFlow version conflict (timing comparison)
     timing_1: {
         messages: [
-            { role: "user", sender: "david", text: "Code that worked on Python 3.8 throws errors on 3.11\nPython 3.8에서 되던 코드가 3.11에서 에러 나요", ts: 0 },
-            { role: "user", sender: "emma", text: "What kind of error?\n어떤 에러인데?", ts: 2500 },
-            { role: "user", sender: "david", text: "AttributeError when importing tensorflow\ntensorflow import할 때 AttributeError요", ts: 5000 },
-            { role: "agent", sender: "helper", text: "david: Your TensorFlow version might not support Python 3.11\ndavid: TensorFlow 버전이 Python 3.11을 지원 안 할 수 있어요", ts: 9000, noTimingTs: 5100 },
-            { role: "agent", sender: "helper", text: "Check version with: pip show tensorflow\n버전 확인: pip show tensorflow", ts: 11500, noTimingTs: 5200 },
-            { role: "user", sender: "david", text: "It says 2.10.0\n2.10.0이래요", ts: 14000 },
+            { role: "user", sender: "david", text: "My TensorFlow code that worked on Python 3.8 throws AttributeError on 3.11\nPython 3.8에서 되던 TensorFlow 코드가 3.11에서 AttributeError 나요", ts: 0 },
+            { role: "user", sender: "emma", text: "What error exactly?\n정확히 무슨 에러?", ts: 2500 },
+            { role: "user", sender: "david", text: "AttributeError: module 'tensorflow' has no attribute 'Session'\nAttributeError: module 'tensorflow' has no attribute 'Session'이요", ts: 5000 },
+            { role: "agent", sender: "helper", text: "david: tf.Session was removed in TF2. Use tf.compat.v1.Session instead\ndavid: tf.Session은 TF2에서 삭제됐어요. tf.compat.v1.Session 쓰세요", ts: 9000, noTimingTs: 5100 },
+            { role: "agent", sender: "helper", text: "Or migrate to TF2 eager execution\n아니면 TF2 즉시 실행으로 마이그레이션하세요", ts: 11500, noTimingTs: 5200 },
+            { role: "user", sender: "david", text: "I'm using TensorFlow 2.10. Is that the issue?\nTensorFlow 2.10 쓰는데 그게 문제인가요?", ts: 14000 },
             { role: "agent", sender: "helper", text: "david: TF 2.10 only supports up to Python 3.10\ndavid: TF 2.10은 Python 3.10까지만 지원해요", ts: 18000, noTimingTs: 14100 },
-            { role: "agent", sender: "helper", text: "Upgrade with: pip install tensorflow==2.15.0\n업그레이드: pip install tensorflow==2.15.0", ts: 21000, noTimingTs: 14200 },
-            { role: "user", sender: "david", text: "Works now, thanks!\n됐어요, 감사합니다!", ts: 24000 },
+            { role: "agent", sender: "helper", text: "Upgrade to TF 2.15: pip install tensorflow==2.15.0\nTF 2.15로 업그레이드: pip install tensorflow==2.15.0", ts: 21000, noTimingTs: 14200 },
+            { role: "user", sender: "david", text: "Works now with 2.15, thanks!\n2.15로 하니까 돼요, 감사합니다!", ts: 24000 },
         ]
     },
 
@@ -259,6 +240,50 @@ const GIF_CONVERSATIONS = {
             { role: "agent", sender: "helper", text: "amy: There might be hidden spaces in your cells\namy: 셀에 숨겨진 공백이 있을 수 있어요", ts: 18000, noTimingTs: 14100 },
             { role: "agent", sender: "helper", text: "Try: =VLOOKUP(TRIM(A1),B:C,2,FALSE)\n시도: =VLOOKUP(TRIM(A1),B:C,2,FALSE)", ts: 21000, noTimingTs: 14200 },
             { role: "user", sender: "amy", text: "That was it! Hidden spaces were the problem\n그거였어요! 숨겨진 공백이 문제였네요", ts: 24000 },
+        ]
+    },
+
+    // Set 7: Book translation - Friends "We were on a break!" (baseline comparison)
+    baseline_1: {
+        messages: [
+            { role: "user", sender: "editor", text: "How should we translate 'We were on a break!' from Friends? It's a running joke\n프렌즈의 'We were on a break!' 어떻게 번역할까요? 반복되는 유머예요", ts: 0 },
+            { role: "user", sender: "translatorA", text: "Literally '우리 그때 잠깐 헤어졌었잖아!' - but it doesn't hit the same\n직역하면 '우리 그때 잠깐 헤어졌었잖아!' - 근데 임팩트가 달라요", ts: 2500 },
+            { role: "user", sender: "translatorB", text: "'잠시 쉬는 거였다고!' sounds more defensive like Ross\n'잠시 쉬는 거였다고!'가 Ross처럼 방어적으로 들려요", ts: 5000 },
+        ],
+        fullMessages: [
+            { role: "agent", sender: "helper", text: "editor: The humor relies on Ross repeating this defensively for years\neditor: 유머는 Ross가 수년간 방어적으로 반복하는 데서 와요", ts: 9000, noTimingTs: 5100 },
+            { role: "agent", sender: "helper", text: "Korean viewers need to feel his desperation, not just understand the words\n한국 시청자들이 단어가 아닌 그의 절박함을 느껴야 해요", ts: 11500, noTimingTs: 5200 },
+            { role: "user", sender: "editor", text: "So which captures that desperation better?\n그럼 그 절박함을 더 잘 살리는 건 뭐예요?", ts: 14000 },
+            { role: "agent", sender: "helper", text: "editor: '잠깐 쉬는 거였다고!' with the emphasis marker keeps the exasperation\neditor: '잠깐 쉬는 거였다고!'에 강조 어미를 쓰면 짜증이 살아요", ts: 18000, noTimingTs: 14100 },
+            { role: "agent", sender: "helper", text: "The '다고' ending in Korean conveys 'I keep telling you this!'\n한국어의 '다고' 어미가 '계속 말하잖아!'를 전달해요", ts: 21000, noTimingTs: 14200 },
+            { role: "agent", sender: "helper", text: "Consistency matters too - use the same phrase every time Ross says it\n일관성도 중요해요 - Ross가 말할 때마다 같은 표현을 쓰세요", ts: 24000, noTimingTs: 14300 },
+        ],
+        baselineMessages: [
+            { role: "agent", sender: "helper", text: "This phrase can be translated as '우리 그때 헤어진 거였어!' or '잠시 쉬는 거였다고!'. When translating idiomatic expressions, consider the target audience and cultural context. Literal translation preserves the original structure but may lose nuance. Liberal translation captures meaning but changes form. The best approach depends on whether the text prioritizes accuracy or readability.\n이 문구는 '우리 그때 헤어진 거였어!' 또는 '잠시 쉬는 거였다고!'로 번역할 수 있습니다. 관용 표현을 번역할 때는 대상 독자와 문화적 맥락을 고려하세요. 직역은 원문 구조를 보존하지만 뉘앙스를 잃을 수 있습니다. 의역은 의미를 살리지만 형태가 바뀝니다.", ts: 9000, noTimingTs: 5100 },
+            { role: "user", sender: "editor", text: "So which captures that desperation better?\n그럼 그 절박함을 더 잘 살리는 건 뭐예요?", ts: 14000 },
+            { role: "agent", sender: "helper", text: "Translation choice depends on your translation philosophy and target readers.\n번역 선택은 번역 철학과 대상 독자에 달려 있습니다.", ts: 18000, noTimingTs: 14100 },
+        ]
+    },
+
+    // Set 8: Database model selection - Big Bang Theory "Bazinga!" context (baseline comparison)
+    baseline_2: {
+        messages: [
+            { role: "user", sender: "pm", text: "The vendor used MongoDB but we need complex joins for reporting. Should we migrate to PostgreSQL?\n외주가 MongoDB 썼는데 리포팅에 복잡한 조인 필요해요. PostgreSQL로 마이그레이션해야 하나요?", ts: 0 },
+            { role: "user", sender: "dev", text: "Our e-commerce data has clear product-order-customer relationships\n우리 이커머스 데이터는 상품-주문-고객 관계가 명확해요", ts: 2500 },
+            { role: "user", sender: "analyst", text: "I need to run monthly sales reports with multiple table joins\n저는 여러 테이블 조인으로 월간 매출 리포트 돌려야 해요", ts: 5000 },
+        ],
+        fullMessages: [
+            { role: "agent", sender: "helper", text: "pm: MongoDB lookups work but are 3-5x slower than SQL joins for your use case\npm: MongoDB lookup도 되지만 이 경우 SQL join보다 3-5배 느려요", ts: 9000, noTimingTs: 5100 },
+            { role: "agent", sender: "helper", text: "For e-commerce with clear relationships, PostgreSQL is the better fit\n명확한 관계가 있는 이커머스엔 PostgreSQL이 더 맞아요", ts: 11500, noTimingTs: 5200 },
+            { role: "user", sender: "pm", text: "How complex would the migration be?\n마이그레이션 복잡도는 어때요?", ts: 14000 },
+            { role: "agent", sender: "helper", text: "pm: Check nesting depth first - flat documents migrate easily\npm: 중첩 깊이부터 확인하세요 - 평면 문서는 쉽게 이전돼요", ts: 18000, noTimingTs: 14100 },
+            { role: "agent", sender: "helper", text: "Deeply nested arrays need careful denormalization planning\n깊게 중첩된 배열은 비정규화 계획이 필요해요", ts: 21000, noTimingTs: 14200 },
+            { role: "agent", sender: "helper", text: "analyst: For your monthly reports, PostgreSQL materialized views would be ideal\nanalyst: 월간 리포트엔 PostgreSQL materialized view가 이상적이에요", ts: 24000, noTimingTs: 14300 },
+        ],
+        baselineMessages: [
+            { role: "agent", sender: "helper", text: "MongoDB and PostgreSQL serve different use cases. MongoDB is a NoSQL document database that stores data in JSON-like documents, offering flexible schemas. PostgreSQL is a relational database that uses tables with predefined schemas and supports complex queries with SQL. MongoDB is better for unstructured data and rapid development, while PostgreSQL excels at complex transactions and data integrity. The choice depends on your data structure, query patterns, and scalability requirements.\nMongoDB와 PostgreSQL은 다른 용도로 사용됩니다. MongoDB는 JSON 형태 문서를 저장하는 NoSQL 문서 데이터베이스로 유연한 스키마를 제공합니다. PostgreSQL은 미리 정의된 스키마의 테이블을 사용하고 SQL로 복잡한 쿼리를 지원하는 관계형 데이터베이스입니다.", ts: 9000, noTimingTs: 5100 },
+            { role: "user", sender: "pm", text: "How complex would the migration be?\n마이그레이션 복잡도는 어때요?", ts: 14000 },
+            { role: "agent", sender: "helper", text: "Migration complexity varies depending on your specific data and requirements.\n마이그레이션 복잡도는 특정 데이터와 요구사항에 따라 다릅니다.", ts: 18000, noTimingTs: 14100 },
         ]
     }
 };
