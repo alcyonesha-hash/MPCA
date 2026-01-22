@@ -394,36 +394,35 @@ class SurveyApp {
             }
         };
 
-        // Send to Google Sheets
-        this.submitToGoogleSheets(surveyData);
+        // Send to JSONBin
+        this.submitToJSONBin(surveyData);
 
         // Show completion screen
         this.showScreen('complete');
     }
 
-    async submitToGoogleSheets(data) {
-        // Google Sheets Web App URL (to be configured)
-        const GOOGLE_SHEETS_URL = window.GOOGLE_SHEETS_WEBHOOK_URL || '';
-
-        if (!GOOGLE_SHEETS_URL) {
-            console.log('Google Sheets URL not configured. Data:', data);
-            // Save locally as backup
-            this.downloadAsJSON(data);
-            return;
-        }
+    async submitToJSONBin(data) {
+        const API_KEY = '$2a$10$awYpM0XtkqmGtzsmzoLBVePYLjVDUkziVThPKwyD3FJHHhPRcKCjy';
 
         try {
-            const response = await fetch(GOOGLE_SHEETS_URL, {
+            const response = await fetch('https://api.jsonbin.io/v3/b', {
                 method: 'POST',
-                mode: 'no-cors',
                 headers: {
                     'Content-Type': 'application/json',
+                    'X-Master-Key': API_KEY,
+                    'X-Bin-Name': `survey_${Date.now()}`
                 },
                 body: JSON.stringify(data)
             });
-            console.log('Data submitted to Google Sheets');
+
+            if (response.ok) {
+                const result = await response.json();
+                console.log('Data saved to JSONBin:', result.metadata.id);
+            } else {
+                throw new Error(`HTTP ${response.status}`);
+            }
         } catch (error) {
-            console.error('Failed to submit to Google Sheets:', error);
+            console.error('Failed to submit to JSONBin:', error);
             // Save locally as backup
             this.downloadAsJSON(data);
         }
