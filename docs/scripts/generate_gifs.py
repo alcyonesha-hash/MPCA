@@ -345,10 +345,17 @@ def generate_timing_video(messages, output_path, with_timing=True):
         frame = create_frame(messages_shown, font)
 
         # Hold for reading time
-        if with_timing:
+        # User messages should have same hold time in both versions
+        # Only agent messages differ between timing/no-timing
+        if msg['role'] == 'user':
+            # User messages: same hold time in both A and B
             hold_time = calculate_reading_time(msg['text']) * 0.5
         else:
-            hold_time = 0.3 * TIMING_MULTIPLIER
+            # Agent messages: differ based on timing mode
+            if with_timing:
+                hold_time = calculate_reading_time(msg['text']) * 0.5
+            else:
+                hold_time = 0.3 * TIMING_MULTIPLIER
 
         hold_frames = max(1, int(hold_time * FPS))
         for _ in range(hold_frames):
@@ -409,17 +416,38 @@ def generate_chunking_video(messages, single_response, output_path, with_chunkin
             for _ in range(hold_frames):
                 frames.append(frame)
     else:
-        # Show user messages first
-        user_messages = [m for m in messages if m['role'] == 'user']
-        for i, msg in enumerate(user_messages):
-            messages_shown.append(msg)
-            frame = create_frame(messages_shown, font)
-            hold_time = calculate_reading_time(msg['text']) * 0.6
-            for _ in range(int(hold_time * FPS)):
-                frames.append(frame)
+        # No chunking: user messages appear at same timing as chunked version
+        # Only agent response differs (single long message instead of chunks)
+        for i, msg in enumerate(messages):
+            msg_ts = msg.get('ts', i * 2000) * TIMING_MULTIPLIER
+
+            # Calculate delay
+            if i > 0:
+                delay_ms = msg_ts - last_ts
+                delay_seconds = min(delay_ms / 1000.0, 6.0)
+
+                if delay_seconds > 0.1:
+                    delay_frames = int(delay_seconds * FPS)
+                    frame = create_frame(messages_shown, font)
+                    for _ in range(delay_frames):
+                        frames.append(frame)
+
+            last_ts = msg_ts
+
+            if msg['role'] == 'user':
+                # User messages: same timing as chunked version
+                messages_shown.append(msg)
+                frame = create_frame(messages_shown, font)
+                hold_time = calculate_reading_time(msg['text']) * 0.5
+                hold_frames = max(1, int(hold_time * FPS))
+                for _ in range(hold_frames):
+                    frames.append(frame)
+            else:
+                # Skip agent messages - we'll add single response at the end
+                pass
 
         # Brief delay then single long response
-        for _ in range(int(1.0 * FPS)):
+        for _ in range(int(1.5 * FPS)):
             frames.append(create_frame(messages_shown, font))
 
         # Add single long response
